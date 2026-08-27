@@ -1,41 +1,24 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
+
+from app.schemas.rol import RolCreate, RolResponse
+from app.models.store import rol_store
 
 router = APIRouter()
 
-# Roles de ejemplo con sus requisitos mínimos (esto luego debería vivir en
-# la base de datos, no hardcodeado, pero sirve como punto de partida)
-ROLES_EJEMPLO = [
-    {
-        "id": 1,
-        "nombre": "Full Stack Developer",
-        "requisitos": ["JavaScript/TypeScript", "React o similar", "Node.js o backend equivalente", "Bases de datos SQL/NoSQL"],
-    },
-    {
-        "id": 2,
-        "nombre": "Analista de Recursos Humanos",
-        "requisitos": ["Gestión de procesos de selección", "Manejo de nómina", "Comunicación interpersonal"],
-    },
-    {
-        "id": 3,
-        "nombre": "Ejecutivo de Ventas",
-        "requisitos": ["Experiencia en ventas B2B/B2C", "Manejo de CRM", "Negociación"],
-    },
-    {
-        "id": 4,
-        "nombre": "Especialista en Marketing Digital",
-        "requisitos": ["SEO/SEM", "Gestión de redes sociales", "Analítica web (Google Analytics)"],
-    },
-]
 
-
-@router.get("/")
+@router.get("/", response_model=list[RolResponse])
 def listar_roles():
-    """Lista los roles/categorías profesionales disponibles con sus requisitos."""
-    return {"roles": ROLES_EJEMPLO}
+    return rol_store.list_all()
 
 
-@router.get("/{rol_id}")
+@router.get("/{rol_id}", response_model=RolResponse)
 def obtener_rol(rol_id: int):
-    """Consulta el detalle de un rol específico (requisitos mínimos)."""
-    rol = next((r for r in ROLES_EJEMPLO if r["id"] == rol_id), None)
-    return rol or {"error": "Rol no encontrado"}
+    rol = rol_store.get(rol_id)
+    if rol is None:
+        raise HTTPException(status_code=404, detail=f"Rol {rol_id} no encontrado")
+    return rol
+
+
+@router.post("/", response_model=RolResponse, status_code=201)
+def crear_rol(data: RolCreate):
+    return rol_store.create(data)
