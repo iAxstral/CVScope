@@ -1,0 +1,23 @@
+.status-pill {
+  display: inline-block;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.status-pill--apto {
+  background: var(--success-bg);
+  color: var(--success);
+}
+
+.status-pill--no_apto {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+.status-pill--pendiente {
+  background: var(--surface-alt);
+  color: var(--ink-soft);
+}
