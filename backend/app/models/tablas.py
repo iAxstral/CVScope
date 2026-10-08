@@ -28,3 +28,12 @@ class Candidato(Base):
     requisitos_cumplidos: Mapped[list] = mapped_column(JSON, default=list)
     requisitos_faltantes: Mapped[list] = mapped_column(JSON, default=list)
     explicacion: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+
+class Usuario(Base):
+    __tablename__ = "usuarios"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    email: Mapped[str] = mapped_column(String(255), unique=True)
+    nombre: Mapped[str] = mapped_column(String(150))
+    hash_contrasena: Mapped[str] = mapped_column(String(255))

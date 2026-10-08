@@ -8,7 +8,10 @@ que había antes, así el resto del código no depende de SQLAlchemy.
 from sqlalchemy import select
 
 from app.db import Base, SesionLocal, engine
-from app.models.tablas import Candidato, Rol
+import os
+
+from app.models.tablas import Candidato, Rol, Usuario
+from app.services.auth import hash_contrasena
 from app.schemas.candidato import CandidatoCreate, EstadoEvaluacion
 from app.schemas.rol import RolCreate
 
@@ -104,15 +107,48 @@ class CandidatoStore:
             return _a_dict(candidato)
 
 
+class UsuarioStore:
+    def get(self, usuario_id: int) -> dict | None:
+        with SesionLocal() as s:
+            usuario = s.get(Usuario, usuario_id)
+            return _a_dict(usuario) if usuario else None
+
+    def get_by_email(self, email: str) -> dict | None:
+        with SesionLocal() as s:
+            usuario = s.scalar(select(Usuario).where(Usuario.email == email.lower().strip()))
+            return _a_dict(usuario) if usuario else None
+
+    def create(self, email: str, nombre: str, contrasena: str) -> dict:
+        with SesionLocal() as s:
+            usuario = Usuario(
+                email=email.lower().strip(), nombre=nombre, hash_contrasena=hash_contrasena(contrasena)
+            )
+            s.add(usuario)
+            s.commit()
+            return _a_dict(usuario)
+
+
 def init_db() -> None:
-    """Crea las tablas si no existen y carga los roles iniciales la primera vez."""
+    """
+    Crea las tablas si no existen y, la primera vez, carga los roles iniciales
+    y el usuario administrador (ADMIN_EMAIL / ADMIN_PASSWORD).
+    """
     Base.metadata.create_all(engine)
     with SesionLocal() as s:
         if s.scalar(select(Rol.id).limit(1)) is None:
             s.add_all(Rol(**r.model_dump()) for r in ROLES_INICIALES)
             s.commit()
+    if UsuarioStore().get_by_email(os.getenv("ADMIN_EMAIL", "admin@cvscope.co")) is None:
+        with SesionLocal() as s:
+            if s.scalar(select(Usuario.id).limit(1)) is None:
+                UsuarioStore().create(
+                    os.getenv("ADMIN_EMAIL", "admin@cvscope.co"),
+                    "Administrador",
+                    os.getenv("ADMIN_PASSWORD", "cvscope2026"),
+                )
 
 
 init_db()
 rol_store = RolStore()
 candidato_store = CandidatoStore()
+usuario_store = UsuarioStore()
