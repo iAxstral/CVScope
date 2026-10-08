@@ -1,5 +1,6 @@
 .maxnet-chart {
   margin: 0;
+  max-width: 760px;
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
