@@ -17,12 +17,15 @@ y qué limitaciones siguen abiertas.
 
 ## Qué hace el sistema
 
-1. **Anonimización antes de cualquier modelo** (`backend/app/services/anonimizador.py`).
+1. **Anonimización antes de la red competitiva y de Gemini** (`backend/app/services/anonimizador.py`).
    Se quitan nombre, correo, teléfono, URLs, documento, edad, fecha de
    nacimiento, estado civil, sexo/género y ciudades (32 capitales de
    departamento y los municipios grandes, con o sin tilde). Las profesiones se
    neutralizan (*ingeniera/ingeniero → ingenierx*). Los años de experiencia se
-   conservan porque sí son un criterio del cargo.
+   conservan porque sí son un criterio del cargo. El evaluador por palabras
+   clave y el clasificador de rol reciben el texto original; el primero solo
+   busca evidencia de los requisitos y la auditoría confirma que no depende de
+   datos personales.
 2. **La red competitiva no ve ni siquiera los marcadores** (`[CANDIDATO]`,
    `[DATO PERSONAL]`…). Si quedaran como palabras, "este CV menciona la edad"
    sería una señal más.
