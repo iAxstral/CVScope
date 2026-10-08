@@ -25,6 +25,12 @@ export default function Bracket({ rondas, participantes, campeonId, onSelectDuel
             </span>
           </h3>
           <ol className="bracket-round__matches">
+            {ronda.pases.map((id) => (
+              <li key={`bye-${id}`} className="bracket-bye">
+                <span className="bracket-bye__name">{porId[id]?.nombre}</span>
+                <span className="bracket-bye__tag">pasa directo</span>
+              </li>
+            ))}
             {ronda.duelos.map((d) => (
               <li key={`${d.a}-${d.b}`}>
                 <button
@@ -36,12 +42,6 @@ export default function Bracket({ rondas, participantes, campeonId, onSelectDuel
                   <Lado competidor={porId[d.a]} gano={d.ganador === d.a} prob={d.prob_a} />
                   <Lado competidor={porId[d.b]} gano={d.ganador === d.b} prob={1 - d.prob_a} />
                 </button>
-              </li>
-            ))}
-            {ronda.pases.map((id) => (
-              <li key={`bye-${id}`} className="bracket-bye">
-                <span className="bracket-bye__name">{porId[id]?.nombre}</span>
-                <span className="bracket-bye__tag">pasa directo</span>
               </li>
             ))}
           </ol>
