@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class RolBase(BaseModel):
@@ -27,5 +27,4 @@ class RolResponse(RolBase):
     """Lo que la API devuelve: incluye el id asignado."""
     id: int
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
