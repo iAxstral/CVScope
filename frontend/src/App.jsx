@@ -2,9 +2,10 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import Layout from "./components/Layout.jsx";
 import Login from "./pages/Login.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
-import CargarCandidatos from "./pages/CargarCandidatos.jsx";
+import Seleccionar from "./pages/Seleccionar.jsx";
 import Ranking from "./pages/Ranking.jsx";
 import CandidateDetail from "./pages/CandidateDetail.jsx";
+import Datasets from "./pages/Datasets.jsx";
 
 export default function App() {
   return (
@@ -13,9 +14,12 @@ export default function App() {
 
       <Route element={<Layout />}>
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/cargar-candidatos" element={<CargarCandidatos />} />
+        <Route path="/seleccionar" element={<Seleccionar />} />
+        <Route path="/cargar-candidatos" element={<Navigate to="/seleccionar" replace />} />
+        <Route path="/ranking" element={<Ranking />} />
         <Route path="/ranking/:rolId" element={<Ranking />} />
-        <Route path="/candidatos/:candidatoId" element={<CandidateDetail />} />
+        <Route path="/candidatos/:cvId" element={<CandidateDetail />} />
+        <Route path="/datasets" element={<Datasets />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

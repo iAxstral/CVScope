@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import "./Dropzone.css";
 
-export default function Dropzone({ file, onFileSelected }) {
+export default function Dropzone({ file, onFileSelected, hint }) {
   const inputRef = useRef(null);
   const [dragActive, setDragActive] = useState(false);
 
@@ -27,7 +27,10 @@ export default function Dropzone({ file, onFileSelected }) {
       role="button"
       tabIndex={0}
       onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") inputRef.current?.click();
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          inputRef.current?.click();
+        }
       }}
     >
       <input
@@ -41,15 +44,12 @@ export default function Dropzone({ file, onFileSelected }) {
       {file ? (
         <div className="dropzone__file">
           <span className="dropzone__file-name">{file.name}</span>
-          <span className="dropzone__file-hint">
-            Archivo cargado. La extracción automática del texto aún no está disponible: pega el
-            contenido en el campo de abajo.
-          </span>
+          {hint && <span className="dropzone__file-hint">{hint}</span>}
         </div>
       ) : (
         <>
           <p className="dropzone__title">Arrastra un archivo aquí o haz clic para buscarlo</p>
-          <p className="dropzone__hint">PDF, DOC, DOCX o TXT</p>
+          <p className="dropzone__hint">TXT (se extrae el texto) · PDF, DOC o DOCX</p>
         </>
       )}
     </div>

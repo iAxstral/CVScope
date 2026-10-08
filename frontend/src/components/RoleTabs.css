@@ -1,0 +1,33 @@
+.role-tabs {
+  display: flex;
+  gap: 0.35rem;
+  padding: 0.3rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.role-tabs__tab {
+  border: none;
+  background: transparent;
+  padding: 0.55rem 0.95rem;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+.role-tabs__tab:hover {
+  background: var(--surface-alt);
+  color: var(--ink);
+}
+
+.role-tabs__tab--active,
+.role-tabs__tab--active:hover {
+  background: var(--primary);
+  color: #fff;
+}
