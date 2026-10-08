@@ -1,0 +1,22 @@
+/*
+  Efecto "marcador de texto": el color no es un fondo de bloque sino un
+  degradado angosto pegado a la parte inferior del texto, como si un
+  highlighter físico hubiera pasado por encima. Es la firma visual de
+  "IA explicable" del producto: representa el veredicto de un requisito.
+*/
+.highlight {
+  padding: 0.05em 0.25em;
+  background-repeat: no-repeat;
+  background-size: 100% 42%;
+  background-position: 0 88%;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.highlight--success {
+  background-image: linear-gradient(90deg, rgba(47, 158, 100, 0.35), rgba(47, 158, 100, 0.35));
+}
+
+.highlight--danger {
+  background-image: linear-gradient(90deg, rgba(214, 69, 80, 0.35), rgba(214, 69, 80, 0.35));
+}

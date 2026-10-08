@@ -1,35 +1,200 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException, Query
+from pydantic import BaseModel, Field
+
+from app.models.store import candidato_store, rol_store
+from app.schemas.preseleccion import (
+    DetalleHojaDeVida,
+    EvaluacionResponse,
+    EvaluarRequest,
+    RankingResponse,
+)
+from app.services.evaluador_requisitos import evaluar_cv
+from app.services.hojas_de_vida import buscar, pool_del_rol
+from app.services.ia_services import ClasificadorNoDisponible, categorizar_rol
 
 router = APIRouter()
 
 
-@router.post("/categorizar")
-def categorizar_candidato():
-    """
-    Paso 1: dado el texto de una hoja de vida, el LLM determina a qué
-    rol/categoría profesional pertenece el candidato (Full Stack, RRHH,
-    Ventas, Marketing Digital, etc.).
-    (Pendiente: implementar llamada a app.services.llm_service)
-    """
-    return {"mensaje": "Categorización pendiente de implementar"}
+class CategorizarRequest(BaseModel):
+    candidato_id: int | None = Field(
+        default=None,
+        description="Id de un candidato ya registrado; si se envía, se usa su hoja_de_vida_texto guardada.",
+    )
+    hoja_de_vida_texto: str | None = Field(
+        default=None,
+        min_length=20,
+        description="Texto plano de una hoja de vida a categorizar directamente, sin necesidad de un candidato registrado.",
+    )
 
 
-@router.post("/evaluar")
-def evaluar_candidato():
-    """
-    Paso 2: dado un candidato ya categorizado en un rol, evalúa si cumple
-    los requisitos mínimos de ese rol (apto/no apto) y genera una
-    explicación de qué requisitos cumple y cuáles no.
-    (Pendiente: implementar llamada a app.services.llm_service)
-    """
-    return {"mensaje": "Evaluación pendiente de implementar"}
+class CategorizarResponse(BaseModel):
+    candidato_id: int | None = None
+    rol_predicho: str = Field(..., examples=["fullstack"])
 
 
-@router.get("/ranking/{rol_id}")
-def ranking_por_rol(rol_id: int):
+def _texto_de(candidato_id: int | None, hoja_de_vida_texto: str | None) -> str:
+    if candidato_id is None and hoja_de_vida_texto is None:
+        raise HTTPException(
+            status_code=400,
+            detail="Debe enviarse candidato_id o hoja_de_vida_texto",
+        )
+    if candidato_id is not None:
+        candidato = candidato_store.get(candidato_id)
+        if candidato is None:
+            raise HTTPException(status_code=404, detail=f"Candidato {candidato_id} no encontrado")
+        return candidato["hoja_de_vida_texto"]
+    return hoja_de_vida_texto
+
+
+def _categorizar(texto: str) -> str:
+    try:
+        return categorizar_rol(texto)
+    except ClasificadorNoDisponible as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+
+def _rol_o_404(rol_id: int) -> dict:
+    rol = rol_store.get(rol_id)
+    if rol is None:
+        raise HTTPException(status_code=404, detail=f"Rol {rol_id} no encontrado")
+    return rol
+
+
+@router.post("/categorizar", response_model=CategorizarResponse)
+def categorizar_candidato(data: CategorizarRequest):
     """
-    Paso 3: entre los candidatos aptos de un mismo rol, genera un ranking
-    ordenado de mejor a peor ajuste con el perfil buscado.
-    (Pendiente: implementar)
+    Paso 1: dado el texto de una hoja de vida (directo o de un candidato ya
+    registrado), el clasificador determina a qué rol/categoría profesional
+    pertenece (fullstack, rrhh, ventas, marketing, etc.).
     """
-    return {"mensaje": f"Ranking del rol {rol_id} pendiente de implementar"}
+    texto = _texto_de(data.candidato_id, data.hoja_de_vida_texto)
+    return CategorizarResponse(candidato_id=data.candidato_id, rol_predicho=_categorizar(texto))
+
+
+@router.post("/evaluar", response_model=EvaluacionResponse)
+def evaluar_candidato(data: EvaluarRequest):
+    """
+    Paso 2 (selección): evalúa si una hoja de vida cumple los requisitos
+    mínimos de un rol (apto/no apto) y explica qué requisitos cumple y cuáles
+    no, citando el fragmento del CV que sustenta cada veredicto.
+
+    Si no se indica el rol, se usa el del candidato registrado o el que
+    prediga el clasificador (Paso 1).
+    """
+    texto = _texto_de(data.candidato_id, data.hoja_de_vida_texto)
+
+    rol_id = data.rol_id
+    if rol_id is None and data.candidato_id is not None:
+        rol_id = candidato_store.get(data.candidato_id)["rol_id"]
+
+    rol_predicho = None
+    if rol_id is None:
+        rol_predicho = _categorizar(texto)
+        rol = rol_store.get_by_clave(rol_predicho)
+        if rol is None:
+            raise HTTPException(
+                status_code=422,
+                detail=f"El clasificador predijo '{rol_predicho}', que no corresponde a ningún rol registrado",
+            )
+    else:
+        rol = _rol_o_404(rol_id)
+
+    resultado = evaluar_cv(texto, rol["requisitos"])
+
+    if data.candidato_id is not None:
+        candidato_store.update(
+            data.candidato_id,
+            rol_id=rol["id"],
+            rol_nombre=rol["nombre"],
+            estado=resultado["estado"],
+            score=resultado["score"],
+            requisitos_cumplidos=resultado["requisitos_cumplidos"],
+            requisitos_faltantes=resultado["requisitos_faltantes"],
+            explicacion=resultado["explicacion"],
+        )
+
+    return EvaluacionResponse(
+        candidato_id=data.candidato_id,
+        rol_id=rol["id"],
+        rol_nombre=rol["nombre"],
+        rol_predicho=rol_predicho,
+        **resultado,
+    )
+
+
+@router.get("/ranking/{rol_id}", response_model=RankingResponse)
+def ranking_por_rol(rol_id: int, top: int = Query(default=5, ge=1, le=50)):
+    """
+    Paso 3 (ranking): evalúa todas las hojas de vida del rol (dataset de
+    ranking + candidatos registrados) y devuelve las `top` mejores entre las
+    aptas, ordenadas de mejor a peor ajuste con el perfil buscado.
+    """
+    rol = _rol_o_404(rol_id)
+
+    pool = pool_del_rol(rol)
+
+    evaluados = []
+    for cv in pool:
+        r = evaluar_cv(cv["texto"], rol["requisitos"])
+        evaluados.append({
+            "id": cv["id"],
+            "nombre": cv["nombre"],
+            "email": cv["email"],
+            "fuente": cv["fuente"],
+            "posicion_referencia": cv["posicion_referencia"],
+            "score": r["score"],
+            "estado": r["estado"],
+            "anios_experiencia": r["anios_experiencia"],
+            "requisitos_cumplidos": r["requisitos_cumplidos"],
+            "requisitos_faltantes": r["requisitos_faltantes"],
+        })
+
+    aptos = sorted(
+        (e for e in evaluados if e["estado"] == "apto"),
+        key=lambda e: (-e["score"], e["id"]),
+    )
+    seleccion = aptos[:top]
+
+    coincidencias = None
+    if any(e["fuente"] == "dataset" for e in evaluados):
+        coincidencias = sum(
+            1 for e in seleccion if e["posicion_referencia"] is not None and e["posicion_referencia"] <= top
+        )
+
+    return RankingResponse(
+        rol_id=rol["id"],
+        rol_nombre=rol["nombre"],
+        requisitos=rol["requisitos"],
+        total_evaluados=len(evaluados),
+        total_aptos=len(aptos),
+        top=seleccion,
+        coincidencias_referencia=coincidencias,
+    )
+
+
+@router.get("/hojas-de-vida/{cv_id}", response_model=DetalleHojaDeVida)
+def detalle_hoja_de_vida(cv_id: str, rol_id: int | None = Query(default=None)):
+    """
+    Detalle explicable de una hoja de vida (del dataset o de un candidato
+    registrado): veredicto por requisito con su evidencia y, si viene de un
+    dataset, las etiquetas reales para compararlas.
+    """
+    cv = buscar(cv_id)
+    if cv is None:
+        raise HTTPException(status_code=404, detail=f"Hoja de vida {cv_id} no encontrada")
+    rol = _rol_o_404(rol_id) if rol_id else cv["rol"]
+
+    if rol is None:
+        raise HTTPException(status_code=400, detail="La hoja de vida no tiene un rol asignado; envíe rol_id")
+
+    return DetalleHojaDeVida(
+        id=cv["id"],
+        nombre=cv["nombre"],
+        email=cv["email"],
+        fuente=cv["fuente"],
+        hoja_de_vida_texto=cv["texto"],
+        rol_id=rol["id"],
+        rol_nombre=rol["nombre"],
+        referencia=cv["referencia"],
+        **evaluar_cv(cv["texto"], rol["requisitos"]),
+    )

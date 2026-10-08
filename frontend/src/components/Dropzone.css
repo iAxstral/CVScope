@@ -1,0 +1,46 @@
+.dropzone {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface-alt);
+  padding: 2rem 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.dropzone:hover,
+.dropzone--active {
+  border-color: var(--primary);
+  background: var(--primary-soft);
+}
+
+.dropzone__input {
+  display: none;
+}
+
+.dropzone__title {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.dropzone__hint {
+  margin-top: 0.35rem;
+  font-size: 0.82rem;
+  color: var(--ink-faint);
+}
+
+.dropzone__file-name {
+  display: block;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.dropzone__file-hint {
+  display: block;
+  margin-top: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--ink-faint);
+}

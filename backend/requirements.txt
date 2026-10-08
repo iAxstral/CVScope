@@ -5,3 +5,7 @@ python-dotenv
 pydantic
 sqlalchemy
 psycopg2-binary
+scikit-learn==1.9.1
+sentence-transformers
+joblib
+numpy
