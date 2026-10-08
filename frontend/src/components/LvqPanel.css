@@ -1,0 +1,115 @@
+.lvq-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.lvq-panel__head .section-title {
+  margin-bottom: 0.4rem;
+}
+
+.lvq-panel__head p {
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  max-width: 900px;
+}
+
+.lvq-panel__eje {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  max-width: 760px;
+}
+
+.lvq-panel__linea {
+  position: relative;
+  height: 28px;
+  margin: 0 8px;
+}
+
+.lvq-panel__linea::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 2px;
+  background: var(--border);
+}
+
+.lvq-panel__punto {
+  position: absolute;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px;
+  border-radius: 50%;
+  border: 2px solid var(--surface);
+  box-shadow: 0 0 0 1px var(--border);
+}
+
+.lvq-panel__punto--apto {
+  background: var(--success);
+}
+
+.lvq-panel__punto--no_apto {
+  background: var(--danger);
+}
+
+.lvq-panel__ticks {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--ink-faint);
+}
+
+.lvq-panel__eje figcaption {
+  font-size: 0.75rem;
+  color: var(--ink-faint);
+}
+
+.lvq-panel__prototipos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 0.5rem 1rem;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+
+.lvq-panel__prototipos li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.lvq-panel__metricas {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin: 0;
+}
+
+.lvq-panel__metricas dt {
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+}
+
+.lvq-panel__metricas dd {
+  margin: 0.15rem 0 0;
+  font-family: var(--font-mono);
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--ink);
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+
+.lvq-panel__metricas small {
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: var(--ink-faint);
+}
