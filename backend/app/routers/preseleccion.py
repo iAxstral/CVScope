@@ -1,3 +1,6 @@
+import os
+from typing import Literal
+
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
 
@@ -6,11 +9,18 @@ from app.schemas.preseleccion import (
     DetalleHojaDeVida,
     EvaluacionResponse,
     EvaluarRequest,
+    MotoresResponse,
     RankingResponse,
 )
 from app.services.evaluador_requisitos import evaluar_cv
 from app.services.hojas_de_vida import buscar, pool_del_rol
 from app.services.ia_services import ClasificadorNoDisponible, categorizar_rol
+from app.services.llm_service import (
+    MODELO_POR_DEFECTO,
+    LLMNoDisponible,
+    evaluar_compatibilidad,
+    llm_disponible,
+)
 
 router = APIRouter()
 
@@ -51,6 +61,15 @@ def _categorizar(texto: str) -> str:
         return categorizar_rol(texto)
     except ClasificadorNoDisponible as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+
+def _evaluar(texto: str, requisitos: list[str], motor: str) -> dict:
+    if motor == "llm":
+        try:
+            return evaluar_compatibilidad(texto, requisitos)
+        except LLMNoDisponible as exc:
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+    return evaluar_cv(texto, requisitos)
 
 
 def _rol_o_404(rol_id: int) -> dict:
@@ -99,7 +118,7 @@ def evaluar_candidato(data: EvaluarRequest):
     else:
         rol = _rol_o_404(rol_id)
 
-    resultado = evaluar_cv(texto, rol["requisitos"])
+    resultado = _evaluar(texto, rol["requisitos"], data.motor)
 
     if data.candidato_id is not None:
         candidato_store.update(
@@ -115,6 +134,7 @@ def evaluar_candidato(data: EvaluarRequest):
 
     return EvaluacionResponse(
         candidato_id=data.candidato_id,
+        motor=data.motor,
         rol_id=rol["id"],
         rol_nombre=rol["nombre"],
         rol_predicho=rol_predicho,
@@ -173,7 +193,11 @@ def ranking_por_rol(rol_id: int, top: int = Query(default=5, ge=1, le=50)):
 
 
 @router.get("/hojas-de-vida/{cv_id}", response_model=DetalleHojaDeVida)
-def detalle_hoja_de_vida(cv_id: str, rol_id: int | None = Query(default=None)):
+def detalle_hoja_de_vida(
+    cv_id: str,
+    rol_id: int | None = Query(default=None),
+    motor: Literal["palabras_clave", "llm"] = Query(default="palabras_clave"),
+):
     """
     Detalle explicable de una hoja de vida (del dataset o de un candidato
     registrado): veredicto por requisito con su evidencia y, si viene de un
@@ -196,5 +220,12 @@ def detalle_hoja_de_vida(cv_id: str, rol_id: int | None = Query(default=None)):
         rol_id=rol["id"],
         rol_nombre=rol["nombre"],
         referencia=cv["referencia"],
-        **evaluar_cv(cv["texto"], rol["requisitos"]),
+        motor=motor,
+        **_evaluar(cv["texto"], rol["requisitos"], motor),
     )
+
+
+@router.get("/motores", response_model=MotoresResponse)
+def motores_disponibles():
+    """Motores de evaluación disponibles (Gemini solo si hay API key)."""
+    return MotoresResponse(llm=llm_disponible(), modelo_llm=os.getenv("LLM_MODEL", MODELO_POR_DEFECTO))

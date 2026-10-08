@@ -80,3 +80,22 @@ def test_sin_api_key(monkeypatch):
     assert llm_service.llm_disponible() is False
     with pytest.raises(llm_service.LLMNoDisponible):
         llm_service.evaluar_compatibilidad(CV, REQUISITOS)
+
+
+def test_api_evaluar_con_motor_llm(monkeypatch):
+    from fastapi.testclient import TestClient
+
+    from app.main import app
+
+    _usar(monkeypatch, {"evaluacion": [
+        {"requisito": "SEO/SEM", "cumple": True, "evidencia": "campañas en Google Ads", "nota": "SEM."},
+    ]})
+    cliente = TestClient(app)
+    r = cliente.post("/preseleccion/evaluar", json={
+        "hoja_de_vida_texto": "Perfil: 4 años de experiencia. Gestioné campañas en Google Ads.",
+        "rol_id": 4,
+        "motor": "llm",
+    })
+    assert r.status_code == 200
+    assert r.json()["motor"] == "llm"
+    assert r.json()["requisitos_cumplidos"] == ["SEO/SEM"]

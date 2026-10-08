@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic import BaseModel, Field
 
 from app.schemas.candidato import EstadoEvaluacion
@@ -23,10 +25,15 @@ class EvaluarRequest(BaseModel):
         description="Rol contra el que se evalúa. Si se omite, se usa el rol del candidato "
                     "o el que prediga el clasificador.",
     )
+    motor: Literal["palabras_clave", "llm"] = Field(
+        default="palabras_clave",
+        description="'palabras_clave' (determinístico, sin red) o 'llm' (Gemini, requiere API key).",
+    )
 
 
 class EvaluacionResponse(BaseModel):
     candidato_id: int | None = None
+    motor: str = "palabras_clave"
     rol_id: int
     rol_nombre: str
     rol_predicho: str | None = Field(
@@ -82,3 +89,9 @@ class DetalleHojaDeVida(EvaluacionResponse):
     fuente: str
     hoja_de_vida_texto: str
     referencia: Referencia | None = None
+
+
+class MotoresResponse(BaseModel):
+    palabras_clave: bool = True
+    llm: bool = Field(..., description="True si hay API key de Gemini configurada.")
+    modelo_llm: str
