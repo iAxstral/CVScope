@@ -1,7 +1,7 @@
 import os
 from typing import Literal
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, File, HTTPException, Query, UploadFile
 from pydantic import BaseModel, Field
 
 from app.models.store import candidato_store, rol_store
@@ -13,6 +13,7 @@ from app.schemas.preseleccion import (
     RankingResponse,
 )
 from app.services.evaluador_requisitos import evaluar_cv
+from app.services.extractor_texto import ArchivoIlegible, FormatoNoSoportado, extraer_texto
 from app.services.hojas_de_vida import buscar, pool_del_rol
 from app.services.ia_services import ClasificadorNoDisponible, categorizar_rol
 from app.services.llm_service import (
@@ -229,3 +230,24 @@ def detalle_hoja_de_vida(
 def motores_disponibles():
     """Motores de evaluación disponibles (Gemini solo si hay API key)."""
     return MotoresResponse(llm=llm_disponible(), modelo_llm=os.getenv("LLM_MODEL", MODELO_POR_DEFECTO))
+
+
+class TextoExtraido(BaseModel):
+    nombre_archivo: str
+    caracteres: int
+    hoja_de_vida_texto: str
+
+
+@router.post("/extraer-texto", response_model=TextoExtraido)
+async def extraer_texto_de_archivo(archivo: UploadFile = File(...)):
+    """Extrae el texto plano de una hoja de vida en PDF, DOCX o TXT."""
+    contenido = await archivo.read()
+    try:
+        texto = extraer_texto(archivo.filename or "", contenido)
+    except FormatoNoSoportado as exc:
+        raise HTTPException(status_code=415, detail=str(exc)) from exc
+    except ArchivoIlegible as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    return TextoExtraido(
+        nombre_archivo=archivo.filename or "", caracteres=len(texto), hoja_de_vida_texto=texto
+    )
