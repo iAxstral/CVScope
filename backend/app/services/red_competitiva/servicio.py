@@ -65,7 +65,12 @@ def explicar_duelo(a: dict, b: dict, prob_a: float) -> str:
     solo_ganador = set(ganador["requisitos_cumplidos"]) - set(perdedor["requisitos_cumplidos"])
     if solo_ganador:
         texto += " Solo el ganador muestra: " + ", ".join(sorted(solo_ganador)) + "."
-    if len(ganador["requisitos_cumplidos"]) < len(perdedor["requisitos_cumplidos"]):
+    if set(ganador["requisitos_cumplidos"]) == set(perdedor["requisitos_cumplidos"]):
+        texto += (
+            " Ambas muestran los mismos requisitos, así que la red decide por la experiencia y"
+            " por otras señales del texto; tome esta diferencia con cautela."
+        )
+    elif len(ganador["requisitos_cumplidos"]) < len(perdedor["requisitos_cumplidos"]):
         texto += (
             " La red lo prefiere aunque tenga menos requisitos detectados por palabras clave: "
             "reconoce en el texto señales que el evaluador no encuentra."
