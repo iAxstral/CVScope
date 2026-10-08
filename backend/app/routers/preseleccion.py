@@ -21,6 +21,7 @@ from app.services.extractor_texto import (
 )
 from app.services.hojas_de_vida import buscar, pool_del_rol
 from app.services.red_competitiva import servicio as servicio_red
+from app.services.red_competitiva.caracteristicas import extraer
 from app.services.red_competitiva.competitiva import podio
 from app.services.ia_services import ClasificadorNoDisponible, categorizar_rol
 from app.services.llm_service import (
@@ -128,6 +129,7 @@ def evaluar_candidato(data: EvaluarRequest):
         rol = _rol_o_404(rol_id)
 
     resultado = _evaluar(texto, rol, data.motor)
+    lvq = servicio_red.clasificar_lvq(extraer(texto, rol["requisitos"]))
 
     if data.candidato_id is not None:
         candidato_store.update(
@@ -147,6 +149,8 @@ def evaluar_candidato(data: EvaluarRequest):
         rol_id=rol["id"],
         rol_nombre=rol["nombre"],
         rol_predicho=rol_predicho,
+        veredicto_lvq=lvq["veredicto"] if lvq else None,
+        margen_lvq=round(lvq["margen"], 3) if lvq else None,
         **resultado,
     )
 

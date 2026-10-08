@@ -46,6 +46,11 @@ class EvaluacionResponse(BaseModel):
     requisitos_cumplidos: list[str]
     requisitos_faltantes: list[str]
     explicacion: str
+    veredicto_lvq: str | None = Field(
+        default=None,
+        description="Apto/no apto según la capa competitiva LVQ (aprendida de los datos).",
+    )
+    margen_lvq: float | None = None
 
 
 class Referencia(BaseModel):
