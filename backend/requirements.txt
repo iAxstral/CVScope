@@ -9,3 +9,6 @@ scikit-learn==1.9.1
 sentence-transformers
 joblib
 numpy
+pypdf
+python-docx
+python-multipart
