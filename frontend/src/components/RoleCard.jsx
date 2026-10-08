@@ -11,6 +11,10 @@ export default function RoleCard({ rol, ranking }) {
         {rol.clave && <span className="chip">{rol.clave}</span>}
       </div>
 
+      <p className="role-card__umbral">
+        Apto con al menos {Math.round((rol.umbral_apto ?? 0.66) * 100)} % de los requisitos
+      </p>
+
       <ul className="role-card__requisitos">
         {rol.requisitos.map((req) => (
           <li key={req}>{req}</li>

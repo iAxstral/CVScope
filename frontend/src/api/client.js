@@ -110,3 +110,12 @@ export function jugarTorneo({ rolId, cvIds, top = 5, semilla }) {
 export function getModeloCompetencia() {
   return get("/competencia/modelo");
 }
+
+export function crearRol({ nombre, clave, requisitos, umbralApto }) {
+  return post("/roles/", {
+    nombre,
+    clave: clave || null,
+    requisitos,
+    umbral_apto: umbralApto,
+  });
+}
