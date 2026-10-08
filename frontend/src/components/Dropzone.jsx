@@ -36,7 +36,7 @@ export default function Dropzone({ file, onFileSelected, hint }) {
       <input
         ref={inputRef}
         type="file"
-        accept=".pdf,.doc,.docx,.txt"
+        accept=".pdf,.docx,.txt"
         className="dropzone__input"
         onChange={(e) => handleFiles(e.target.files)}
       />
@@ -49,7 +49,7 @@ export default function Dropzone({ file, onFileSelected, hint }) {
       ) : (
         <>
           <p className="dropzone__title">Arrastra un archivo aquí o haz clic para buscarlo</p>
-          <p className="dropzone__hint">TXT (se extrae el texto) · PDF, DOC o DOCX</p>
+          <p className="dropzone__hint">PDF, DOCX o TXT · el texto se extrae automáticamente</p>
         </>
       )}
     </div>
