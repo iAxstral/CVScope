@@ -29,7 +29,7 @@ from app.services.evaluador_requisitos import (  # noqa: E402
 )
 from app.services.red_competitiva.caracteristicas import DIM_ENTRADA, DIM_HASH, extraer  # noqa: E402
 from app.services.red_competitiva.modelo import RedCompetitiva  # noqa: E402
-from app.services.red_competitiva.torneo import clasificar  # noqa: E402
+from app.services.red_competitiva.competitiva import podio  # noqa: E402
 
 RUTA_MODELO = Path(__file__).resolve().parent.parent / "app" / "ml_models" / "red_competitiva.npz"
 SEMILLA = 2026
@@ -101,13 +101,14 @@ def exactitud_base(duelos) -> float:
                           for a, b in duelos]))
 
 
-def precision_top(cvs: list[dict], comparar) -> dict[str, int]:
+def precision_top(cvs: list[dict], fuerza) -> dict[str, int]:
+    """Cuántos del top real recupera el podio de la capa competitiva (MAXNET)."""
     resultado = {}
     for rol in sorted({c["rol"] for c in cvs}):
         del_rol = [c for c in cvs if c["rol"] == rol]
         real = {c["id"] for c in sorted(del_rol, key=lambda c: (-c["ref"], c["id"]))[:TOP]}
-        podio = clasificar(del_rol, comparar, TOP)
-        resultado[rol] = len(real & {c["id"] for c in podio})
+        puestos = podio([fuerza(c) for c in del_rol], TOP)
+        resultado[rol] = len(real & {del_rol[i]["id"] for i in puestos})
     return resultado
 
 
@@ -147,11 +148,11 @@ def main() -> None:
 
     red = entrenar(duelos_ent, rng)
 
-    def comparar_red(a, b):
-        return red.probabilidad(a["x"], b["x"])[0]
+    def fuerza_red(c):
+        return float(red.puntaje(c["x"])[0])
 
-    def comparar_base(a, b):
-        return 1.0 if a["base"] > b["base"] else 0.0 if a["base"] < b["base"] else 0.5
+    def fuerza_base(c):
+        return c["base"]
 
     exact = {
         "val_red": exactitud_red(red, duelos_val),
@@ -163,8 +164,8 @@ def main() -> None:
         x_a = np.stack([a["x"] for a, _ in empates_prueba])
         x_b = np.stack([b["x"] for _, b in empates_prueba])
         exact["confianza_empates"] = float(np.mean(np.abs(red.probabilidad(x_a, x_b) - 0.5) * 2))
-    top_red = precision_top(prueba, comparar_red)
-    top_base = precision_top(prueba, comparar_base)
+    top_red = precision_top(prueba, fuerza_red)
+    top_base = precision_top(prueba, fuerza_base)
     p5_red = sum(top_red.values()) / (TOP * len(top_red))
     p5_base = sum(top_base.values()) / (TOP * len(top_base))
 

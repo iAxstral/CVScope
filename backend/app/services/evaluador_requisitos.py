@@ -157,10 +157,19 @@ def evaluar_cv(cv_texto: str, requisitos: list[str]) -> dict:
             "nota": nota,
         })
 
+    return resumir(evaluacion, extraer_anios_experiencia(cv_texto))
+
+
+def resumir(evaluacion: list[dict], anios: int) -> dict:
+    """
+    Puntaje, veredicto y explicación a partir de la evaluación por requisito.
+    Lo comparten el evaluador por palabras clave y el evaluador con LLM, así
+    ambos motores califican con la misma regla.
+    """
+    requisitos = [e["requisito"] for e in evaluacion]
     cumplidos = [e["requisito"] for e in evaluacion if e["cumple"]]
     faltantes = [e["requisito"] for e in evaluacion if not e["cumple"]]
     fraccion = len(cumplidos) / len(requisitos) if requisitos else 0.0
-    anios = extraer_anios_experiencia(cv_texto)
 
     score = round(
         PESO_REQUISITOS * fraccion

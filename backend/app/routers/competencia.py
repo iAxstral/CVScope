@@ -54,22 +54,24 @@ def _resolver(entrada: HojaDeVidaEntrada, etiqueta: str) -> dict:
 @router.post("/comparar", response_model=CompararResponse)
 def comparar(data: CompararRequest):
     """
-    Duelo entre dos hojas de vida: la red estima la probabilidad de que A sea
-    mejor que B para el rol y declara un ganador.
+    Duelo entre dos hojas de vida: la capa de evaluación calcula la fuerza de
+    cada una y la capa competitiva (MAXNET con 2 neuronas) decide la ganadora
+    por inhibición lateral. Incluye la traza de activaciones.
     """
     _modelo()
     rol = _rol_o_404(data.rol_id)
     a = servicio.preparar(_resolver(data.a, "a"), rol["requisitos"])
     b = servicio.preparar(_resolver(data.b, "b"), rol["requisitos"])
-    prob_a = servicio.comparar(a, b)
+    resultado = servicio.duelo(a, b)
     return CompararResponse(
         rol_id=rol["id"],
         rol_nombre=rol["nombre"],
         a=a,
         b=b,
-        prob_a=prob_a,
-        ganador="a" if prob_a >= 0.5 else "b",
-        explicacion=servicio.explicar_duelo(a, b, prob_a),
+        prob_a=resultado["prob_a"],
+        ganador="a" if resultado["gana_a"] else "b",
+        explicacion=servicio.explicar_duelo(a, b, resultado),
+        maxnet=resultado,
     )
 
 
@@ -77,8 +79,9 @@ def comparar(data: CompararRequest):
 def torneo(data: TorneoRequest):
     """
     Torneo de eliminación directa: las hojas de vida se enfrentan de a pares,
-    la mejor de cada duelo avanza y se obtiene un campeón. El podio (top N)
-    se arma con torneos sucesivos retirando al campeón de cada uno.
+    la mejor de cada duelo (MAXNET de 2 neuronas) avanza y se obtiene un
+    campeón. Además se juega una competencia abierta (MAXNET con todas las
+    neuronas a la vez) y el podio (top N) se arma retirando a la ganadora.
     """
     _modelo()
     rol = _rol_o_404(data.rol_id)
@@ -97,12 +100,6 @@ def torneo(data: TorneoRequest):
         raise HTTPException(status_code=400, detail="Se necesitan al menos 2 hojas de vida para un torneo")
 
     resultado = servicio.torneo(cvs, rol["requisitos"], data.top, data.semilla)
-    por_id = {p["id"]: p for p in resultado["participantes"]}
-    for ronda in resultado["rondas"]:
-        for duelo in ronda["duelos"]:
-            duelo["explicacion"] = servicio.explicar_duelo(
-                por_id[duelo["a"]], por_id[duelo["b"]], duelo["prob_a"]
-            )
 
     coincidencias = None
     if any(p["posicion_referencia"] for p in resultado["participantes"]):
@@ -118,6 +115,7 @@ def torneo(data: TorneoRequest):
         rondas=resultado["rondas"],
         campeon=resultado["campeon"],
         podio=resultado["podio"],
+        competencia_abierta=resultado["competencia_abierta"],
         total_duelos=resultado["total_duelos"],
         coincidencias_referencia=coincidencias,
     )
@@ -129,7 +127,10 @@ def info_modelo():
     _, meta = _modelo()
     capas = " -> ".join(str(n) for n in (DIM_ENTRADA, *CAPAS_OCULTAS, 1))
     return ModeloInfo(
-        arquitectura=f"Red siamesa {capas} (ReLU); P(A>B) = sigmoide(s(A) - s(B))",
+        arquitectura=(
+            f"Red competitiva tipo Hamming: capa de evaluación {capas} (ReLU, pesos compartidos)"
+            " + capa competitiva MAXNET (inhibición lateral, winner-take-all)"
+        ),
         dim_entrada=DIM_ENTRADA,
         metricas={k: float(v) for k, v in meta.items() if k not in ("dim_hash", "epocas")},
     )

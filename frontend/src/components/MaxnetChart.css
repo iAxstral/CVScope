@@ -1,0 +1,94 @@
+.maxnet-chart {
+  margin: 0;
+  max-width: 760px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.maxnet-chart__plot {
+  position: relative;
+}
+
+.maxnet-chart svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+.maxnet-chart__grid {
+  stroke: var(--border);
+  stroke-width: 1;
+}
+
+.maxnet-chart__tick {
+  fill: var(--ink-faint);
+  font-size: 11px;
+  font-family: var(--font-mono);
+}
+
+.maxnet-chart__line {
+  fill: none;
+  stroke: var(--primary);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.maxnet-chart__line--contexto {
+  stroke: var(--ink-faint);
+  stroke-width: 1;
+  opacity: 0.45;
+}
+
+.maxnet-chart__label {
+  fill: var(--ink);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.maxnet-chart__cursor {
+  stroke: var(--ink-soft);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+
+.maxnet-chart__tooltip {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 170px;
+  padding: 0.5rem 0.65rem;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 20px rgba(23, 32, 58, 0.12);
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.maxnet-chart__tooltip strong {
+  color: var(--ink);
+}
+
+.maxnet-chart__tooltip span {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.maxnet-chart__tooltip b {
+  font-family: var(--font-mono);
+  color: var(--ink);
+}
+
+.maxnet-chart__caption {
+  font-size: 0.75rem;
+  color: var(--ink-faint);
+}

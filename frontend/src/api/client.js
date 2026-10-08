@@ -42,20 +42,35 @@ export function categorizarCv({ candidatoId, hojaDeVidaTexto }) {
   });
 }
 
-export function evaluarCv({ candidatoId, hojaDeVidaTexto, rolId }) {
+export function evaluarCv({ candidatoId, hojaDeVidaTexto, rolId, motor = "palabras_clave" }) {
   return post("/preseleccion/evaluar", {
     candidato_id: candidatoId ?? null,
     hoja_de_vida_texto: hojaDeVidaTexto ?? null,
     rol_id: rolId ? Number(rolId) : null,
+    motor,
   });
+}
+
+export function getMotores() {
+  return get("/preseleccion/motores");
+}
+
+export async function extraerTexto(archivo) {
+  const datos = new FormData();
+  datos.append("archivo", archivo);
+  const res = await fetch(`${API_BASE_URL}/preseleccion/extraer-texto`, {
+    method: "POST",
+    body: datos,
+  });
+  return handleResponse(res);
 }
 
 export function getRanking(rolId, top = 5) {
   return get(`/preseleccion/ranking/${rolId}`, { top });
 }
 
-export function getDetalleHojaDeVida(cvId, rolId) {
-  return get(`/preseleccion/hojas-de-vida/${encodeURIComponent(cvId)}`, { rol_id: rolId });
+export function getDetalleHojaDeVida(cvId, rolId, motor) {
+  return get(`/preseleccion/hojas-de-vida/${encodeURIComponent(cvId)}`, { rol_id: rolId, motor });
 }
 
 export function crearCandidato({ nombre, email, hojaDeVidaTexto, rolId }) {
