@@ -13,7 +13,12 @@ from app.schemas.preseleccion import (
     RankingResponse,
 )
 from app.services.evaluador_requisitos import evaluar_cv
-from app.services.extractor_texto import ArchivoIlegible, FormatoNoSoportado, extraer_texto
+from app.services.extractor_texto import (
+    TAMANO_MAXIMO,
+    ArchivoIlegible,
+    FormatoNoSoportado,
+    extraer_texto,
+)
 from app.services.hojas_de_vida import buscar, pool_del_rol
 from app.services.ia_services import ClasificadorNoDisponible, categorizar_rol
 from app.services.llm_service import (
@@ -241,7 +246,15 @@ class TextoExtraido(BaseModel):
 @router.post("/extraer-texto", response_model=TextoExtraido)
 async def extraer_texto_de_archivo(archivo: UploadFile = File(...)):
     """Extrae el texto plano de una hoja de vida en PDF, DOCX o TXT."""
-    contenido = await archivo.read()
+    # Se lee por partes y se corta apenas supera el límite, para no cargar en
+    # memoria un archivo enorme antes de rechazarlo.
+    partes, leido = [], 0
+    while parte := await archivo.read(64 * 1024):
+        leido += len(parte)
+        if leido > TAMANO_MAXIMO:
+            raise HTTPException(status_code=413, detail="El archivo supera el tamaño máximo de 5 MB")
+        partes.append(parte)
+    contenido = b"".join(partes)
     try:
         texto = extraer_texto(archivo.filename or "", contenido)
     except FormatoNoSoportado as exc:
