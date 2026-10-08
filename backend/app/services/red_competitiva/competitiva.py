@@ -80,3 +80,18 @@ def maxnet(fuerzas, epsilon: float | None = None, max_iteraciones: int = MAX_ITE
         "probabilidades": probabilidades(fuerzas),
         "trayectoria": trayectoria,
     }
+
+
+def podio(fuerzas, top: int = 5) -> list[int]:
+    """
+    Top `top` por competencias sucesivas: la ganadora de cada MAXNET ocupa el
+    siguiente puesto y se retira; las demás vuelven a competir.
+    """
+    restantes = list(range(len(fuerzas)))
+    fuerzas = np.asarray(fuerzas, dtype=np.float64)
+    puestos = []
+    while restantes and len(puestos) < top:
+        ganador = restantes[maxnet(fuerzas[restantes])["ganador"]]
+        puestos.append(ganador)
+        restantes.remove(ganador)
+    return puestos

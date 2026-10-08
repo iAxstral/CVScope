@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from app.services.red_competitiva.competitiva import maxnet, probabilidades
+from app.services.red_competitiva.competitiva import maxnet, podio, probabilidades
 
 
 @pytest.mark.parametrize("semilla", range(20))
@@ -40,3 +40,7 @@ def test_empate_exacto_gana_la_primera_sembrada_sin_ciclo_infinito():
 def test_epsilon_fuera_de_rango():
     with pytest.raises(ValueError):
         maxnet([1.0, 2.0, 3.0], epsilon=0.6)  # máximo 1 / (3 - 1) = 0.5
+
+
+def test_podio_devuelve_el_top_en_orden():
+    assert podio([4.0, 9.0, 1.0, 7.0, 5.0, 8.0], top=3) == [1, 5, 3]
