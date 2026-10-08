@@ -126,6 +126,21 @@
   color: var(--ink-soft);
 }
 
+.duelo__maxnet {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--border);
+}
+
+.duelo__maxnet h3 {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
 @media (max-width: 720px) {
   .duelo__controles {
     grid-template-columns: minmax(0, 1fr);

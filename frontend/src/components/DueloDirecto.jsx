@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { compararCvs } from "../api/client.js";
 import Highlight from "./Highlight.jsx";
+import MaxnetChart from "./MaxnetChart.jsx";
 import "./DueloDirecto.css";
 
 function Esquina({ competidor, gano, prob }) {
@@ -107,6 +108,18 @@ export default function DueloDirecto({ rolId, participantes }) {
             <Esquina competidor={r.b} gano={r.ganador === "b"} prob={1 - r.prob_a} />
           </div>
           <p className="duelo__explicacion">{r.explicacion}</p>
+          <div className="duelo__maxnet">
+            <h3>
+              Capa competitiva (MAXNET) · ε = {r.maxnet.epsilon} · {r.maxnet.iteraciones} iteración
+              {r.maxnet.iteraciones === 1 ? "" : "es"}
+            </h3>
+            <MaxnetChart
+              trayectoria={r.maxnet.trayectoria}
+              nombres={[r.a.nombre, r.b.nombre]}
+              ganador={r.ganador === "a" ? 0 : 1}
+              colores={{ 0: "var(--primary)", 1: "var(--accent)" }}
+            />
+          </div>
         </div>
       )}
     </section>
