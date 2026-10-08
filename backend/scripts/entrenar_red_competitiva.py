@@ -61,13 +61,20 @@ def preparar(filas: list[dict]) -> list[dict]:
     ]
 
 
-def pares(cvs: list[dict]) -> list[tuple[dict, dict]]:
-    """Todos los duelos posibles dentro de cada rol, sin empates de referencia."""
+def pares(cvs: list[dict], con_empates: bool = False) -> list[tuple[dict, dict]]:
+    """Todos los duelos posibles dentro de cada rol (los empates solo si se piden)."""
     resultado = []
     for rol in sorted({c["rol"] for c in cvs}):
         del_rol = [c for c in cvs if c["rol"] == rol]
-        resultado += [(a, b) for a, b in itertools.combinations(del_rol, 2) if a["ref"] != b["ref"]]
+        resultado += [
+            (a, b) for a, b in itertools.combinations(del_rol, 2) if con_empates or a["ref"] != b["ref"]
+        ]
     return resultado
+
+
+def etiqueta_duelo(a: dict, b: dict) -> float:
+    """1 si gana A, 0 si gana B y 0.5 si empatan: así la red aprende a dudar."""
+    return 1.0 if a["ref"] > b["ref"] else 0.0 if a["ref"] < b["ref"] else 0.5
 
 
 def dividir(cvs: list[dict], rng: np.random.Generator) -> tuple[list[dict], list[dict]]:
@@ -108,7 +115,7 @@ def entrenar(duelos, rng: np.random.Generator) -> RedCompetitiva:
     red = RedCompetitiva(DIM_ENTRADA, semilla=SEMILLA)
     x_a = np.stack([a["x"] for a, _ in duelos])
     x_b = np.stack([b["x"] for _, b in duelos])
-    y = np.array([a["ref"] > b["ref"] for a, b in duelos], dtype=np.float32)
+    y = np.array([etiqueta_duelo(a, b) for a, b in duelos], dtype=np.float32)
 
     for epoca in range(1, EPOCAS + 1):
         orden = rng.permutation(len(y))
@@ -133,7 +140,9 @@ def main() -> None:
     prueba = preparar(cargar_ranking())
     entrenamiento, validacion = dividir(seleccion, rng)
 
-    duelos_ent, duelos_val, duelos_prueba = pares(entrenamiento), pares(validacion), pares(prueba)
+    duelos_ent = pares(entrenamiento, con_empates=True)
+    duelos_val, duelos_prueba = pares(validacion), pares(prueba)
+    empates_prueba = [(a, b) for a, b in pares(prueba, con_empates=True) if a["ref"] == b["ref"]]
     print(f"Duelos -> entrenamiento {len(duelos_ent)} | validación {len(duelos_val)} | prueba {len(duelos_prueba)}")
 
     red = entrenar(duelos_ent, rng)
@@ -150,6 +159,10 @@ def main() -> None:
         "prueba_red": exactitud_red(red, duelos_prueba),
         "prueba_base": exactitud_base(duelos_prueba),
     }
+    if empates_prueba:
+        x_a = np.stack([a["x"] for a, _ in empates_prueba])
+        x_b = np.stack([b["x"] for _, b in empates_prueba])
+        exact["confianza_empates"] = float(np.mean(np.abs(red.probabilidad(x_a, x_b) - 0.5) * 2))
     top_red = precision_top(prueba, comparar_red)
     top_base = precision_top(prueba, comparar_base)
     p5_red = sum(top_red.values()) / (TOP * len(top_red))
@@ -161,6 +174,9 @@ def main() -> None:
     for rol in top_red:
         print(f"Top {TOP} {rol:<17} {top_red[rol]:>13}/{TOP}   {top_base[rol]:>12}/{TOP}")
     print(f"Precisión@{TOP} promedio     {p5_red:>15.3f}   {p5_base:>14.3f}")
+    if "confianza_empates" in exact:
+        print(f"Confianza media en {len(empates_prueba)} empates de prueba (0 = duda, 1 = segura): "
+              f"{exact['confianza_empates']:.3f}")
 
     red.guardar(
         RUTA_MODELO,
@@ -170,6 +186,7 @@ def main() -> None:
         precision_top5_prueba=p5_red,
         exactitud_duelos_prueba_base=exact["prueba_base"],
         precision_top5_prueba_base=p5_base,
+        confianza_empates_prueba=exact.get("confianza_empates", 0.0),
     )
     print(f"\nModelo guardado en {RUTA_MODELO}")
 
