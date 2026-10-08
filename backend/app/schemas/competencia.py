@@ -26,6 +26,15 @@ class Competidor(BaseModel):
     posicion_referencia: int | None = None
 
 
+class Maxnet(BaseModel):
+    """Traza de la capa competitiva (inhibición lateral)."""
+    epsilon: float = Field(..., description="Peso de inhibición lateral entre neuronas.")
+    iteraciones: int
+    trayectoria: list[list[float]] = Field(
+        ..., description="Activación de cada neurona en cada iteración (la primera es la inicial)."
+    )
+
+
 class CompararResponse(BaseModel):
     rol_id: int
     rol_nombre: str
@@ -34,6 +43,7 @@ class CompararResponse(BaseModel):
     prob_a: float = Field(..., ge=0, le=1, description="Probabilidad de que A gane a B.")
     ganador: str = Field(..., description="'a' o 'b'")
     explicacion: str
+    maxnet: Maxnet
 
 
 class TorneoRequest(BaseModel):
@@ -49,7 +59,7 @@ class TorneoRequest(BaseModel):
     )
 
 
-class Duelo(BaseModel):
+class Duelo(Maxnet):
     a: str
     b: str
     ganador: str
@@ -64,6 +74,12 @@ class Ronda(BaseModel):
     pases: list[str] = Field(default_factory=list, description="Pasan sin jugar (bye).")
 
 
+class CompetenciaAbierta(Maxnet):
+    """MAXNET con todas las hojas de vida compitiendo a la vez."""
+    ids: list[str] = Field(..., description="Orden de las neuronas en la trayectoria.")
+    ganador: str
+
+
 class TorneoResponse(BaseModel):
     rol_id: int
     rol_nombre: str
@@ -71,6 +87,7 @@ class TorneoResponse(BaseModel):
     rondas: list[Ronda]
     campeon: Competidor
     podio: list[Competidor]
+    competencia_abierta: CompetenciaAbierta
     total_duelos: int
     coincidencias_referencia: int | None = Field(
         default=None, description="Cuántos del podio están en el top de referencia del dataset."

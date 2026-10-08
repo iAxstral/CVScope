@@ -1,0 +1,193 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1720 1080" width="1720" height="1080" font-family="Inter, Helvetica, Arial, sans-serif">
+<defs>
+<marker id="punta-flujo" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#22346b"/></marker>
+<marker id="punta-conexion" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b8c2d6"/></marker>
+<marker id="punta-inhibicion" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d64550"/></marker>
+<marker id="punta-excitacion" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2f9e64"/></marker>
+<marker id="punta-entrenamiento" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#e8a63d"/></marker>
+</defs>
+<rect width="1720" height="1080" fill="#f1f4f8"/>
+<rect x="30" y="100" width="230" height="690" rx="14" fill="#f7f9fc" stroke="#dfe4ee" stroke-width="1.5"/>
+<rect x="30" y="100" width="230" height="38" rx="14" fill="#17244d" stroke="#17244d" stroke-width="1.5"/>
+<text x="145.0" y="119.0" font-size="12" font-weight="700" fill="#ffffff" text-anchor="middle" dominant-baseline="central">1 · DATOS DE ENTRADA</text>
+<rect x="275" y="100" width="270" height="690" rx="14" fill="#f7f9fc" stroke="#dfe4ee" stroke-width="1.5"/>
+<rect x="275" y="100" width="270" height="38" rx="14" fill="#17244d" stroke="#17244d" stroke-width="1.5"/>
+<text x="410.0" y="119.0" font-size="12" font-weight="700" fill="#ffffff" text-anchor="middle" dominant-baseline="central">2 · PREPROCESAMIENTO</text>
+<rect x="560" y="100" width="450" height="690" rx="14" fill="#f7f9fc" stroke="#dfe4ee" stroke-width="1.5"/>
+<rect x="560" y="100" width="450" height="38" rx="14" fill="#17244d" stroke="#17244d" stroke-width="1.5"/>
+<text x="785.0" y="119.0" font-size="12" font-weight="700" fill="#ffffff" text-anchor="middle" dominant-baseline="central">3 · CAPA DE EVALUACIÓN (feedforward, entrenada)</text>
+<rect x="1025" y="100" width="405" height="690" rx="14" fill="#f7f9fc" stroke="#dfe4ee" stroke-width="1.5"/>
+<rect x="1025" y="100" width="405" height="38" rx="14" fill="#17244d" stroke="#17244d" stroke-width="1.5"/>
+<text x="1227.5" y="119.0" font-size="12" font-weight="700" fill="#ffffff" text-anchor="middle" dominant-baseline="central">4 · CAPA COMPETITIVA MAXNET (recurrente)</text>
+<rect x="1445" y="100" width="245" height="690" rx="14" fill="#f7f9fc" stroke="#dfe4ee" stroke-width="1.5"/>
+<rect x="1445" y="100" width="245" height="38" rx="14" fill="#17244d" stroke="#17244d" stroke-width="1.5"/>
+<text x="1567.5" y="119.0" font-size="12" font-weight="700" fill="#ffffff" text-anchor="middle" dominant-baseline="central">5 · SALIDA</text>
+<rect x="30" y="810" width="1660" height="170" rx="14" fill="#fbf0da" stroke="#e8a63d" stroke-width="1.5"/>
+<polyline points="633.9,176.8 721.1,188.2" fill="none" stroke="#b8c2d6" stroke-width="1" stroke-linejoin="round"/>
+<polyline points="632.4,181.5 722.6,228.5" fill="none" stroke="#b8c2d6" stroke-width="1" stroke-linejoin="round"/>
+<polyline points="630.3,184.4 724.7,270.6" fill="none" stroke="#b8c2d6" stroke-width="1" stroke-linejoin="round"/>
+<polyline points="628.0,186.5 727.0,328.5" fill="none" stroke="#b8c2d6" stroke-width="1" stroke-linejoin="round"/>
+<polyline points="633.5,216.5 721.5,193.5" fill="none" stroke="#b8c2d6" stroke-width="1" stroke-linejoin="round"/>
+<polyline points="633.9,221.8 721.1,233.2" fill="none" stroke="#b8c2d6" stroke-width="1" stroke-linejoin="round"/>
+<polyline points="632.4,226.5 722.6,273.5" fill="none" stroke="#b8c2d6" stroke-width="1" stroke-linejoin="round"/>
+<polyline points="629.7,230.1 725.3,329.9" fill="none" stroke="#b8c2d6" stroke-width="1" stroke-linejoin="round"/>
+<polyline points="631.7,257.4 723.3,197.6" fill="none" stroke="#b8c2d6" stroke-width="1" stroke-linejoin="round"/>
+<polyline points="633.5,261.5 721.5,238.5" fill="none" stroke="#b8c2d6" stroke-width="1" stroke-linejoin="round"/>
+<polyline points="633.9,266.8 721.1,278.2" fill="none" stroke="#b8c2d6" stroke-width="1" stroke-linejoin="round"/>
+<polyline points="631.7,272.6 723.3,332.4" fill="none" stroke="#b8c2d6" stroke-width="1" stroke-linejoin="round"/>
+<polyline points="628.3,333.8 726.7,201.2" fill="none" stroke="#b8c2d6" stroke-width="1" stroke-linejoin="round"/>
+<polyline points="630.1,335.3 724.9,244.7" fill="none" stroke="#b8c2d6" stroke-width="1" stroke-linejoin="round"/>
+<polyline points="632.2,338.1 722.8,286.9" fill="none" stroke="#b8c2d6" stroke-width="1" stroke-linejoin="round"/>
+<polyline points="634.0,344.4 721.0,340.6" fill="none" stroke="#b8c2d6" stroke-width="1" stroke-linejoin="round"/>
+<polyline points="748.9,191.8 836.1,203.2" fill="none" stroke="#b8c2d6" stroke-width="1" stroke-linejoin="round"/>
+<polyline points="747.4,196.5 837.6,243.5" fill="none" stroke="#b8c2d6" stroke-width="1" stroke-linejoin="round"/>
+<polyline points="744.3,200.5 840.7,309.5" fill="none" stroke="#b8c2d6" stroke-width="1" stroke-linejoin="round"/>
+<polyline points="748.5,231.5 836.5,208.5" fill="none" stroke="#b8c2d6" stroke-width="1" stroke-linejoin="round"/>
+<polyline points="748.9,236.8 836.1,248.2" fill="none" stroke="#b8c2d6" stroke-width="1" stroke-linejoin="round"/>
+<polyline points="746.3,243.3 838.7,311.7" fill="none" stroke="#b8c2d6" stroke-width="1" stroke-linejoin="round"/>
+<polyline points="746.7,272.4 838.3,212.6" fill="none" stroke="#b8c2d6" stroke-width="1" stroke-linejoin="round"/>
+<polyline points="748.5,276.5 836.5,253.5" fill="none" stroke="#b8c2d6" stroke-width="1" stroke-linejoin="round"/>
+<polyline points="748.2,284.6 836.8,315.4" fill="none" stroke="#b8c2d6" stroke-width="1" stroke-linejoin="round"/>
+<polyline points="744.1,329.3 840.9,215.7" fill="none" stroke="#b8c2d6" stroke-width="1" stroke-linejoin="round"/>
+<polyline points="746.0,331.4 839.0,258.6" fill="none" stroke="#b8c2d6" stroke-width="1" stroke-linejoin="round"/>
+<polyline points="748.8,337.6 836.2,322.4" fill="none" stroke="#b8c2d6" stroke-width="1" stroke-linejoin="round"/>
+<polyline points="862.4,211.4 939.6,251.4" fill="none" stroke="#b8c2d6" stroke-width="1" stroke-linejoin="round"/>
+<polyline points="863.9,251.5 937.1,259.5" fill="none" stroke="#b8c2d6" stroke-width="1" stroke-linejoin="round"/>
+<polyline points="862.4,313.5 939.7,272.7" fill="none" stroke="#b8c2d6" stroke-width="1" stroke-linejoin="round"/>
+<polyline points="382.0,1012.0 441.0,1012.0" fill="none" stroke="#b8c2d6" stroke-width="1" stroke-linejoin="round"/>
+<text x="40.0" y="35.0" font-size="24" font-weight="700" fill="#17203a" text-anchor="start" dominant-baseline="central">CVScope · Red neuronal competitiva (tipo Hamming)</text>
+<text x="40.0" y="67.0" font-size="13" font-weight="400" fill="#5c6b8a" text-anchor="start" dominant-baseline="central">Cada hoja de vida es una neurona. Una capa de evaluación entrenada calcula su fuerza y una capa competitiva (MAXNET) las enfrenta por inhibición lateral hasta que solo una queda activa.</text>
+<rect x="55" y="160" width="180" height="58" rx="8" fill="#ffffff" stroke="#22346b" stroke-width="1.5"/>
+<text x="145.0" y="180.9" font-size="12" font-weight="700" fill="#17203a" text-anchor="middle" dominant-baseline="central">Hoja de vida 1</text><text x="145.0" y="197.1" font-size="12" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">PDF · DOCX · TXT</text>
+<rect x="55" y="235" width="180" height="58" rx="8" fill="#ffffff" stroke="#22346b" stroke-width="1.5"/>
+<text x="145.0" y="255.9" font-size="12" font-weight="700" fill="#17203a" text-anchor="middle" dominant-baseline="central">Hoja de vida 2</text><text x="145.0" y="272.1" font-size="12" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">PDF · DOCX · TXT</text>
+<rect x="55" y="345" width="180" height="58" rx="8" fill="#ffffff" stroke="#22346b" stroke-width="1.5"/>
+<text x="145.0" y="365.9" font-size="12" font-weight="700" fill="#17203a" text-anchor="middle" dominant-baseline="central">Hoja de vida n</text><text x="145.0" y="382.1" font-size="12" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">PDF · DOCX · TXT</text>
+<text x="145.0" y="318.0" font-size="22" font-weight="400" fill="#5c6b8a" text-anchor="middle" dominant-baseline="central">⋮</text>
+<rect x="55" y="440" width="180" height="150" rx="8" fill="#fbf0da" stroke="#e8a63d" stroke-width="1.5"/>
+<text x="65.0" y="477.9" font-size="11" font-weight="700" fill="#17203a" text-anchor="start" dominant-baseline="central">Requisitos del rol</text><text x="65.0" y="492.7" font-size="11" font-weight="400" fill="#17203a" text-anchor="start" dominant-baseline="central">ej. Full Stack:</text><text x="65.0" y="507.6" font-size="11" font-weight="400" fill="#17203a" text-anchor="start" dominant-baseline="central">• JavaScript/TypeScript</text><text x="65.0" y="522.4" font-size="11" font-weight="400" fill="#17203a" text-anchor="start" dominant-baseline="central">• React o similar</text><text x="65.0" y="537.3" font-size="11" font-weight="400" fill="#17203a" text-anchor="start" dominant-baseline="central">• Node.js o backend</text><text x="65.0" y="552.1" font-size="11" font-weight="400" fill="#17203a" text-anchor="start" dominant-baseline="central">• Bases de datos</text>
+<text x="145.0" y="647.9" font-size="11" font-weight="400" fill="#5c6b8a" text-anchor="middle" dominant-baseline="central">Entran todas las hojas de</text><text x="145.0" y="662.7" font-size="11" font-weight="400" fill="#5c6b8a" text-anchor="middle" dominant-baseline="central">vida que compiten por el</text><text x="145.0" y="677.6" font-size="11" font-weight="400" fill="#5c6b8a" text-anchor="middle" dominant-baseline="central">mismo rol (n = 15 en el</text><text x="145.0" y="692.4" font-size="11" font-weight="400" fill="#5c6b8a" text-anchor="middle" dominant-baseline="central">dataset de ranking) y los</text><text x="145.0" y="707.3" font-size="11" font-weight="400" fill="#5c6b8a" text-anchor="middle" dominant-baseline="central">requisitos mínimos de ese</text><text x="145.0" y="722.1" font-size="11" font-weight="400" fill="#5c6b8a" text-anchor="middle" dominant-baseline="central">rol.</text>
+<rect x="295" y="160" width="230" height="96" rx="8" fill="#ffffff" stroke="#22346b" stroke-width="1.5"/>
+<text x="410.0" y="193.2" font-size="11" font-weight="700" fill="#17203a" text-anchor="middle" dominant-baseline="central">Anonimización</text><text x="410.0" y="208.0" font-size="11" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">quita nombre, ciudad, edad,</text><text x="410.0" y="222.9" font-size="11" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">género, correo y teléfono</text>
+<rect x="295" y="300" width="230" height="80" rx="8" fill="#ffffff" stroke="#22346b" stroke-width="1.5"/>
+<text x="410.0" y="332.6" font-size="11" font-weight="700" fill="#17203a" text-anchor="middle" dominant-baseline="central">Extracción de características</text><text x="410.0" y="347.4" font-size="11" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">vector x por hoja de vida</text>
+<text x="410.0" y="411.0" font-size="14" font-weight="700" fill="#17203a" text-anchor="middle" dominant-baseline="central">x ∈ ℝ¹⁰²⁶</text>
+<rect x="305" y="428" width="210" height="48" rx="4" fill="#e7ebf5" stroke="#22346b" stroke-width="1.5"/>
+<text x="410.0" y="444.6" font-size="11" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">x₁ = fracción de requisitos</text><text x="410.0" y="459.4" font-size="11" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">cumplidos (0 a 1)</text>
+<rect x="305" y="476" width="210" height="48" rx="4" fill="#e7ebf5" stroke="#22346b" stroke-width="1.5"/>
+<text x="410.0" y="492.6" font-size="11" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">x₂ = años de experiencia / 12</text><text x="410.0" y="507.4" font-size="11" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">(tope 1)</text>
+<rect x="305" y="524" width="210" height="62" rx="4" fill="#e7ebf5" stroke="#22346b" stroke-width="1.5"/>
+<text x="410.0" y="540.1" font-size="11" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">x₃ … x₁₀₂₆ = 1024 n-gramas</text><text x="410.0" y="555.0" font-size="11" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">(palabras y pares de palabras,</text><text x="410.0" y="569.9" font-size="11" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">hashing)</text>
+<text x="410.0" y="637.9" font-size="11" font-weight="400" fill="#5c6b8a" text-anchor="middle" dominant-baseline="central">La red nunca ve datos personales:</text><text x="410.0" y="652.7" font-size="11" font-weight="400" fill="#5c6b8a" text-anchor="middle" dominant-baseline="central">así no puede aprender sesgos por</text><text x="410.0" y="667.6" font-size="11" font-weight="400" fill="#5c6b8a" text-anchor="middle" dominant-baseline="central">nombre, ciudad o género. Los</text><text x="410.0" y="682.4" font-size="11" font-weight="400" fill="#5c6b8a" text-anchor="middle" dominant-baseline="central">n-gramas le permiten reconocer</text><text x="410.0" y="697.3" font-size="11" font-weight="400" fill="#5c6b8a" text-anchor="middle" dominant-baseline="central">requisitos escritos sin palabras</text><text x="410.0" y="712.1" font-size="11" font-weight="400" fill="#5c6b8a" text-anchor="middle" dominant-baseline="central">clave.</text>
+<ellipse cx="620.0" cy="175.0" rx="14.0" ry="14.0" fill="#e7ebf5" stroke="#22346b" stroke-width="1.5"/>
+<ellipse cx="620.0" cy="220.0" rx="14.0" ry="14.0" fill="#e7ebf5" stroke="#22346b" stroke-width="1.5"/>
+<ellipse cx="620.0" cy="265.0" rx="14.0" ry="14.0" fill="#e7ebf5" stroke="#22346b" stroke-width="1.5"/>
+<ellipse cx="620.0" cy="345.0" rx="14.0" ry="14.0" fill="#e7ebf5" stroke="#22346b" stroke-width="1.5"/>
+<text x="620.0" y="305.0" font-size="16" font-weight="400" fill="#5c6b8a" text-anchor="middle" dominant-baseline="central">⋮</text>
+<text x="620.0" y="382.6" font-size="11" font-weight="700" fill="#17203a" text-anchor="middle" dominant-baseline="central">Entrada</text><text x="620.0" y="397.4" font-size="11" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">1026</text>
+<ellipse cx="735.0" cy="190.0" rx="14.0" ry="14.0" fill="#e7ebf5" stroke="#22346b" stroke-width="1.5"/>
+<ellipse cx="735.0" cy="235.0" rx="14.0" ry="14.0" fill="#e7ebf5" stroke="#22346b" stroke-width="1.5"/>
+<ellipse cx="735.0" cy="280.0" rx="14.0" ry="14.0" fill="#e7ebf5" stroke="#22346b" stroke-width="1.5"/>
+<ellipse cx="735.0" cy="340.0" rx="14.0" ry="14.0" fill="#e7ebf5" stroke="#22346b" stroke-width="1.5"/>
+<text x="735.0" y="310.0" font-size="16" font-weight="400" fill="#5c6b8a" text-anchor="middle" dominant-baseline="central">⋮</text>
+<text x="735.0" y="382.6" font-size="11" font-weight="700" fill="#17203a" text-anchor="middle" dominant-baseline="central">Oculta 1</text><text x="735.0" y="397.4" font-size="11" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">64 · ReLU</text>
+<ellipse cx="850.0" cy="205.0" rx="14.0" ry="14.0" fill="#e7ebf5" stroke="#22346b" stroke-width="1.5"/>
+<ellipse cx="850.0" cy="250.0" rx="14.0" ry="14.0" fill="#e7ebf5" stroke="#22346b" stroke-width="1.5"/>
+<ellipse cx="850.0" cy="320.0" rx="14.0" ry="14.0" fill="#e7ebf5" stroke="#22346b" stroke-width="1.5"/>
+<text x="850.0" y="285.0" font-size="16" font-weight="400" fill="#5c6b8a" text-anchor="middle" dominant-baseline="central">⋮</text>
+<text x="850.0" y="382.6" font-size="11" font-weight="700" fill="#17203a" text-anchor="middle" dominant-baseline="central">Oculta 2</text><text x="850.0" y="397.4" font-size="11" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">32 · ReLU</text>
+<ellipse cx="960.0" cy="262.0" rx="23.0" ry="23.0" fill="#17244d" stroke="#17244d" stroke-width="1.5"/>
+<text x="960.0" y="262.0" font-size="13" font-weight="400" fill="#ffffff" text-anchor="middle" dominant-baseline="central">s(x)</text>
+<text x="960.0" y="382.6" font-size="11" font-weight="700" fill="#17203a" text-anchor="middle" dominant-baseline="central">Salida</text><text x="960.0" y="397.4" font-size="11" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">fuerza</text>
+<rect x="585" y="425" width="330" height="54" rx="8" fill="#ffffff" stroke="#22346b" stroke-width="1.5" stroke-dasharray="6 4"/>
+<text x="750.0" y="444.6" font-size="11" font-weight="700" fill="#17203a" text-anchor="middle" dominant-baseline="central">Misma red y mismos pesos para todas las hojas de</text><text x="750.0" y="459.4" font-size="11" font-weight="700" fill="#17203a" text-anchor="middle" dominant-baseline="central">vida (red siamesa)</text>
+<rect x="585" y="500" width="400" height="118" rx="8" fill="#ffffff" stroke="#dfe4ee" stroke-width="1.5"/>
+<text x="595.0" y="536.7" font-size="11" font-weight="700" fill="#17203a" text-anchor="start" dominant-baseline="central">Una fuerza por hoja de vida</text><text x="595.0" y="551.6" font-size="11" font-weight="400" fill="#17203a" text-anchor="start" dominant-baseline="central">Hoja de vida 1  →  s₁ = 23.4</text><text x="595.0" y="566.4" font-size="11" font-weight="400" fill="#17203a" text-anchor="start" dominant-baseline="central">Hoja de vida 2  →  s₂ = 23.2</text><text x="595.0" y="581.3" font-size="11" font-weight="400" fill="#17203a" text-anchor="start" dominant-baseline="central">Hoja de vida n  →  sₙ = 9.8</text>
+<rect x="585" y="640" width="400" height="70" rx="8" fill="#fbf0da" stroke="#e8a63d" stroke-width="1.5"/>
+<text x="785.0" y="666.9" font-size="12" font-weight="700" fill="#17203a" text-anchor="middle" dominant-baseline="central">Activación inicial de cada neurona competitiva</text><text x="785.0" y="683.1" font-size="12" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">aᵢ(0) = exp(sᵢ − max s)   ∈ (0, 1]</text>
+<ellipse cx="1120.0" cy="225.0" rx="36.0" ry="36.0" fill="#ffffff" stroke="#22346b" stroke-width="1.5"/>
+<text x="1120.0" y="216.9" font-size="12" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">HV 1</text><text x="1120.0" y="233.1" font-size="12" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">a₁</text>
+<ellipse cx="1330.0" cy="225.0" rx="36.0" ry="36.0" fill="#ffffff" stroke="#22346b" stroke-width="1.5"/>
+<text x="1330.0" y="216.9" font-size="12" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">HV 2</text><text x="1330.0" y="233.1" font-size="12" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">a₂</text>
+<ellipse cx="1225.0" cy="385.0" rx="36.0" ry="36.0" fill="#ffffff" stroke="#22346b" stroke-width="1.5"/>
+<text x="1225.0" y="376.9" font-size="12" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">HV n</text><text x="1225.0" y="393.1" font-size="12" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">aₙ</text>
+<text x="1225.0" y="206.0" font-size="13" font-weight="700" fill="#d64550" text-anchor="middle" dominant-baseline="central">−ε</text>
+<text x="1125.0" y="306.0" font-size="13" font-weight="700" fill="#d64550" text-anchor="middle" dominant-baseline="central">−ε</text>
+<text x="1325.0" y="306.0" font-size="13" font-weight="700" fill="#d64550" text-anchor="middle" dominant-baseline="central">−ε</text>
+<rect x="1045" y="470" width="365" height="92" rx="8" fill="#ffffff" stroke="#22346b" stroke-width="1.5"/>
+<text x="1227.5" y="499.8" font-size="12" font-weight="700" fill="#17203a" text-anchor="middle" dominant-baseline="central">Regla de competencia (cada iteración t)</text><text x="1227.5" y="516.0" font-size="12" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">aᵢ(t+1) = max(0, aᵢ(t) − ε · Σⱼ≠ᵢ aⱼ(t))</text><text x="1227.5" y="532.2" font-size="12" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">con 0 &lt; ε &lt; 1/(S − 1)</text>
+<rect x="1045" y="575" width="365" height="46" rx="8" fill="#e7f6ee" stroke="#2f9e64" stroke-width="1.5"/>
+<text x="1227.5" y="590.6" font-size="11" font-weight="700" fill="#17203a" text-anchor="middle" dominant-baseline="central">Se repite hasta que solo una neurona queda activa</text><text x="1227.5" y="605.4" font-size="11" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">(winner-take-all)</text>
+<rect x="1045" y="634" width="365" height="98" rx="8" fill="#ffffff" stroke="#dfe4ee" stroke-width="1.5"/>
+<text x="1055.0" y="645.9" font-size="11" font-weight="700" fill="#17203a" text-anchor="start" dominant-baseline="central">Ejemplo: duelo de 2 neuronas (ε = 0.5)</text><text x="1055.0" y="660.7" font-size="11" font-weight="400" fill="#17203a" text-anchor="start" dominant-baseline="central">t = 0:   A = 1.00   B = 0.82</text><text x="1055.0" y="675.6" font-size="11" font-weight="400" fill="#17203a" text-anchor="start" dominant-baseline="central">t = 1:   A = 0.59   B = 0.32</text><text x="1055.0" y="690.4" font-size="11" font-weight="400" fill="#17203a" text-anchor="start" dominant-baseline="central">t = 2:   A = 0.43   B = 0.02</text><text x="1055.0" y="705.3" font-size="11" font-weight="400" fill="#17203a" text-anchor="start" dominant-baseline="central">t = 3:   A = 0.42   B = 0.00</text><text x="1055.0" y="720.1" font-size="11" font-weight="400" fill="#17203a" text-anchor="start" dominant-baseline="central">→ gana A (P = 55.0 %)</text>
+<rect x="1470" y="160" width="195" height="80" rx="8" fill="#17244d" stroke="#17244d" stroke-width="1.5"/>
+<text x="1567.5" y="183.8" font-size="12" font-weight="700" fill="#ffffff" text-anchor="middle" dominant-baseline="central">Salida one-hot</text><text x="1567.5" y="200.0" font-size="12" font-weight="400" fill="#ffffff" text-anchor="middle" dominant-baseline="central">[0, 1, 0, …, 0]</text><text x="1567.5" y="216.2" font-size="12" font-weight="400" fill="#ffffff" text-anchor="middle" dominant-baseline="central">solo la ganadora en 1</text>
+<rect x="1470" y="268" width="195" height="62" rx="8" fill="#e8a63d" stroke="#e8a63d" stroke-width="1.5"/>
+<text x="1567.5" y="290.9" font-size="12" font-weight="700" fill="#17244d" text-anchor="middle" dominant-baseline="central">Hoja de vida ganadora</text><text x="1567.5" y="307.1" font-size="12" font-weight="400" fill="#17244d" text-anchor="middle" dominant-baseline="central">(campeona del rol)</text>
+<rect x="1470" y="352" width="195" height="66" rx="8" fill="#ffffff" stroke="#22346b" stroke-width="1.5"/>
+<text x="1567.5" y="370.1" font-size="11" font-weight="700" fill="#17203a" text-anchor="middle" dominant-baseline="central">Probabilidad de ganar</text><text x="1567.5" y="385.0" font-size="11" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">Pᵢ = softmax(s)ᵢ</text><text x="1567.5" y="399.8" font-size="11" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">duelo: σ(s_A − s_B)</text>
+<rect x="1470" y="440" width="195" height="66" rx="8" fill="#ffffff" stroke="#22346b" stroke-width="1.5"/>
+<text x="1567.5" y="458.1" font-size="11" font-weight="700" fill="#17203a" text-anchor="middle" dominant-baseline="central">Top 5</text><text x="1567.5" y="473.0" font-size="11" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">se retira la ganadora</text><text x="1567.5" y="487.8" font-size="11" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">y se repite la competencia</text>
+<rect x="1470" y="528" width="195" height="82" rx="8" fill="#ffffff" stroke="#22346b" stroke-width="1.5"/>
+<text x="1567.5" y="546.7" font-size="11" font-weight="700" fill="#17203a" text-anchor="middle" dominant-baseline="central">Torneo</text><text x="1567.5" y="561.6" font-size="11" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">duelos de 2 neuronas;</text><text x="1567.5" y="576.4" font-size="11" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">la ganadora pasa</text><text x="1567.5" y="591.3" font-size="11" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">a la siguiente ronda</text>
+<rect x="1470" y="632" width="195" height="82" rx="8" fill="#ffffff" stroke="#22346b" stroke-width="1.5"/>
+<text x="1567.5" y="650.7" font-size="11" font-weight="700" fill="#17203a" text-anchor="middle" dominant-baseline="central">Explicación</text><text x="1567.5" y="665.6" font-size="11" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">requisitos con evidencia</text><text x="1567.5" y="680.4" font-size="11" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">e iteraciones de</text><text x="1567.5" y="695.3" font-size="11" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">inhibición</text>
+<text x="60.0" y="831.0" font-size="13" font-weight="700" fill="#17244d" text-anchor="start" dominant-baseline="central">ENTRENAMIENTO DE LA CAPA DE EVALUACIÓN (fuera de línea)</text>
+<rect x="55" y="855" width="290" height="100" rx="8" fill="#ffffff" stroke="#e8a63d" stroke-width="1.5"/>
+<text x="200.0" y="888.8" font-size="12" font-weight="700" fill="#17203a" text-anchor="middle" dominant-baseline="central">Dataset de selección</text><text x="200.0" y="905.0" font-size="12" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">240 hojas de vida</text><text x="200.0" y="921.2" font-size="12" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">etiquetadas por rol</text>
+<rect x="385" y="855" width="290" height="100" rx="8" fill="#ffffff" stroke="#e8a63d" stroke-width="1.5"/>
+<text x="530.0" y="888.8" font-size="12" font-weight="700" fill="#17203a" text-anchor="middle" dominant-baseline="central">4.512 duelos dentro de cada rol</text><text x="530.0" y="905.0" font-size="12" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">gana la de mayor puntaje</text><text x="530.0" y="921.2" font-size="12" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">de referencia (empate = 0.5)</text>
+<rect x="715" y="855" width="290" height="100" rx="8" fill="#ffffff" stroke="#e8a63d" stroke-width="1.5"/>
+<text x="860.0" y="888.8" font-size="12" font-weight="700" fill="#17203a" text-anchor="middle" dominant-baseline="central">P(A gana a B) = σ(s(A) − s(B))</text><text x="860.0" y="905.0" font-size="12" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">pérdida: entropía cruzada</text><text x="860.0" y="921.2" font-size="12" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">por pares</text>
+<rect x="1045" y="855" width="290" height="100" rx="8" fill="#ffffff" stroke="#e8a63d" stroke-width="1.5"/>
+<text x="1190.0" y="896.9" font-size="12" font-weight="700" fill="#17203a" text-anchor="middle" dominant-baseline="central">Retropropagación</text><text x="1190.0" y="913.1" font-size="12" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">Adam + L2 · 40 épocas</text>
+<rect x="1375" y="855" width="290" height="100" rx="8" fill="#ffffff" stroke="#e8a63d" stroke-width="1.5"/>
+<text x="1520.0" y="888.8" font-size="12" font-weight="700" fill="#17203a" text-anchor="middle" dominant-baseline="central">Prueba (dataset de ranking)</text><text x="1520.0" y="905.0" font-size="12" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">exactitud en duelos 0.959</text><text x="1520.0" y="921.2" font-size="12" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">precisión@5 0.80 (base 0.70)</text>
+<text x="40.0" y="1012.0" font-size="12" font-weight="700" fill="#17203a" text-anchor="start" dominant-baseline="central">Leyenda:</text>
+<text x="200.0" y="1012.0" font-size="12" font-weight="400" fill="#5c6b8a" text-anchor="start" dominant-baseline="central">Flujo de datos</text>
+<text x="460.0" y="1012.0" font-size="12" font-weight="400" fill="#5c6b8a" text-anchor="start" dominant-baseline="central">Conexiones entre capas</text>
+<text x="720.0" y="1012.0" font-size="12" font-weight="400" fill="#5c6b8a" text-anchor="start" dominant-baseline="central">Inhibición lateral (−ε)</text>
+<text x="980.0" y="1012.0" font-size="12" font-weight="400" fill="#5c6b8a" text-anchor="start" dominant-baseline="central">Autoexcitación (+1)</text>
+<text x="1240.0" y="1012.0" font-size="12" font-weight="400" fill="#5c6b8a" text-anchor="start" dominant-baseline="central">Entrenamiento</text>
+<text x="40.0" y="1051.0" font-size="11" font-weight="400" fill="#5c6b8a" text-anchor="start" dominant-baseline="central">Código: backend/app/services/red_competitiva/ (caracteristicas.py, modelo.py, competitiva.py, torneo.py) · Diagrama generado con docs/diagrama/generar_diagrama.py</text>
+<polyline points="1156.0,218.0 1294.0,218.0" fill="none" stroke="#d64550" stroke-width="1.6" stroke-linejoin="round" stroke-dasharray="6 4" marker-end="url(#punta-inhibicion)"/>
+<polyline points="1294.0,232.0 1156.0,232.0" fill="none" stroke="#d64550" stroke-width="1.6" stroke-linejoin="round" stroke-dasharray="6 4" marker-end="url(#punta-inhibicion)"/>
+<polyline points="1145.6,251.3 1211.1,351.1" fill="none" stroke="#d64550" stroke-width="1.6" stroke-linejoin="round" stroke-dasharray="6 4" marker-end="url(#punta-inhibicion)"/>
+<polyline points="1199.4,358.7 1133.9,258.9" fill="none" stroke="#d64550" stroke-width="1.6" stroke-linejoin="round" stroke-dasharray="6 4" marker-end="url(#punta-inhibicion)"/>
+<polyline points="1316.1,258.9 1250.6,358.7" fill="none" stroke="#d64550" stroke-width="1.6" stroke-linejoin="round" stroke-dasharray="6 4" marker-end="url(#punta-inhibicion)"/>
+<polyline points="1238.9,351.1 1304.4,251.3" fill="none" stroke="#d64550" stroke-width="1.6" stroke-linejoin="round" stroke-dasharray="6 4" marker-end="url(#punta-inhibicion)"/>
+<path d="M1102.0,193.7 C1084.0,153.0 1156.0,153.0 1138.0,193.7" fill="none" stroke="#2f9e64" stroke-width="1.8" marker-end="url(#punta-excitacion)"/>
+<text x="1120.0" y="154.8" font-size="12" font-weight="700" fill="#2f9e64" text-anchor="middle">+1</text>
+<path d="M1312.0,193.7 C1294.0,153.0 1366.0,153.0 1348.0,193.7" fill="none" stroke="#2f9e64" stroke-width="1.8" marker-end="url(#punta-excitacion)"/>
+<text x="1330.0" y="154.8" font-size="12" font-weight="700" fill="#2f9e64" text-anchor="middle">+1</text>
+<path d="M1207.0,353.7 C1189.0,313.0 1261.0,313.0 1243.0,353.7" fill="none" stroke="#2f9e64" stroke-width="1.8" marker-end="url(#punta-excitacion)"/>
+<text x="1225.0" y="314.8" font-size="12" font-weight="700" fill="#2f9e64" text-anchor="middle">+1</text>
+<polyline points="235.0,195.5 295.0,199.8" fill="none" stroke="#22346b" stroke-width="2" stroke-linejoin="round" marker-end="url(#punta-flujo)"/>
+<polyline points="235.0,245.0 295.0,232.3" fill="none" stroke="#22346b" stroke-width="2" stroke-linejoin="round" marker-end="url(#punta-flujo)"/>
+<polyline points="191.3,345.0 333.4,256.0" fill="none" stroke="#22346b" stroke-width="2" stroke-linejoin="round" marker-end="url(#punta-flujo)"/>
+<polyline points="410.0,256.0 410.0,300.0" fill="none" stroke="#22346b" stroke-width="2" stroke-linejoin="round" marker-end="url(#punta-flujo)"/>
+<polyline points="235.0,493.6 309.0,476.0" fill="none" stroke="#22346b" stroke-width="2" stroke-linejoin="round" marker-end="url(#punta-flujo)"/>
+<polyline points="525.0,342.7 606.0,344.7" fill="none" stroke="#22346b" stroke-width="2" stroke-linejoin="round" marker-end="url(#punta-flujo)"/>
+<rect x="556.0" y="333.7" width="19" height="20" rx="4" fill="#f1f4f8"/>
+<text x="565.5" y="343.7" font-size="11" font-weight="700" fill="#22346b" text-anchor="middle" dominant-baseline="central">x</text>
+<polyline points="985.0,675.0 1015.0,675.0 1015.0,516.0 1045.0,516.0" fill="none" stroke="#22346b" stroke-width="2" stroke-linejoin="round" marker-end="url(#punta-flujo)"/>
+<rect x="991.5" y="585.5" width="47" height="20" rx="4" fill="#f1f4f8"/>
+<text x="1015.0" y="595.5" font-size="11" font-weight="700" fill="#22346b" text-anchor="middle" dominant-baseline="central">aᵢ(0)</text>
+<polyline points="960.0,285.0 960.0,500.0" fill="none" stroke="#22346b" stroke-width="2" stroke-linejoin="round" marker-end="url(#punta-flujo)"/>
+<polyline points="785.0,618.0 785.0,640.0" fill="none" stroke="#22346b" stroke-width="2" stroke-linejoin="round" marker-end="url(#punta-flujo)"/>
+<polyline points="1365.8,221.2 1470.0,210.3" fill="none" stroke="#22346b" stroke-width="2" stroke-linejoin="round" marker-end="url(#punta-flujo)"/>
+<rect x="1383.9" y="205.7" width="68" height="20" rx="4" fill="#f1f4f8"/>
+<text x="1417.9" y="215.7" font-size="11" font-weight="700" fill="#22346b" text-anchor="middle" dominant-baseline="central">ganadora</text>
+<polyline points="1567.5,240.0 1567.5,268.0" fill="none" stroke="#22346b" stroke-width="2" stroke-linejoin="round" marker-end="url(#punta-flujo)"/>
+<polyline points="345.0,905.0 385.0,905.0" fill="none" stroke="#e8a63d" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6 4" marker-end="url(#punta-entrenamiento)"/>
+<polyline points="675.0,905.0 715.0,905.0" fill="none" stroke="#e8a63d" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6 4" marker-end="url(#punta-entrenamiento)"/>
+<polyline points="1005.0,905.0 1045.0,905.0" fill="none" stroke="#e8a63d" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6 4" marker-end="url(#punta-entrenamiento)"/>
+<polyline points="1335.0,905.0 1375.0,905.0" fill="none" stroke="#e8a63d" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6 4" marker-end="url(#punta-entrenamiento)"/>
+<polyline points="1190.0,855.0 1190.0,800.0 785.0,800.0 785.0,790.0" fill="none" stroke="#e8a63d" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6 4" marker-end="url(#punta-entrenamiento)"/>
+<rect x="869.5" y="790.0" width="236" height="20" rx="4" fill="#f1f4f8"/>
+<text x="987.5" y="800.0" font-size="11" font-weight="700" fill="#e8a63d" text-anchor="middle" dominant-baseline="central">actualiza los pesos de la capa 3</text>
+<polyline points="122.0,1012.0 181.0,1012.0" fill="none" stroke="#22346b" stroke-width="2" stroke-linejoin="round" marker-end="url(#punta-flujo)"/>
+<polyline points="642.0,1012.0 701.0,1012.0" fill="none" stroke="#d64550" stroke-width="1.6" stroke-linejoin="round" stroke-dasharray="6 4" marker-end="url(#punta-inhibicion)"/>
+<polyline points="902.0,1012.0 961.0,1012.0" fill="none" stroke="#2f9e64" stroke-width="1.8" stroke-linejoin="round" marker-end="url(#punta-excitacion)"/>
+<polyline points="1162.0,1012.0 1221.0,1012.0" fill="none" stroke="#e8a63d" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6 4" marker-end="url(#punta-entrenamiento)"/>
+</svg>

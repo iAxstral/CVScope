@@ -1,6 +1,13 @@
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { crearCandidato, evaluarCv, getCvAleatorio, getRoles } from "../api/client.js";
+import {
+  crearCandidato,
+  evaluarCv,
+  extraerTexto,
+  getCvAleatorio,
+  getMotores,
+  getRoles,
+} from "../api/client.js";
 import useApi from "../hooks/useApi.js";
 import Dropzone from "../components/Dropzone.jsx";
 import RequisitoList from "../components/RequisitoList.jsx";
@@ -11,10 +18,16 @@ import "./Seleccionar.css";
 
 const MIN_TEXTO = 20;
 const AUTO = "auto";
+const MOTORES = {
+  palabras_clave: "Palabras clave",
+  llm: "Gemini (LLM)",
+};
 
 export default function Seleccionar() {
   const [searchParams] = useSearchParams();
   const roles = useApi(getRoles);
+  const motores = useApi(getMotores);
+  const [motor, setMotor] = useState("palabras_clave");
   const [rolId, setRolId] = useState(searchParams.get("rolId") ?? AUTO);
   const [file, setFile] = useState(null);
   const [fileAviso, setFileAviso] = useState("");
@@ -28,13 +41,13 @@ export default function Seleccionar() {
   async function handleFile(picked) {
     setFile(picked);
     setEjemplo(null);
-    if (picked.type === "text/plain" || picked.name.toLowerCase().endsWith(".txt")) {
-      setCvTexto(await picked.text());
-      setFileAviso("Texto extraído del archivo.");
-    } else {
-      setFileAviso(
-        "La extracción automática de PDF/DOCX aún no está disponible: pega el contenido en el campo de texto.",
-      );
+    setFileAviso("Extrayendo texto…");
+    try {
+      const datos = await extraerTexto(picked);
+      setCvTexto(datos.hoja_de_vida_texto);
+      setFileAviso(`Texto extraído (${datos.caracteres} caracteres). Revísalo antes de evaluar.`);
+    } catch (err) {
+      setFileAviso(`No se pudo extraer el texto: ${err.message}`);
     }
   }
 
@@ -59,6 +72,7 @@ export default function Seleccionar() {
       const data = await evaluarCv({
         hojaDeVidaTexto: cvTexto,
         rolId: rolId === AUTO ? null : rolId,
+        motor,
       });
       setEvaluacion({ status: "success", data, error: "" });
     } catch (err) {
@@ -108,6 +122,49 @@ export default function Seleccionar() {
               </select>
             )}
           </label>
+
+          <fieldset className="field sel-motor">
+            <legend>Motor de evaluación</legend>
+            <div className="sel-motor__opciones">
+              <label
+                className={`sel-motor__opcion ${motor === "palabras_clave" ? "is-active" : ""}`}
+              >
+                <input
+                  type="radio"
+                  name="motor"
+                  value="palabras_clave"
+                  checked={motor === "palabras_clave"}
+                  onChange={() => setMotor("palabras_clave")}
+                />
+                <span>
+                  <strong>Palabras clave</strong>
+                  <small>Rápido y determinístico</small>
+                </span>
+              </label>
+              <label
+                className={`sel-motor__opcion ${motor === "llm" ? "is-active" : ""} ${
+                  motores.data?.llm ? "" : "is-disabled"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="motor"
+                  value="llm"
+                  checked={motor === "llm"}
+                  disabled={!motores.data?.llm}
+                  onChange={() => setMotor("llm")}
+                />
+                <span>
+                  <strong>Gemini (LLM)</strong>
+                  <small>
+                    {motores.data?.llm
+                      ? `Entiende redacciones indirectas · ${motores.data.modelo_llm}`
+                      : "No disponible: configura OPENAI_API_KEY en backend/.env"}
+                  </small>
+                </span>
+              </label>
+            </div>
+          </fieldset>
 
           <div className="field">
             <span>Archivo del CV</span>
@@ -196,7 +253,12 @@ function Resultado({ resultado, referencia, cvTexto, ejemplo }) {
           <div>
             <span className="sel-summary__label">Rol evaluado</span>
             <h2 className="sel-summary__rol">{resultado.rol_nombre}</h2>
-            {resultado.rol_predicho && <span className="chip chip--accent">Detectado por IA</span>}
+            <div className="sel-summary__chips">
+              <span className="chip">Motor: {MOTORES[resultado.motor] ?? resultado.motor}</span>
+              {resultado.rol_predicho && (
+                <span className="chip chip--accent">Detectado por IA</span>
+              )}
+            </div>
           </div>
           <StatusPill estado={resultado.estado} />
         </div>

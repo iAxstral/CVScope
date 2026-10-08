@@ -165,3 +165,73 @@
     grid-template-columns: 1fr;
   }
 }
+
+.sel-motor {
+  border: none;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.sel-motor legend {
+  padding: 0;
+  margin-bottom: 0.45rem;
+}
+
+.sel-motor__opciones {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.6rem;
+}
+
+.sel-motor__opcion {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  cursor: pointer;
+  font-weight: 400;
+}
+
+.sel-motor__opcion input {
+  margin-top: 0.2rem;
+  accent-color: var(--primary);
+}
+
+.sel-motor__opcion strong {
+  display: block;
+  color: var(--ink);
+  font-size: 0.88rem;
+}
+
+.sel-motor__opcion small {
+  display: block;
+  color: var(--ink-faint);
+  font-size: 0.76rem;
+  margin-top: 0.1rem;
+}
+
+.sel-motor__opcion.is-active {
+  border-color: var(--primary);
+  background: var(--primary-soft);
+}
+
+.sel-motor__opcion.is-disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.sel-summary__chips {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 520px) {
+  .sel-motor__opciones {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -4,6 +4,7 @@ import { getModeloCompetencia, getRoles, jugarTorneo } from "../api/client.js";
 import useApi from "../hooks/useApi.js";
 import Bracket from "../components/Bracket.jsx";
 import DueloDirecto from "../components/DueloDirecto.jsx";
+import MaxnetChart from "../components/MaxnetChart.jsx";
 import RoleTabs from "../components/RoleTabs.jsx";
 import StatTile from "../components/StatTile.jsx";
 import { Cargando, ErrorCarga } from "../components/EstadoCarga.jsx";
@@ -30,8 +31,9 @@ export default function Torneo() {
       <header className="page-header">
         <h1>Red neuronal competitiva</h1>
         <p className="page-header__subtitle">
-          Las hojas de vida se enfrentan de a dos: la red decide cuál es mejor para el rol y la
-          ganadora avanza a la siguiente ronda hasta que queda una campeona.
+          Cada hoja de vida es una neurona. La capa de evaluación le da una fuerza y en la capa
+          competitiva (MAXNET) las neuronas se inhiben entre sí hasta que solo queda una activa: la
+          ganadora. En el torneo compiten de a dos y la ganadora avanza a la siguiente ronda.
         </p>
       </header>
 
@@ -110,6 +112,8 @@ function Resultado({ torneo }) {
   const final = torneo.rondas.at(-1)?.duelos[0] ?? null;
   const [duelo, setDuelo] = useState(final);
   const detalle = (id) => `/candidatos/${id}?rolId=${torneo.rol_id}`;
+  const apagadasAlInicio =
+    torneo.competencia_abierta.trayectoria[1]?.filter((v) => v === 0).length ?? 0;
 
   return (
     <>
@@ -163,8 +167,29 @@ function Resultado({ torneo }) {
         </section>
       </div>
 
+      <section className="card torneo-abierta">
+        <div className="torneo-abierta__head">
+          <h2 className="section-title">Competencia abierta en la capa competitiva</h2>
+          <p>
+            Las {torneo.participantes.length} neuronas compiten a la vez. En cada iteración cada una
+            se refuerza a sí misma e inhibe a las demás:{" "}
+            <code>a_i(t+1) = max(0, a_i(t) − ε · Σ a_j(t))</code> con ε ={" "}
+            {torneo.competencia_abierta.epsilon.toFixed(4)}. Tras{" "}
+            {torneo.competencia_abierta.iteraciones} iteraciones solo queda activa la de{" "}
+            <strong>{porId[torneo.competencia_abierta.ganador]?.nombre}</strong>.{" "}
+            {apagadasAlInicio > 0 &&
+              `${apagadasAlInicio} neuronas arrancan con tan poca activación que se apagan en la primera iteración y quedan sobre el cero.`}
+          </p>
+        </div>
+        <MaxnetChart
+          trayectoria={torneo.competencia_abierta.trayectoria}
+          nombres={torneo.competencia_abierta.ids.map((id) => porId[id]?.nombre ?? id)}
+          ganador={torneo.competencia_abierta.ids.indexOf(torneo.competencia_abierta.ganador)}
+        />
+      </section>
+
       <section>
-        <h2 className="section-title">Cuadro del torneo</h2>
+        <h2 className="section-title">Cuadro del torneo (duelos de 2 neuronas)</h2>
         <Bracket
           rondas={torneo.rondas}
           participantes={torneo.participantes}

@@ -5,13 +5,13 @@ from fastapi.testclient import TestClient
 from app.main import app
 from app.services.red_competitiva.caracteristicas import DIM_ENTRADA, extraer, tokenizar
 from app.services.red_competitiva.modelo import RedCompetitiva, _sigmoide
-from app.services.red_competitiva.torneo import clasificar, jugar_torneo
+from app.services.red_competitiva.torneo import jugar_torneo
 
 client = TestClient(app)
 
 
 def _por_fuerza(a, b):
-    return 1.0 if a["f"] > b["f"] else 0.0
+    return {"prob_a": 1.0 if a["f"] > b["f"] else 0.0, "gana_a": a["f"] >= b["f"]}
 
 
 # ---------------------------------------------------------------- torneo
@@ -31,12 +31,6 @@ def test_torneo_da_byes_solo_en_la_primera_ronda():
     rondas = jugar_torneo(participantes, _por_fuerza)["rondas"]
     assert rondas[0]["pases"] == ["0", "1", "2"]
     assert all(not r["pases"] for r in rondas[1:])
-
-
-def test_clasificar_devuelve_el_top_en_orden():
-    participantes = [{"id": str(i), "f": f} for i, f in enumerate([4, 9, 1, 7, 5, 8])]
-    podio = clasificar(participantes, _por_fuerza, top=3)
-    assert [p["f"] for p in podio] == [9, 8, 7]
 
 
 def test_torneo_vacio_y_de_uno():
@@ -116,6 +110,13 @@ def test_caracteristicas_tienen_tamano_fijo_y_rasgos():
     assert tokenizar("Node.js y C++") == ["node.js", "c++"]
 
 
+def test_caracteristicas_no_dependen_del_nombre_ni_la_ciudad():
+    requisitos = ["Experiencia en ventas B2B/B2C", "Manejo de CRM", "Negociación"]
+    a = "Ana Ruiz. Asesora comercial en Cali. Perfil: 5 años de experiencia. Ventas B2B con HubSpot."
+    b = "Pedro Gómez. Asesor comercial en Bogotá. Perfil: 5 años de experiencia. Ventas B2B con HubSpot."
+    np.testing.assert_array_equal(extraer(a, requisitos), extraer(b, requisitos))
+
+
 # -------------------------------------------------------------------- API
 
 def test_api_torneo_por_defecto():
@@ -125,6 +126,12 @@ def test_api_torneo_por_defecto():
     assert len(datos["podio"]) == 5
     assert datos["total_duelos"] == len(datos["participantes"]) - 1
     assert datos["campeon"]["id"] == datos["podio"][0]["id"]
+    abierta = datos["competencia_abierta"]
+    assert abierta["ganador"] == datos["campeon"]["id"]
+    assert len(abierta["trayectoria"][0]) == len(datos["participantes"])
+    assert sum(v > 0 for v in abierta["trayectoria"][-1]) == 1
+    duelo = datos["rondas"][-1]["duelos"][0]
+    assert "inhibición lateral" in duelo["explicacion"]
 
 
 def test_api_comparar_es_consistente_al_invertir():
@@ -133,6 +140,8 @@ def test_api_comparar_es_consistente_al_invertir():
     ba = client.post("/competencia/comparar", json={"rol_id": 3, "a": b, "b": a}).json()
     assert ab["prob_a"] + ba["prob_a"] == pytest.approx(1.0, abs=1e-6)
     assert {ab["ganador"], ba["ganador"]} == {"a", "b"}
+    final = ab["maxnet"]["trayectoria"][-1]
+    assert (final[0] > 0) == (ab["ganador"] == "a") and sum(v > 0 for v in final) == 1
 
 
 def test_api_errores():
