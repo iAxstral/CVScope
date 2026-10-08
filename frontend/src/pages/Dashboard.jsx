@@ -72,8 +72,15 @@ export default function Dashboard() {
                 <small>Compara a los candidatos aptos y obtén el top 5 por rol.</small>
               </span>
             </Link>
-            <Link to="/datasets" className="flow-step">
+            <Link to="/torneo" className="flow-step">
               <span className="flow-step__n">3</span>
+              <span>
+                <strong>Competir</strong>
+                <small>La red neuronal enfrenta las hojas de vida de a dos hasta un campeón.</small>
+              </span>
+            </Link>
+            <Link to="/datasets" className="flow-step">
+              <span className="flow-step__n">4</span>
               <span>
                 <strong>Validar</strong>
                 <small>Explora los datasets de selección y de ranking.</small>

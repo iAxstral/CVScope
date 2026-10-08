@@ -1,0 +1,193 @@
+.torneo-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 1200px;
+}
+
+.torneo-modelo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  background: var(--primary-dark);
+  border-color: var(--primary-dark);
+  color: #fff;
+}
+
+.torneo-modelo__label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.torneo-modelo__arq {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+}
+
+.torneo-modelo__metricas {
+  display: flex;
+  gap: 2rem;
+  margin: 0;
+  flex-wrap: wrap;
+}
+
+.torneo-modelo__metricas dt {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.torneo-modelo__metricas dd {
+  margin: 0.15rem 0 0;
+  font-family: var(--font-mono);
+  font-size: 1.4rem;
+  font-weight: 600;
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+
+.torneo-modelo__metricas small {
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.torneo-page__toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.torneo-page__sorteo {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.torneo-page__stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.torneo-page__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  gap: 1rem;
+}
+
+.torneo-campeon {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.5rem;
+  border-top: 4px solid var(--accent);
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+
+.torneo-campeon__label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--warning);
+  font-weight: 600;
+}
+
+.torneo-campeon__nombre {
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 600;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+.torneo-campeon__nombre:hover {
+  color: var(--primary);
+}
+
+.torneo-campeon__meta {
+  color: var(--ink-soft);
+  font-size: 0.88rem;
+}
+
+.torneo-podio ol {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.torneo-podio li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.torneo-podio__pos {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: var(--surface-alt);
+  color: var(--ink-soft);
+  flex-shrink: 0;
+}
+
+.torneo-podio__pos--1 {
+  background: var(--accent);
+  color: var(--primary-dark);
+}
+
+.torneo-podio__nombre {
+  font-weight: 500;
+  color: var(--ink);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.torneo-podio__nombre:hover {
+  color: var(--primary);
+}
+
+.torneo-podio__fuerza {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.torneo-duelo {
+  margin-top: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+.torneo-duelo__label {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+@media (max-width: 860px) {
+  .torneo-page__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

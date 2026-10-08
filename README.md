@@ -33,6 +33,34 @@ priorizando interpretabilidad sobre una simple decisión de caja negra.
 3. **Rankear** — entre las hojas de vida aptas del rol se devuelve el **top 5**.
    Puntaje = 80 × fracción de requisitos cumplidos + 20 × experiencia (tope 12 años).
 
+## Red neuronal competitiva
+
+Pone a competir las hojas de vida de un rol **de a dos**: en cada duelo la red
+decide cuál es mejor y la ganadora pasa a la siguiente ronda, hasta que queda
+un campeón (eliminación directa; si no son potencia de 2, los primeros
+sembrados pasan la primera ronda sin jugar). El top 5 se obtiene jugando
+torneos sucesivos y retirando al campeón de cada uno.
+
+- **Arquitectura:** red siamesa en NumPy. La misma red (1026 → 64 → 32 → 1,
+  ReLU) le da a cada hoja de vida un puntaje de fuerza `s(x)` y
+  `P(A gana a B) = sigmoide(s(A) − s(B))`, así el duelo es consistente
+  (`P(A>B) = 1 − P(B>A)`).
+- **Entrada (1026):** fracción de requisitos con evidencia, años de experiencia
+  y una bolsa de unigramas/bigramas con *hashing* (1024). Los n-gramas le
+  permiten reconocer requisitos escritos sin las palabras clave.
+- **Entrenamiento:** duelos dentro de cada rol del dataset de selección (gana
+  el mayor puntaje de referencia; los empates se etiquetan 0.5), pérdida de
+  entropía cruzada por pares, Adam + L2.
+- **Prueba (dataset de ranking, no visto en el entrenamiento):**
+
+| Métrica | Red competitiva | Palabras clave |
+|---|---|---|
+| Exactitud en duelos | 0.956 | 0.934 |
+| Precisión@5 del torneo | 0.80 | 0.70 |
+
+Entrenar de nuevo: `python scripts/entrenar_red_competitiva.py`.
+Pruebas: `pip install pytest && python -m pytest tests` (desde `backend/`).
+
 ## Datasets
 
 Ambos son sintéticos y reproducibles (`python scripts/generar_datasets.py`,
@@ -64,12 +92,13 @@ cvscope/
 │   ├── app/
 │   │   ├── main.py
 │   │   ├── routers/       # roles, candidatos, preseleccion, datasets, vacantes
-│   │   ├── services/      # clasificador de rol, evaluador de requisitos, datasets, LLM
+│   │   ├── services/      # clasificador de rol, evaluador de requisitos, red_competitiva/, datasets, LLM
 │   │   ├── models/        # Store en memoria (roles y candidatos)
 │   │   ├── schemas/       # Esquemas Pydantic (validación de datos)
-│   │   └── ml_models/     # clasificador_rol.pkl
+│   │   └── ml_models/     # clasificador_rol.pkl, red_competitiva.npz
 │   ├── data/              # dataset_seleccion.csv, dataset_ranking.csv
 │   ├── scripts/           # generar, evaluar y entrenar
+│   ├── tests/             # pruebas de la red competitiva
 │   ├── requirements.txt
 │   └── .env.example
 └── frontend/
@@ -77,7 +106,7 @@ cvscope/
         ├── api/           # Cliente HTTP del backend
         ├── components/
         ├── hooks/
-        ├── pages/         # Dashboard, Seleccionar, Ranking, Detalle, Datasets
+        ├── pages/         # Dashboard, Seleccionar, Ranking, Red competitiva, Detalle, Datasets
         └── utils/
 ```
 
@@ -89,6 +118,9 @@ cvscope/
 | POST | `/preseleccion/evaluar` | Apto/no apto + evidencia por requisito (rol opcional: si falta, se categoriza) |
 | GET | `/preseleccion/ranking/{rol_id}?top=5` | Top N de hojas de vida aptas del rol |
 | GET | `/preseleccion/hojas-de-vida/{cv_id}` | Detalle explicable de un CV del dataset o registrado |
+| POST | `/competencia/comparar` | Duelo entre dos hojas de vida: probabilidad, ganador y explicación |
+| POST | `/competencia/torneo` | Torneo completo por rondas, campeón y top N |
+| GET | `/competencia/modelo` | Arquitectura y métricas de la red competitiva |
 | GET | `/datasets/` · `/datasets/seleccion` · `/datasets/ranking` | Resumen y consulta de los datasets |
 
 ## Cómo ejecutar

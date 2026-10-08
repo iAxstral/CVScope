@@ -78,3 +78,20 @@ export function listarDataset(nombre, { rol, apto, q, limit, offset } = {}) {
 export function getCvAleatorio(rol) {
   return get("/datasets/seleccion/aleatorio", { rol });
 }
+
+export function compararCvs({ rolId, a, b }) {
+  return post("/competencia/comparar", { rol_id: Number(rolId), a, b });
+}
+
+export function jugarTorneo({ rolId, cvIds, top = 5, semilla }) {
+  return post("/competencia/torneo", {
+    rol_id: Number(rolId),
+    cv_ids: cvIds ?? null,
+    top,
+    semilla: semilla ?? null,
+  });
+}
+
+export function getModeloCompetencia() {
+  return get("/competencia/modelo");
+}

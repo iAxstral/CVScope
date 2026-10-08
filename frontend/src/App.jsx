@@ -6,6 +6,7 @@ import Seleccionar from "./pages/Seleccionar.jsx";
 import Ranking from "./pages/Ranking.jsx";
 import CandidateDetail from "./pages/CandidateDetail.jsx";
 import Datasets from "./pages/Datasets.jsx";
+import Torneo from "./pages/Torneo.jsx";
 
 export default function App() {
   return (
@@ -20,6 +21,8 @@ export default function App() {
         <Route path="/ranking/:rolId" element={<Ranking />} />
         <Route path="/candidatos/:cvId" element={<CandidateDetail />} />
         <Route path="/datasets" element={<Datasets />} />
+        <Route path="/torneo" element={<Torneo />} />
+        <Route path="/torneo/:rolId" element={<Torneo />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />
