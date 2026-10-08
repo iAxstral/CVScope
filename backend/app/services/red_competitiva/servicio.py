@@ -85,7 +85,7 @@ def explicar_duelo(a: dict, b: dict, resultado: dict) -> str:
     texto = (
         f"{ganador['nombre']} gana con una probabilidad de {prob:.1%}: en la capa competitiva "
         f"su neurona apagó a la de {perdedor['nombre']} tras {iteraciones} "
-        f"iteración{'es' if iteraciones != 1 else ''} de inhibición lateral. "
+        f"{'iteración' if iteraciones == 1 else 'iteraciones'} de inhibición lateral. "
         f"Cumple {len(ganador['requisitos_cumplidos'])} requisito(s) con evidencia y reporta "
         f"{ganador['anios_experiencia']} año(s) de experiencia, frente a "
         f"{len(perdedor['requisitos_cumplidos'])} requisito(s) y {perdedor['anios_experiencia']} "

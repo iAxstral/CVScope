@@ -110,8 +110,8 @@ export default function DueloDirecto({ rolId, participantes }) {
           <p className="duelo__explicacion">{r.explicacion}</p>
           <div className="duelo__maxnet">
             <h3>
-              Capa competitiva (MAXNET) · ε = {r.maxnet.epsilon} · {r.maxnet.iteraciones} iteración
-              {r.maxnet.iteraciones === 1 ? "" : "es"}
+              Capa competitiva (MAXNET) · ε = {r.maxnet.epsilon} · {r.maxnet.iteraciones}{" "}
+              {r.maxnet.iteraciones === 1 ? "iteración" : "iteraciones"}
             </h3>
             <MaxnetChart
               trayectoria={r.maxnet.trayectoria}
