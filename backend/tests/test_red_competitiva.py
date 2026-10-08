@@ -116,6 +116,13 @@ def test_caracteristicas_tienen_tamano_fijo_y_rasgos():
     assert tokenizar("Node.js y C++") == ["node.js", "c++"]
 
 
+def test_caracteristicas_no_dependen_del_nombre_ni_la_ciudad():
+    requisitos = ["Experiencia en ventas B2B/B2C", "Manejo de CRM", "Negociación"]
+    a = "Ana Ruiz. Asesora comercial en Cali. Perfil: 5 años de experiencia. Ventas B2B con HubSpot."
+    b = "Pedro Gómez. Asesor comercial en Bogotá. Perfil: 5 años de experiencia. Ventas B2B con HubSpot."
+    np.testing.assert_array_equal(extraer(a, requisitos), extraer(b, requisitos))
+
+
 # -------------------------------------------------------------------- API
 
 def test_api_torneo_por_defecto():
