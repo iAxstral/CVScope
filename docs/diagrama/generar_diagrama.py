@@ -241,7 +241,7 @@ def construir() -> None:
         ("e2", "4.512 duelos dentro de cada rol\ngana la de mayor puntaje\nde referencia (empate = 0.5)"),
         ("e3", "P(A gana a B) = σ(s(A) − s(B))\npérdida: entropía cruzada\npor pares"),
         ("e4", "Retropropagación\nAdam + L2 · 40 épocas"),
-        ("e5", "Prueba (dataset de ranking)\nexactitud en duelos 0.961\nprecisión@5 0.80 (base 0.70)"),
+        ("e5", "Prueba (dataset de ranking)\nexactitud en duelos 0.959\nprecisión@5 0.80 (base 0.70)"),
     ]
     for k, (id_, contenido) in enumerate(pasos_ent):
         caja(id_, 55 + k * 330, 855, 290, 100, contenido, fondo=SURFACE, borde=ACCENT, tam=12,

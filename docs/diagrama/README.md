@@ -101,7 +101,7 @@ que aprender (sus pesos son `+1` y `−ε`, fijos).
 
 | Métrica | Red competitiva | Palabras clave (línea base) |
 |---|---|---|
-| Exactitud en duelos | 0.961 | 0.934 |
+| Exactitud en duelos | 0.959 | 0.934 |
 | Precisión@5 | 0.80 | 0.70 |
 
 ## Dónde está en el código
