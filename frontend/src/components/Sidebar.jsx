@@ -13,6 +13,7 @@ const links = [
   { to: "/dashboard", label: "Dashboard", icono: "dashboard" },
   { to: "/seleccionar", label: "Seleccionar CV", icono: "seleccionar" },
   { to: "/ranking", label: "Ranking top 5", icono: "ranking" },
+  { to: "/torneo", label: "Red competitiva", icono: "torneo" },
   { to: "/datasets", label: "Datasets", icono: "datasets" },
 ];
 
