@@ -9,6 +9,13 @@ class RolBase(BaseModel):
         description="Lista de requisitos mínimos que debe cumplir un candidato para este rol.",
         examples=[["JavaScript/TypeScript", "React", "Node.js"]],
     )
+    clave: str | None = Field(
+        default=None,
+        max_length=30,
+        description="Etiqueta corta del rol usada por el clasificador y los datasets "
+                    "(fullstack, rrhh, ventas, marketing).",
+        examples=["fullstack"],
+    )
 
 
 class RolCreate(RolBase):

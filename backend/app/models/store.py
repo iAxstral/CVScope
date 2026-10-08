@@ -12,18 +12,22 @@ class RolStore:
         ejemplos = [
             RolCreate(
                 nombre="Full Stack Developer",
+                clave="fullstack",
                 requisitos=["JavaScript/TypeScript", "React o similar", "Node.js o backend equivalente", "Bases de datos SQL/NoSQL"],
             ),
             RolCreate(
                 nombre="Analista de Recursos Humanos",
+                clave="rrhh",
                 requisitos=["Gestión de procesos de selección", "Manejo de nómina", "Comunicación interpersonal"],
             ),
             RolCreate(
                 nombre="Ejecutivo de Ventas",
+                clave="ventas",
                 requisitos=["Experiencia en ventas B2B/B2C", "Manejo de CRM", "Negociación"],
             ),
             RolCreate(
                 nombre="Especialista en Marketing Digital",
+                clave="marketing",
                 requisitos=["SEO/SEM", "Gestión de redes sociales", "Analítica web (Google Analytics)"],
             ),
         ]
@@ -35,6 +39,9 @@ class RolStore:
 
     def get(self, rol_id: int) -> dict | None:
         return self._roles.get(rol_id)
+
+    def get_by_clave(self, clave: str) -> dict | None:
+        return next((r for r in self._roles.values() if r.get("clave") == clave), None)
 
     def create(self, data: RolCreate) -> dict:
         rol = {"id": self._next_id, **data.model_dump()}
