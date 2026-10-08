@@ -86,8 +86,8 @@ export async function extraerTexto(archivo) {
   return handleResponse(res);
 }
 
-export function getRanking(rolId, top = 5) {
-  return get(`/preseleccion/ranking/${rolId}`, { top });
+export function getRanking(rolId, top = 5, metodo = "red") {
+  return get(`/preseleccion/ranking/${rolId}`, { top, metodo });
 }
 
 export function getDetalleHojaDeVida(cvId, rolId, motor) {
