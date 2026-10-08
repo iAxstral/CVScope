@@ -1,0 +1,38 @@
+.score-meter {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 96px;
+}
+
+.score-meter__value {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--ink);
+  font-size: 1.3rem;
+  line-height: 1;
+}
+
+.score-meter--lg .score-meter__value {
+  font-size: 2.4rem;
+}
+
+.score-meter__track {
+  display: block;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--primary-soft);
+  overflow: hidden;
+}
+
+.score-meter--lg .score-meter__track {
+  height: 8px;
+}
+
+.score-meter__fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--primary);
+  transition: width 0.4s ease;
+}

@@ -1,0 +1,260 @@
+.ds-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 1200px;
+}
+
+.ds-resumen {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1rem;
+}
+
+.ds-resumen__info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.ds-resumen__info .section-title {
+  margin-bottom: 0;
+}
+
+.ds-resumen__file {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--primary);
+  background: var(--primary-soft);
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  width: fit-content;
+}
+
+.ds-resumen__stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.ds-dist {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.ds-dist__title {
+  font-size: 1rem;
+}
+
+.ds-dist__legend {
+  display: flex;
+  gap: 1.25rem;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+
+.ds-dist__legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.ds-dist__swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+.ds-dist__swatch--apto,
+.ds-dist__seg--apto {
+  background: var(--success);
+}
+
+.ds-dist__swatch--no,
+.ds-dist__seg--no {
+  background: var(--danger);
+}
+
+.ds-dist__rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.ds-dist__row {
+  display: grid;
+  grid-template-columns: 150px 1fr 64px;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.85rem;
+}
+
+.ds-dist__rol {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.ds-dist__bar {
+  display: flex;
+  gap: 2px;
+  height: 14px;
+}
+
+.ds-dist__seg {
+  min-width: 0;
+  flex-basis: 0;
+}
+
+.ds-dist__seg:first-child {
+  border-radius: 4px 0 0 4px;
+}
+
+.ds-dist__seg:last-child {
+  border-radius: 0 4px 4px 0;
+}
+
+.ds-dist__seg:hover {
+  filter: brightness(1.12);
+}
+
+.ds-dist__nums {
+  font-family: var(--font-mono);
+  color: var(--ink-soft);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.ds-tabla {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.ds-tabla__filtros {
+  display: grid;
+  grid-template-columns: 200px 200px 1fr;
+  gap: 0.75rem;
+}
+
+.ds-tabla__wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  transition: opacity 0.15s ease;
+}
+
+.ds-tabla__wrap--loading {
+  opacity: 0.55;
+}
+
+.ds-tabla__wrap .empty-state {
+  border: none;
+}
+
+.ds-tabla table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.ds-tabla th {
+  text-align: left;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-soft);
+  background: var(--surface-alt);
+  padding: 0.7rem 0.9rem;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.ds-tabla td {
+  padding: 0.75rem 0.9rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+.ds-tabla tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.ds-tabla tbody tr:hover {
+  background: var(--surface-alt);
+}
+
+.ds-tabla .num {
+  text-align: right;
+  font-family: var(--font-mono);
+  white-space: nowrap;
+}
+
+.ds-tabla__cv {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 260px;
+}
+
+.ds-tabla__cv span {
+  color: var(--ink-faint);
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+.ds-tabla__reqs {
+  color: var(--ink-soft);
+  min-width: 180px;
+}
+
+.ds-tabla__paginacion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+
+.ds-tabla__paginacion div {
+  display: flex;
+  gap: 0.5rem;
+}
+
+@media (max-width: 900px) {
+  .ds-resumen {
+    grid-template-columns: 1fr;
+  }
+
+  .ds-tabla__filtros {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .ds-tabla__filtros input {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 520px) {
+  .ds-resumen__stats {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .ds-dist__row {
+    grid-template-columns: 1fr auto;
+    gap: 0.35rem 1rem;
+  }
+
+  .ds-dist__bar {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}

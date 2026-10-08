@@ -8,8 +8,47 @@
   gap: 1rem;
 }
 
+.role-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
 .role-card__title {
   font-size: 1.2rem;
+}
+
+.role-card__stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+
+.role-card__stats strong {
+  color: var(--ink);
+  font-family: var(--font-mono);
+}
+
+.role-card__lider {
+  color: var(--ink);
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.role-card__lider:hover {
+  color: var(--primary);
+}
+
+.role-card__score {
+  font-family: var(--font-mono);
+  font-weight: 600;
 }
 
 .role-card__requisitos {
@@ -39,6 +78,6 @@
 .role-card__actions {
   display: flex;
   gap: 0.6rem;
-  margin-top: 0.25rem;
+  margin-top: auto;
   flex-wrap: wrap;
 }

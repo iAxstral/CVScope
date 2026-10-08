@@ -1,10 +1,15 @@
 import { Link } from "react-router-dom";
 import "./RoleCard.css";
 
-export default function RoleCard({ rol }) {
+export default function RoleCard({ rol, ranking }) {
+  const lider = ranking?.top?.[0];
+
   return (
     <article className="role-card">
-      <h3 className="role-card__title">{rol.nombre}</h3>
+      <div className="role-card__head">
+        <h3 className="role-card__title">{rol.nombre}</h3>
+        {rol.clave && <span className="chip">{rol.clave}</span>}
+      </div>
 
       <ul className="role-card__requisitos">
         {rol.requisitos.map((req) => (
@@ -12,12 +17,25 @@ export default function RoleCard({ rol }) {
         ))}
       </ul>
 
+      {ranking && (
+        <div className="role-card__stats">
+          <span>
+            <strong>{ranking.total_aptos}</strong> aptos de {ranking.total_evaluados}
+          </span>
+          {lider && (
+            <Link to={`/candidatos/${lider.id}?rolId=${rol.id}`} className="role-card__lider">
+              #1 {lider.nombre} · <span className="role-card__score">{lider.score}</span>
+            </Link>
+          )}
+        </div>
+      )}
+
       <div className="role-card__actions">
-        <Link to={`/ranking/${rol.id}`} state={{ rolNombre: rol.nombre }} className="btn btn--ghost">
-          Ver ranking
+        <Link to={`/ranking/${rol.id}`} className="btn btn--primary">
+          Ver top 5
         </Link>
-        <Link to={`/cargar-candidatos?rolId=${rol.id}`} className="btn btn--primary">
-          Cargar candidatos
+        <Link to={`/seleccionar?rolId=${rol.id}`} className="btn btn--ghost">
+          Evaluar CV
         </Link>
       </div>
     </article>
