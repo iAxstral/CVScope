@@ -26,6 +26,7 @@ DIM_HASH = 1024
 N_RASGOS = 2
 DIM_ENTRADA = N_RASGOS + DIM_HASH
 
+_MARCADOR = re.compile(r"\[[A-Z ]+\]")
 _TOKEN = re.compile(r"[a-z0-9][a-z0-9+#.]*[a-z0-9+#]|[a-z0-9]")
 
 # Palabras muy frecuentes que no aportan información para comparar CVs.
@@ -62,7 +63,9 @@ def extraer(cv_texto: str, requisitos: list[str]) -> np.ndarray:
     El texto se anonimiza primero: la red nunca ve nombre, ciudad, edad ni
     marcas de género, así no puede aprender sesgos a partir de ellos.
     """
-    cv_texto = anonimizar(cv_texto)
+    # Los marcadores ([CANDIDATO], [DATO PERSONAL]...) también se quitan: si
+    # quedaran como palabras, "el CV menciona la edad" sería una señal más.
+    cv_texto = _MARCADOR.sub(" ", anonimizar(cv_texto))
     evaluacion = evaluar_cv(cv_texto, requisitos)
     fraccion = len(evaluacion["requisitos_cumplidos"]) / len(requisitos) if requisitos else 0.0
     anios = min(evaluacion["anios_experiencia"], ANIOS_EXPERIENCIA_TOPE) / ANIOS_EXPERIENCIA_TOPE
