@@ -1,3 +1,5 @@
+import os
+
 from dotenv import load_dotenv
 
 load_dotenv()  # backend/.env: API key de Gemini, base de datos...
@@ -17,10 +19,16 @@ app = FastAPI(
 # Todos los endpoints, salvo /auth/login y la raíz, exigen sesión iniciada.
 protegido = [Depends(usuario_actual)]
 
-# CORS: permite que el frontend (Vite, por defecto en localhost:5173) consuma la API
+# CORS: orígenes del frontend que pueden consumir la API (Vite en desarrollo;
+# en Docker se agrega el del contenedor con CORS_ORIGINS, separados por comas)
+ORIGENES_PERMITIDOS = [
+    o.strip()
+    for o in os.getenv("CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173").split(",")
+    if o.strip()
+]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origins=ORIGENES_PERMITIDOS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
