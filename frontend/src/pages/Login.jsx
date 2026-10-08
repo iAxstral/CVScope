@@ -1,16 +1,27 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { iniciarSesion } from "../api/client.js";
+import { sesionActual } from "../utils/sesion.js";
 import "./Login.css";
 
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [estado, setEstado] = useState({ status: "idle", error: "" });
 
-  function handleSubmit(e) {
+  if (sesionActual()) return <Navigate to="/dashboard" replace />;
+
+  async function handleSubmit(e) {
     e.preventDefault();
-    // TODO: conectar a endpoint de auth cuando exista
-    navigate("/dashboard");
+    setEstado({ status: "loading", error: "" });
+    try {
+      await iniciarSesion({ email, contrasena: password });
+      navigate(location.state?.desde ?? "/dashboard", { replace: true });
+    } catch (err) {
+      setEstado({ status: "error", error: err.message });
+    }
   }
 
   return (
@@ -30,6 +41,7 @@ export default function Login() {
             <input
               type="email"
               required
+              autoComplete="username"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="tu@empresa.com"
@@ -41,14 +53,25 @@ export default function Login() {
             <input
               type="password"
               required
+              autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
             />
           </label>
 
-          <button type="submit" className="btn btn--primary login-form__submit">
-            Entrar
+          {estado.status === "error" && (
+            <p className="login-form__error" role="alert">
+              {estado.error}
+            </p>
+          )}
+
+          <button
+            type="submit"
+            className="btn btn--primary login-form__submit"
+            disabled={estado.status === "loading"}
+          >
+            {estado.status === "loading" ? "Entrando…" : "Entrar"}
           </button>
         </form>
       </div>
