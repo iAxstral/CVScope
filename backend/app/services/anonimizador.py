@@ -17,19 +17,39 @@ Los años de experiencia NO se tocan: son un criterio del cargo.
 """
 
 import re
+import unicodedata
 
+# Capitales de departamento y municipios grandes de Colombia. Se comparan sin
+# distinguir tildes. scripts/auditar_sesgos.py verifica que no se filtren.
 CIUDADES = [
-    "Bogotá", "Bogota", "Medellín", "Medellin", "Cali", "Barranquilla", "Bucaramanga",
-    "Pereira", "Manizales", "Cartagena", "Cúcuta", "Cucuta", "Ibagué", "Ibague",
-    "Santa Marta", "Villavicencio", "Pasto", "Montería", "Monteria", "Neiva",
-    "Armenia", "Popayán", "Popayan", "Tunja", "Sincelejo", "Valledupar", "Chía", "Chia",
+    "Bogotá", "Medellín", "Cali", "Barranquilla", "Cartagena", "Cúcuta", "Bucaramanga",
+    "Pereira", "Manizales", "Ibagué", "Santa Marta", "Villavicencio", "Pasto", "Montería",
+    "Neiva", "Armenia", "Popayán", "Tunja", "Sincelejo", "Valledupar", "Riohacha", "Quibdó",
+    "Florencia", "Yopal", "Arauca", "Leticia", "Mocoa", "San Andrés", "Inírida", "Mitú",
+    "Puerto Carreño", "San José del Guaviare", "Soacha", "Bello", "Itagüí", "Envigado",
+    "Soledad", "Palmira", "Buenaventura", "Tuluá", "Barrancabermeja", "Floridablanca", "Girón",
+    "Dosquebradas", "Chía", "Zipaquirá", "Facatativá", "Fusagasugá", "Rionegro", "Apartadó",
+    "Turbo", "Sogamoso", "Duitama", "Girardot", "Cartago", "Buga", "Jamundí", "Malambo",
+    "Maicao", "Magangué", "Lorica", "Sahagún", "Ocaña", "Pamplona", "Ipiales", "Tumaco",
 ]
 
 _EMAIL = re.compile(r"[\w.+-]+@[\w-]+(\.[\w-]+)+")
 _URL = re.compile(r"(https?://\S+|www\.\S+|linkedin\.com/\S+)", re.IGNORECASE)
 _TELEFONO = re.compile(r"(?<!\w)(\+?\d[\d\s().-]{6,}\d)(?!\w)")
 _DOCUMENTO = re.compile(r"\b(c\.?c\.?|c[ée]dula|documento|ti|nit)\s*(n[°º.o]*)?\s*:?\s*[\d.]{6,}", re.IGNORECASE)
-_CIUDAD = re.compile(r"\b(" + "|".join(re.escape(c) for c in CIUDADES) + r")\b", re.IGNORECASE)
+_VARIANTES = {"a": "[aá]", "e": "[eé]", "i": "[ií]", "o": "[oó]", "u": "[uúü]"}
+
+
+def _sin_tildes_regex(palabra: str) -> str:
+    base = unicodedata.normalize("NFKD", palabra.lower())
+    base = "".join(c for c in base if not unicodedata.combining(c))
+    return "".join(_VARIANTES.get(c, re.escape(c)) for c in base)
+
+
+_CIUDAD = re.compile(
+    r"\b(" + "|".join(_sin_tildes_regex(c) for c in sorted(CIUDADES, key=len, reverse=True)) + r")\b",
+    re.IGNORECASE,
+)
 _DATOS_PERSONALES = re.compile(
     r"(\b\d{1,2}\s+años\s+de\s+edad\b"
     r"|\bedad\s*:?\s*\d{1,2}(\s+años)?"

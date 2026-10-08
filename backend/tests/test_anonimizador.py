@@ -31,3 +31,8 @@ def test_mismo_cv_con_otro_nombre_y_ciudad_queda_igual():
     a = "Ana Ruiz. Profesional en ventas en Cali. 5 años de experiencia en ventas B2B con HubSpot."
     b = "Pedro Gómez. Profesional en ventas en Bogotá. 5 años de experiencia en ventas B2B con HubSpot."
     assert anonimizar(a) == anonimizar(b)
+
+
+def test_ciudades_con_y_sin_tilde():
+    for ciudad in ["Quibdó", "Quibdo", "San José del Guaviare", "Itagüí", "Tumaco", "BOGOTA"]:
+        assert ciudad not in anonimizar(f"Vivo en {ciudad}. 3 años de experiencia."), ciudad
