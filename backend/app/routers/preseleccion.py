@@ -8,13 +8,11 @@ from app.schemas.preseleccion import (
     EvaluarRequest,
     RankingResponse,
 )
-from app.services.datasets import cargar_ranking, cargar_seleccion
 from app.services.evaluador_requisitos import evaluar_cv
+from app.services.hojas_de_vida import buscar, pool_del_rol
 from app.services.ia_services import ClasificadorNoDisponible, categorizar_rol
 
 router = APIRouter()
-
-PREFIJO_REGISTRADO = "cand-"
 
 
 class CategorizarRequest(BaseModel):
@@ -133,29 +131,7 @@ def ranking_por_rol(rol_id: int, top: int = Query(default=5, ge=1, le=50)):
     """
     rol = _rol_o_404(rol_id)
 
-    pool = [
-        {
-            "id": f["id"],
-            "nombre": f["nombre"],
-            "email": f["email"],
-            "texto": f["hoja_de_vida_texto"],
-            "fuente": "dataset",
-            "posicion_referencia": f["posicion_referencia"],
-        }
-        for f in cargar_ranking()
-        if rol.get("clave") and f["rol"] == rol["clave"]
-    ]
-    pool += [
-        {
-            "id": f"{PREFIJO_REGISTRADO}{c['id']}",
-            "nombre": c["nombre"],
-            "email": c["email"],
-            "texto": c["hoja_de_vida_texto"],
-            "fuente": "registrado",
-            "posicion_referencia": None,
-        }
-        for c in candidato_store.list_by_rol(rol_id)
-    ]
+    pool = pool_del_rol(rol)
 
     evaluados = []
     for cv in pool:
@@ -203,44 +179,22 @@ def detalle_hoja_de_vida(cv_id: str, rol_id: int | None = Query(default=None)):
     registrado): veredicto por requisito con su evidencia y, si viene de un
     dataset, las etiquetas reales para compararlas.
     """
-    referencia = None
-    email = None
-
-    if cv_id.startswith(PREFIJO_REGISTRADO) and cv_id[len(PREFIJO_REGISTRADO):].isdigit():
-        candidato = candidato_store.get(int(cv_id[len(PREFIJO_REGISTRADO):]))
-        if candidato is None:
-            raise HTTPException(status_code=404, detail=f"Hoja de vida {cv_id} no encontrada")
-        nombre, email, texto, fuente = (
-            candidato["nombre"], candidato["email"], candidato["hoja_de_vida_texto"], "registrado"
-        )
-        rol = _rol_o_404(rol_id or candidato["rol_id"]) if (rol_id or candidato["rol_id"]) else None
-    else:
-        fila = next((f for f in cargar_ranking() + cargar_seleccion() if f["id"] == cv_id), None)
-        if fila is None:
-            raise HTTPException(status_code=404, detail=f"Hoja de vida {cv_id} no encontrada")
-        texto = fila["hoja_de_vida_texto"]
-        nombre = fila.get("nombre") or texto.split(".")[0]
-        email = fila.get("email")
-        fuente = "dataset_ranking" if cv_id.startswith("rk-") else "dataset_seleccion"
-        rol = _rol_o_404(rol_id) if rol_id else rol_store.get_by_clave(fila["rol"])
-        referencia = {
-            "apto": fila["apto"],
-            "requisitos_cumplidos": fila["requisitos_cumplidos"],
-            "puntaje_referencia": fila.get("puntaje_referencia"),
-            "posicion_referencia": fila.get("posicion_referencia"),
-        }
+    cv = buscar(cv_id)
+    if cv is None:
+        raise HTTPException(status_code=404, detail=f"Hoja de vida {cv_id} no encontrada")
+    rol = _rol_o_404(rol_id) if rol_id else cv["rol"]
 
     if rol is None:
         raise HTTPException(status_code=400, detail="La hoja de vida no tiene un rol asignado; envíe rol_id")
 
     return DetalleHojaDeVida(
-        id=cv_id,
-        nombre=nombre,
-        email=email,
-        fuente=fuente,
-        hoja_de_vida_texto=texto,
+        id=cv["id"],
+        nombre=cv["nombre"],
+        email=cv["email"],
+        fuente=cv["fuente"],
+        hoja_de_vida_texto=cv["texto"],
         rol_id=rol["id"],
         rol_nombre=rol["nombre"],
-        referencia=referencia,
-        **evaluar_cv(texto, rol["requisitos"]),
+        referencia=cv["referencia"],
+        **evaluar_cv(cv["texto"], rol["requisitos"]),
     )
