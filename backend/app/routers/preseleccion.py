@@ -20,6 +20,8 @@ from app.services.extractor_texto import (
     extraer_texto,
 )
 from app.services.hojas_de_vida import buscar, pool_del_rol
+from app.services.red_competitiva import servicio as servicio_red
+from app.services.red_competitiva.competitiva import podio
 from app.services.ia_services import ClasificadorNoDisponible, categorizar_rol
 from app.services.llm_service import (
     MODELO_POR_DEFECTO,
@@ -150,14 +152,23 @@ def evaluar_candidato(data: EvaluarRequest):
 
 
 @router.get("/ranking/{rol_id}", response_model=RankingResponse)
-def ranking_por_rol(rol_id: int, top: int = Query(default=5, ge=1, le=50)):
+def ranking_por_rol(
+    rol_id: int,
+    top: int = Query(default=5, ge=1, le=50),
+    metodo: Literal["red", "palabras_clave"] = Query(default="red"),
+):
     """
     Paso 3 (ranking): evalúa todas las hojas de vida del rol (dataset de
-    ranking + candidatos registrados) y devuelve las `top` mejores entre las
-    aptas, ordenadas de mejor a peor ajuste con el perfil buscado.
+    ranking + candidatos registrados) y devuelve las `top` mejores.
+
+    - metodo=red (por defecto): las ordena la red neuronal competitiva, igual
+      que el podio de la página "Red competitiva".
+    - metodo=palabras_clave: solo las aptas, ordenadas por el puntaje del
+      evaluador por palabras clave.
+
+    `top_otro_metodo` trae el top del otro método para compararlos.
     """
     rol = _rol_o_404(rol_id)
-
     pool = pool_del_rol(rol)
 
     evaluados = []
@@ -180,7 +191,24 @@ def ranking_por_rol(rol_id: int, top: int = Query(default=5, ge=1, le=50)):
         (e for e in evaluados if e["estado"] == "apto"),
         key=lambda e: (-e["score"], e["id"]),
     )
-    seleccion = aptos[:top]
+    top_palabras = aptos[:top]
+
+    aviso = None
+    top_red = None
+    if evaluados:
+        try:
+            fuerzas = [servicio_red.preparar(cv, rol["requisitos"])["fuerza"] for cv in pool]
+            for e, f in zip(evaluados, fuerzas):
+                e["fuerza"] = round(f, 3)
+            top_red = [evaluados[i] for i in podio(fuerzas, top)]
+        except servicio_red.ModeloNoDisponible as exc:
+            aviso = f"La red competitiva no está disponible ({exc}); se ordenó por palabras clave."
+
+    if metodo == "red" and top_red is not None:
+        seleccion, otro = top_red, top_palabras
+    else:
+        metodo = "palabras_clave"
+        seleccion, otro = top_palabras, top_red or []
 
     coincidencias = None
     if any(e["fuente"] == "dataset" for e in evaluados):
@@ -192,10 +220,13 @@ def ranking_por_rol(rol_id: int, top: int = Query(default=5, ge=1, le=50)):
         rol_id=rol["id"],
         rol_nombre=rol["nombre"],
         requisitos=rol["requisitos"],
+        metodo=metodo,
         total_evaluados=len(evaluados),
         total_aptos=len(aptos),
         top=seleccion,
+        top_otro_metodo=[e["id"] for e in otro],
         coincidencias_referencia=coincidencias,
+        aviso=aviso,
     )
 
 
