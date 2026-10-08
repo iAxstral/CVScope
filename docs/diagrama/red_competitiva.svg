@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1720 1080" width="1720" height="1080" font-family="Inter, Helvetica, Arial, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1720 1330" width="1720" height="1330" font-family="Inter, Helvetica, Arial, sans-serif">
 <defs>
 <marker id="punta-flujo" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#22346b"/></marker>
 <marker id="punta-conexion" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b8c2d6"/></marker>
@@ -6,7 +6,7 @@
 <marker id="punta-excitacion" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2f9e64"/></marker>
 <marker id="punta-entrenamiento" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#e8a63d"/></marker>
 </defs>
-<rect width="1720" height="1080" fill="#f1f4f8"/>
+<rect width="1720" height="1330" fill="#f1f4f8"/>
 <rect x="30" y="100" width="230" height="690" rx="14" fill="#f7f9fc" stroke="#dfe4ee" stroke-width="1.5"/>
 <rect x="30" y="100" width="230" height="38" rx="14" fill="#17244d" stroke="#17244d" stroke-width="1.5"/>
 <text x="145.0" y="119.0" font-size="12" font-weight="700" fill="#ffffff" text-anchor="middle" dominant-baseline="central">1 · DATOS DE ENTRADA</text>
@@ -23,6 +23,7 @@
 <rect x="1445" y="100" width="245" height="38" rx="14" fill="#17244d" stroke="#17244d" stroke-width="1.5"/>
 <text x="1567.5" y="119.0" font-size="12" font-weight="700" fill="#ffffff" text-anchor="middle" dominant-baseline="central">5 · SALIDA</text>
 <rect x="30" y="810" width="1660" height="170" rx="14" fill="#fbf0da" stroke="#e8a63d" stroke-width="1.5"/>
+<rect x="30" y="995" width="1660" height="235" rx="14" fill="#e7f6ee" stroke="#2f9e64" stroke-width="1.5"/>
 <polyline points="633.9,176.8 721.1,188.2" fill="none" stroke="#b8c2d6" stroke-width="1" stroke-linejoin="round"/>
 <polyline points="632.4,181.5 722.6,228.5" fill="none" stroke="#b8c2d6" stroke-width="1" stroke-linejoin="round"/>
 <polyline points="630.3,184.4 724.7,270.6" fill="none" stroke="#b8c2d6" stroke-width="1" stroke-linejoin="round"/>
@@ -54,7 +55,7 @@
 <polyline points="862.4,211.4 939.6,251.4" fill="none" stroke="#b8c2d6" stroke-width="1" stroke-linejoin="round"/>
 <polyline points="863.9,251.5 937.1,259.5" fill="none" stroke="#b8c2d6" stroke-width="1" stroke-linejoin="round"/>
 <polyline points="862.4,313.5 939.7,272.7" fill="none" stroke="#b8c2d6" stroke-width="1" stroke-linejoin="round"/>
-<polyline points="382.0,1012.0 441.0,1012.0" fill="none" stroke="#b8c2d6" stroke-width="1" stroke-linejoin="round"/>
+<polyline points="382.0,1262.0 441.0,1262.0" fill="none" stroke="#b8c2d6" stroke-width="1" stroke-linejoin="round"/>
 <text x="40.0" y="35.0" font-size="24" font-weight="700" fill="#17203a" text-anchor="start" dominant-baseline="central">CVScope · Red neuronal competitiva (tipo Hamming)</text>
 <text x="40.0" y="67.0" font-size="13" font-weight="400" fill="#5c6b8a" text-anchor="start" dominant-baseline="central">Cada hoja de vida es una neurona. Una capa de evaluación entrenada calcula su fuerza y una capa competitiva (MAXNET) las enfrenta por inhibición lateral hasta que solo una queda activa.</text>
 <rect x="55" y="160" width="180" height="58" rx="8" fill="#ffffff" stroke="#22346b" stroke-width="1.5"/>
@@ -98,7 +99,7 @@
 <text x="850.0" y="382.6" font-size="11" font-weight="700" fill="#17203a" text-anchor="middle" dominant-baseline="central">Oculta 2</text><text x="850.0" y="397.4" font-size="11" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">32 · ReLU</text>
 <ellipse cx="960.0" cy="262.0" rx="23.0" ry="23.0" fill="#17244d" stroke="#17244d" stroke-width="1.5"/>
 <text x="960.0" y="262.0" font-size="13" font-weight="400" fill="#ffffff" text-anchor="middle" dominant-baseline="central">s(x)</text>
-<text x="960.0" y="382.6" font-size="11" font-weight="700" fill="#17203a" text-anchor="middle" dominant-baseline="central">Salida</text><text x="960.0" y="397.4" font-size="11" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">fuerza</text>
+<text x="925.0" y="382.6" font-size="11" font-weight="700" fill="#17203a" text-anchor="middle" dominant-baseline="central">Salida</text><text x="925.0" y="397.4" font-size="11" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">fuerza</text>
 <rect x="585" y="425" width="330" height="54" rx="8" fill="#ffffff" stroke="#22346b" stroke-width="1.5" stroke-dasharray="6 4"/>
 <text x="750.0" y="444.6" font-size="11" font-weight="700" fill="#17203a" text-anchor="middle" dominant-baseline="central">Misma red y mismos pesos para todas las hojas de</text><text x="750.0" y="459.4" font-size="11" font-weight="700" fill="#17203a" text-anchor="middle" dominant-baseline="central">vida (red siamesa)</text>
 <rect x="585" y="500" width="400" height="118" rx="8" fill="#ffffff" stroke="#dfe4ee" stroke-width="1.5"/>
@@ -143,13 +144,26 @@
 <text x="1190.0" y="896.9" font-size="12" font-weight="700" fill="#17203a" text-anchor="middle" dominant-baseline="central">Retropropagación</text><text x="1190.0" y="913.1" font-size="12" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">Adam + L2 · 40 épocas</text>
 <rect x="1375" y="855" width="290" height="100" rx="8" fill="#ffffff" stroke="#e8a63d" stroke-width="1.5"/>
 <text x="1520.0" y="888.8" font-size="12" font-weight="700" fill="#17203a" text-anchor="middle" dominant-baseline="central">Prueba (dataset de ranking)</text><text x="1520.0" y="905.0" font-size="12" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">exactitud en duelos 0.959</text><text x="1520.0" y="921.2" font-size="12" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">precisión@5 0.80 (base 0.70)</text>
-<text x="40.0" y="1012.0" font-size="12" font-weight="700" fill="#17203a" text-anchor="start" dominant-baseline="central">Leyenda:</text>
-<text x="200.0" y="1012.0" font-size="12" font-weight="400" fill="#5c6b8a" text-anchor="start" dominant-baseline="central">Flujo de datos</text>
-<text x="460.0" y="1012.0" font-size="12" font-weight="400" fill="#5c6b8a" text-anchor="start" dominant-baseline="central">Conexiones entre capas</text>
-<text x="720.0" y="1012.0" font-size="12" font-weight="400" fill="#5c6b8a" text-anchor="start" dominant-baseline="central">Inhibición lateral (−ε)</text>
-<text x="980.0" y="1012.0" font-size="12" font-weight="400" fill="#5c6b8a" text-anchor="start" dominant-baseline="central">Autoexcitación (+1)</text>
-<text x="1240.0" y="1012.0" font-size="12" font-weight="400" fill="#5c6b8a" text-anchor="start" dominant-baseline="central">Entrenamiento</text>
-<text x="40.0" y="1051.0" font-size="11" font-weight="400" fill="#5c6b8a" text-anchor="start" dominant-baseline="central">Código: backend/app/services/red_competitiva/ (caracteristicas.py, modelo.py, competitiva.py, torneo.py) · Diagrama generado con docs/diagrama/generar_diagrama.py</text>
+<text x="60.0" y="1016.0" font-size="13" font-weight="700" fill="#17244d" text-anchor="start" dominant-baseline="central">CAPA COMPETITIVA QUE APRENDE · LVQ (decide apto / no apto)</text>
+<rect x="55" y="1040" width="290" height="86" rx="8" fill="#ffffff" stroke="#2f9e64" stroke-width="1.5"/>
+<text x="200.0" y="1066.8" font-size="12" font-weight="700" fill="#17203a" text-anchor="middle" dominant-baseline="central">Entrada</text><text x="200.0" y="1083.0" font-size="12" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">el mismo vector x ∈ ℝ¹⁰²⁶ del paso 2</text><text x="200.0" y="1099.2" font-size="12" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">(rasgos explícitos con peso 3)</text>
+<rect x="385" y="1040" width="290" height="86" rx="8" fill="#ffffff" stroke="#2f9e64" stroke-width="1.5"/>
+<text x="530.0" y="1066.8" font-size="12" font-weight="700" fill="#17203a" text-anchor="middle" dominant-baseline="central">4 neuronas prototipo</text><text x="530.0" y="1083.0" font-size="12" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">2 «apto» y 2 «no apto»</text><text x="530.0" y="1099.2" font-size="12" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">cada una con pesos w_k</text>
+<rect x="715" y="1040" width="290" height="86" rx="8" fill="#ffffff" stroke="#2f9e64" stroke-width="1.5"/>
+<text x="860.0" y="1066.8" font-size="12" font-weight="700" fill="#17203a" text-anchor="middle" dominant-baseline="central">Competencia</text><text x="860.0" y="1083.0" font-size="12" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">gana la neurona más cercana:</text><text x="860.0" y="1099.2" font-size="12" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">k* = argmin ‖x − w_k‖</text>
+<rect x="1045" y="1040" width="290" height="86" rx="8" fill="#17244d" stroke="#17244d" stroke-width="1.5"/>
+<text x="1190.0" y="1066.8" font-size="12" font-weight="700" fill="#ffffff" text-anchor="middle" dominant-baseline="central">Salida</text><text x="1190.0" y="1083.0" font-size="12" font-weight="400" fill="#ffffff" text-anchor="middle" dominant-baseline="central">la clase de la ganadora:</text><text x="1190.0" y="1099.2" font-size="12" font-weight="400" fill="#ffffff" text-anchor="middle" dominant-baseline="central">apto / no apto + margen</text>
+<rect x="1375" y="1040" width="290" height="86" rx="8" fill="#ffffff" stroke="#dfe4ee" stroke-width="1.5"/>
+<text x="1520.0" y="1066.8" font-size="12" font-weight="700" fill="#17203a" text-anchor="middle" dominant-baseline="central">Prototipos aprendidos</text><text x="1520.0" y="1083.0" font-size="12" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">apto ≈ 0.8 de requisitos</text><text x="1520.0" y="1099.2" font-size="12" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">no apto ≈ 0.1 – 0.25 · exactitud 0.983</text>
+<rect x="645" y="1150" width="430" height="66" rx="8" fill="#ffffff" stroke="#e8a63d" stroke-width="1.5"/>
+<text x="860.0" y="1175.6" font-size="11" font-weight="700" fill="#17203a" text-anchor="middle" dominant-baseline="central">Aprendizaje de Kohonen (al entrenar)</text><text x="860.0" y="1190.4" font-size="11" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central">acierta: w ← w + α(x − w)  ·  falla: w ← w − α(x − w)</text>
+<text x="40.0" y="1262.0" font-size="12" font-weight="700" fill="#17203a" text-anchor="start" dominant-baseline="central">Leyenda:</text>
+<text x="200.0" y="1262.0" font-size="12" font-weight="400" fill="#5c6b8a" text-anchor="start" dominant-baseline="central">Flujo de datos</text>
+<text x="460.0" y="1262.0" font-size="12" font-weight="400" fill="#5c6b8a" text-anchor="start" dominant-baseline="central">Conexiones entre capas</text>
+<text x="720.0" y="1262.0" font-size="12" font-weight="400" fill="#5c6b8a" text-anchor="start" dominant-baseline="central">Inhibición lateral (−ε)</text>
+<text x="980.0" y="1262.0" font-size="12" font-weight="400" fill="#5c6b8a" text-anchor="start" dominant-baseline="central">Autoexcitación (+1)</text>
+<text x="1240.0" y="1262.0" font-size="12" font-weight="400" fill="#5c6b8a" text-anchor="start" dominant-baseline="central">Entrenamiento</text>
+<text x="40.0" y="1301.0" font-size="11" font-weight="400" fill="#5c6b8a" text-anchor="start" dominant-baseline="central">Código: backend/app/services/red_competitiva/ (caracteristicas.py, modelo.py, competitiva.py, lvq.py, torneo.py) · Diagrama generado con docs/diagrama/generar_diagrama.py</text>
 <polyline points="1156.0,218.0 1294.0,218.0" fill="none" stroke="#d64550" stroke-width="1.6" stroke-linejoin="round" stroke-dasharray="6 4" marker-end="url(#punta-inhibicion)"/>
 <polyline points="1294.0,232.0 1156.0,232.0" fill="none" stroke="#d64550" stroke-width="1.6" stroke-linejoin="round" stroke-dasharray="6 4" marker-end="url(#punta-inhibicion)"/>
 <polyline points="1145.6,251.3 1211.1,351.1" fill="none" stroke="#d64550" stroke-width="1.6" stroke-linejoin="round" stroke-dasharray="6 4" marker-end="url(#punta-inhibicion)"/>
@@ -186,8 +200,15 @@
 <polyline points="1190.0,855.0 1190.0,800.0 785.0,800.0 785.0,790.0" fill="none" stroke="#e8a63d" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6 4" marker-end="url(#punta-entrenamiento)"/>
 <rect x="869.5" y="790.0" width="236" height="20" rx="4" fill="#f1f4f8"/>
 <text x="987.5" y="800.0" font-size="11" font-weight="700" fill="#e8a63d" text-anchor="middle" dominant-baseline="central">actualiza los pesos de la capa 3</text>
-<polyline points="122.0,1012.0 181.0,1012.0" fill="none" stroke="#22346b" stroke-width="2" stroke-linejoin="round" marker-end="url(#punta-flujo)"/>
-<polyline points="642.0,1012.0 701.0,1012.0" fill="none" stroke="#d64550" stroke-width="1.6" stroke-linejoin="round" stroke-dasharray="6 4" marker-end="url(#punta-inhibicion)"/>
-<polyline points="902.0,1012.0 961.0,1012.0" fill="none" stroke="#2f9e64" stroke-width="1.8" stroke-linejoin="round" marker-end="url(#punta-excitacion)"/>
-<polyline points="1162.0,1012.0 1221.0,1012.0" fill="none" stroke="#e8a63d" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6 4" marker-end="url(#punta-entrenamiento)"/>
+<polyline points="345.0,1083.0 385.0,1083.0" fill="none" stroke="#22346b" stroke-width="2" stroke-linejoin="round" marker-end="url(#punta-flujo)"/>
+<polyline points="675.0,1083.0 715.0,1083.0" fill="none" stroke="#22346b" stroke-width="2" stroke-linejoin="round" marker-end="url(#punta-flujo)"/>
+<polyline points="1005.0,1083.0 1045.0,1083.0" fill="none" stroke="#22346b" stroke-width="2" stroke-linejoin="round" marker-end="url(#punta-flujo)"/>
+<polyline points="860.0,1126.0 860.0,1150.0" fill="none" stroke="#e8a63d" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6 4" marker-end="url(#punta-entrenamiento)"/>
+<polyline points="645.0,1183.0 560.0,1183.0 530.0,1126.0" fill="none" stroke="#e8a63d" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6 4" marker-end="url(#punta-entrenamiento)"/>
+<rect x="540.5" y="1173.0" width="124" height="20" rx="4" fill="#f1f4f8"/>
+<text x="602.5" y="1183.0" font-size="11" font-weight="700" fill="#e8a63d" text-anchor="middle" dominant-baseline="central">ajusta los pesos</text>
+<polyline points="122.0,1262.0 181.0,1262.0" fill="none" stroke="#22346b" stroke-width="2" stroke-linejoin="round" marker-end="url(#punta-flujo)"/>
+<polyline points="642.0,1262.0 701.0,1262.0" fill="none" stroke="#d64550" stroke-width="1.6" stroke-linejoin="round" stroke-dasharray="6 4" marker-end="url(#punta-inhibicion)"/>
+<polyline points="902.0,1262.0 961.0,1262.0" fill="none" stroke="#2f9e64" stroke-width="1.8" stroke-linejoin="round" marker-end="url(#punta-excitacion)"/>
+<polyline points="1162.0,1262.0 1221.0,1262.0" fill="none" stroke="#e8a63d" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6 4" marker-end="url(#punta-entrenamiento)"/>
 </svg>
