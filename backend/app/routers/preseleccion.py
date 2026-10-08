@@ -69,13 +69,14 @@ def _categorizar(texto: str) -> str:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
 
 
-def _evaluar(texto: str, requisitos: list[str], motor: str) -> dict:
+def _evaluar(texto: str, rol: dict, motor: str) -> dict:
+    requisitos, umbral = rol["requisitos"], rol["umbral_apto"]
     if motor == "llm":
         try:
-            return evaluar_compatibilidad(texto, requisitos)
+            return evaluar_compatibilidad(texto, requisitos, umbral)
         except LLMNoDisponible as exc:
             raise HTTPException(status_code=503, detail=str(exc)) from exc
-    return evaluar_cv(texto, requisitos)
+    return evaluar_cv(texto, requisitos, umbral)
 
 
 def _rol_o_404(rol_id: int) -> dict:
@@ -124,7 +125,7 @@ def evaluar_candidato(data: EvaluarRequest):
     else:
         rol = _rol_o_404(rol_id)
 
-    resultado = _evaluar(texto, rol["requisitos"], data.motor)
+    resultado = _evaluar(texto, rol, data.motor)
 
     if data.candidato_id is not None:
         candidato_store.update(
@@ -161,7 +162,7 @@ def ranking_por_rol(rol_id: int, top: int = Query(default=5, ge=1, le=50)):
 
     evaluados = []
     for cv in pool:
-        r = evaluar_cv(cv["texto"], rol["requisitos"])
+        r = evaluar_cv(cv["texto"], rol["requisitos"], rol["umbral_apto"])
         evaluados.append({
             "id": cv["id"],
             "nombre": cv["nombre"],
@@ -227,7 +228,7 @@ def detalle_hoja_de_vida(
         rol_nombre=rol["nombre"],
         referencia=cv["referencia"],
         motor=motor,
-        **_evaluar(cv["texto"], rol["requisitos"], motor),
+        **_evaluar(cv["texto"], rol, motor),
     )
 
 

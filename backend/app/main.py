@@ -5,7 +5,7 @@ load_dotenv()  # backend/.env: API key de Gemini, base de datos...
 from fastapi import FastAPI  # noqa: E402
 from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
 
-from app.routers import candidatos, competencia, datasets, vacantes, preseleccion, roles  # noqa: E402
+from app.routers import candidatos, competencia, datasets, preseleccion, roles  # noqa: E402
 
 app = FastAPI(
     title="CVScope API",
@@ -23,7 +23,6 @@ app.add_middleware(
 )
 
 app.include_router(roles.router, prefix="/roles", tags=["Roles"])
-app.include_router(vacantes.router, prefix="/vacantes", tags=["Vacantes"])
 app.include_router(candidatos.router, prefix="/candidatos", tags=["Candidatos"])
 app.include_router(preseleccion.router, prefix="/preseleccion", tags=["Preselección"])
 app.include_router(datasets.router, prefix="/datasets", tags=["Datasets"])
