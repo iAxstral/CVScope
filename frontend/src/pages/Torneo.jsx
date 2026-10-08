@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { getModeloCompetencia, getRoles, jugarTorneo } from "../api/client.js";
 import useApi from "../hooks/useApi.js";
 import Bracket from "../components/Bracket.jsx";
+import DueloDirecto from "../components/DueloDirecto.jsx";
 import RoleTabs from "../components/RoleTabs.jsx";
 import StatTile from "../components/StatTile.jsx";
 import { Cargando, ErrorCarga } from "../components/EstadoCarga.jsx";
@@ -179,6 +180,13 @@ function Resultado({ torneo }) {
           </div>
         )}
       </section>
+
+      <DueloDirecto
+        rolId={torneo.rol_id}
+        participantes={torneo.podio.concat(
+          torneo.participantes.filter((p) => !torneo.podio.some((q) => q.id === p.id)),
+        )}
+      />
     </>
   );
 }
