@@ -17,7 +17,7 @@ y qué limitaciones siguen abiertas.
 
 ## Qué hace el sistema
 
-1. **Anonimización antes de la red competitiva y de Gemini** (`backend/app/services/anonimizador.py`).
+1. **Anonimización antes de la red competitiva (incluida la capa LVQ) y de Gemini** (`backend/app/services/anonimizador.py`).
    Se quitan nombre, correo, teléfono, URLs, documento, edad, fecha de
    nacimiento, estado civil, sexo/género y ciudades (32 capitales de
    departamento y los municipios grandes, con o sin tilde). Las profesiones se
@@ -53,6 +53,10 @@ Esta auditoría **encontró dos fugas reales** que se corrigieron:
   hasta **4.8 puntos**.
 - El marcador `[DATO PERSONAL]` hacía que mencionar la edad cambiara la fuerza
   hasta **5.7 puntos**.
+
+La auditoría corre en el **CI** (GitHub Actions) en cada push y en cada PR, y
+sale con error si cambiar cualquiera de esos datos altera la evaluación: una
+fuga nueva no puede llegar a `develop` sin que se note.
 
 Además, las pruebas automáticas (`backend/tests/test_anonimizador.py`,
 `test_red_competitiva.py`) verifican que dos hojas de vida que solo difieren en

@@ -17,7 +17,7 @@ from pathlib import Path
 from xml.sax.saxutils import escape
 
 SALIDA = Path(__file__).resolve().parent
-ANCHO, ALTO = 1720, 1080
+ANCHO, ALTO = 1720, 1330
 
 # Paleta de la aplicación (frontend/src/index.css)
 NAVY = "#17244d"
@@ -161,7 +161,7 @@ def construir() -> None:
         texto(f"n{c}_t", cx - 50, 372, 100, 36, etiqueta, color=INK, tam=11, negrita=True)
         ids_capas.append(ids)
     neurona("salida_s", 960, 262, 46, "s(x)", fondo=NAVY, borde=NAVY, color="#ffffff", tam=13)
-    texto("salida_s_t", 915, 372, 90, 36, "Salida\nfuerza", color=INK, tam=11, negrita=True)
+    texto("salida_s_t", 896, 372, 58, 36, "Salida\nfuerza", color=INK, tam=11, negrita=True)
     for izq, der in zip(ids_capas, ids_capas[1:]):
         for a in izq:
             for b in der:
@@ -252,8 +252,34 @@ def construir() -> None:
     flecha("e4", "eval_ancla", "entrenamiento", "actualiza los pesos de la capa 3",
            puntos=[(1190, 800), (785, 800)])
 
+    # Capa competitiva que aprende (LVQ) ------------------------------------
+    caja("banda_lvq", 30, 995, 1660, 235, "", fondo=SUCCESS_SOFT, borde=SUCCESS, redondeo=14)
+    texto("lvq_t", 50, 1003, 1200, 26,
+          "CAPA COMPETITIVA QUE APRENDE · LVQ (decide apto / no apto)",
+          color=NAVY, tam=13, negrita=True, alinear="left")
+    caja("l1", 55, 1040, 290, 86, "Entrada\nel mismo vector x ∈ ℝ¹⁰²⁶ del paso 2\n(rasgos explícitos con peso 3)",
+         fondo=SURFACE, borde=SUCCESS, tam=12, negrita=True)
+    caja("l2", 385, 1040, 290, 86, "4 neuronas prototipo\n2 «apto» y 2 «no apto»\ncada una con pesos w_k",
+         fondo=SURFACE, borde=SUCCESS, tam=12, negrita=True)
+    caja("l3", 715, 1040, 290, 86, "Competencia\ngana la neurona más cercana:\nk* = argmin ‖x − w_k‖",
+         fondo=SURFACE, borde=SUCCESS, tam=12, negrita=True)
+    caja("l5", 1045, 1040, 290, 86, "Salida\nla clase de la ganadora:\napto / no apto + margen",
+         fondo=NAVY, borde=NAVY, color="#ffffff", tam=12, negrita=True)
+    caja("l6", 1375, 1040, 290, 86,
+         "Prototipos aprendidos\napto ≈ 0.8 de requisitos\nno apto ≈ 0.1 – 0.25 · exactitud 0.983",
+         fondo=SURFACE, borde=BORDER, tam=12, negrita=True)
+    caja("l4", 645, 1150, 430, 66,
+         "Aprendizaje de Kohonen (al entrenar)\nacierta: w ← w + α(x − w)  ·  falla: w ← w − α(x − w)",
+         fondo=SURFACE, borde=ACCENT, tam=11, negrita=True)
+    flecha("l1", "l2")
+    flecha("l2", "l3")
+    flecha("l3", "l5")
+    flecha("l3", "l4", "entrenamiento")
+    ancla("l2_ancla", 530, 1126)
+    flecha("l4", "l2_ancla", "entrenamiento", "ajusta los pesos", puntos=[(560, 1183)])
+
     # Leyenda ---------------------------------------------------------------
-    texto("ley_t", 30, 1000, 120, 24, "Leyenda:", color=INK, tam=12, negrita=True, alinear="left")
+    texto("ley_t", 30, 1250, 120, 24, "Leyenda:", color=INK, tam=12, negrita=True, alinear="left")
     leyenda = [
         ("flujo", "Flujo de datos"),
         ("conexion", "Conexiones entre capas"),
@@ -263,13 +289,13 @@ def construir() -> None:
     ]
     for k, (tipo, etiqueta) in enumerate(leyenda):
         x = 120 + k * 260
-        caja(f"ley_{tipo}_a", x, 1006, 2, 12, "", fondo="none", borde="none")
-        caja(f"ley_{tipo}_b", x + 60, 1006, 2, 12, "", fondo="none", borde="none")
+        caja(f"ley_{tipo}_a", x, 1256, 2, 12, "", fondo="none", borde="none")
+        caja(f"ley_{tipo}_b", x + 60, 1256, 2, 12, "", fondo="none", borde="none")
         flecha(f"ley_{tipo}_a", f"ley_{tipo}_b", tipo)
-        texto(f"ley_{tipo}_t", x + 70, 1000, 180, 24, etiqueta, tam=12, alinear="left")
-    texto("fuente", 30, 1040, 1660, 22,
+        texto(f"ley_{tipo}_t", x + 70, 1250, 180, 24, etiqueta, tam=12, alinear="left")
+    texto("fuente", 30, 1290, 1660, 22,
           "Código: backend/app/services/red_competitiva/ (caracteristicas.py, modelo.py, "
-          "competitiva.py, torneo.py) · Diagrama generado con docs/diagrama/generar_diagrama.py",
+          "competitiva.py, lvq.py, torneo.py) · Diagrama generado con docs/diagrama/generar_diagrama.py",
           tam=11, alinear="left")
 
 

@@ -1,4 +1,5 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { cerrarSesion, sesionActual } from "../utils/sesion.js";
 import "./Sidebar.css";
 
 const iconos = {
@@ -27,6 +28,8 @@ function Icono({ nombre }) {
 }
 
 export default function Sidebar({ open, onNavigate }) {
+  const navigate = useNavigate();
+  const usuario = sesionActual()?.usuario;
   return (
     <aside className={`sidebar ${open ? "sidebar--open" : ""}`}>
       <div className="sidebar__brand">
@@ -50,9 +53,17 @@ export default function Sidebar({ open, onNavigate }) {
 
       <div className="sidebar__footer">
         <p className="sidebar__footnote">Preselección de talento con IA explicable</p>
-        <NavLink to="/" className="sidebar__logout">
+        {usuario && <p className="sidebar__usuario">{usuario.nombre}</p>}
+        <button
+          type="button"
+          className="sidebar__logout"
+          onClick={() => {
+            cerrarSesion();
+            navigate("/", { replace: true });
+          }}
+        >
           Cerrar sesión
-        </NavLink>
+        </button>
       </div>
     </aside>
   );

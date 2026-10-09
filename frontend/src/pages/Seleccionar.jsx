@@ -264,6 +264,19 @@ function Resultado({ resultado, referencia, cvTexto, ejemplo }) {
         </div>
         <ScoreMeter score={resultado.score} size="lg" />
         <p className="sel-summary__explicacion">{resultado.explicacion}</p>
+        {resultado.veredicto_lvq && (
+          <p className="sel-summary__lvq">
+            <span className={`status-pill status-pill--${resultado.veredicto_lvq}`}>
+              LVQ: {resultado.veredicto_lvq === "apto" ? "apto" : "no apto"}
+            </span>
+            <span>
+              Capa competitiva que aprende (margen {resultado.margen_lvq?.toFixed(2)}).{" "}
+              {(resultado.veredicto_lvq === "apto") === (resultado.estado === "apto")
+                ? "Coincide con la evaluación por requisitos."
+                : "No coincide con la evaluación por requisitos: revisa la evidencia."}
+            </span>
+          </p>
+        )}
         {referencia && (
           <p
             className={`sel-summary__ref ${

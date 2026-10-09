@@ -1,0 +1,6 @@
+# Clasificador de rol: solo lo usa POST /preseleccion/categorizar y la
+# detección automática del rol. La API arranca y funciona sin estas
+# dependencias (ese endpoint responde 503).
+scikit-learn==1.9.1
+sentence-transformers==6.1.0
+joblib==1.6.0

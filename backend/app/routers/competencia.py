@@ -6,12 +6,15 @@ from app.schemas.competencia import (
     CompararResponse,
     HojaDeVidaEntrada,
     ModeloInfo,
+    PrototipoLVQ,
     TorneoRequest,
     TorneoResponse,
 )
 from app.services.hojas_de_vida import buscar, pool_del_rol
 from app.services.red_competitiva import servicio
 from app.services.red_competitiva.caracteristicas import DIM_ENTRADA
+from app.services.evaluador_requisitos import ANIOS_EXPERIENCIA_TOPE
+from app.services.red_competitiva.lvq import CLASES
 from app.services.red_competitiva.modelo import CAPAS_OCULTAS
 
 router = APIRouter()
@@ -126,10 +129,29 @@ def info_modelo():
     """Arquitectura y métricas de prueba de la red competitiva entrenada."""
     _, meta = _modelo()
     capas = " -> ".join(str(n) for n in (DIM_ENTRADA, *CAPAS_OCULTAS, 1))
+    lvq = None
+    cargado = servicio.cargar_lvq()
+    if cargado:
+        capa, meta_lvq = cargado
+        escala = float(capa.pesos_rasgos[0])
+        lvq = {
+            "metricas": {k: float(v) for k, v in meta_lvq.items()},
+            "prototipos": [
+                PrototipoLVQ(
+                    neurona=k,
+                    clase=CLASES[c],
+                    fraccion_requisitos=round(float(w[0]) / escala, 3),
+                    anios_experiencia=round(float(w[1]) / escala * ANIOS_EXPERIENCIA_TOPE, 1),
+                ).model_dump()
+                for k, (w, c) in enumerate(zip(capa.prototipos, capa.clases))
+            ],
+        }
     return ModeloInfo(
+        lvq=lvq,
         arquitectura=(
             f"Red competitiva tipo Hamming: capa de evaluación {capas} (ReLU, pesos compartidos)"
             " + capa competitiva MAXNET (inhibición lateral, winner-take-all)"
+            " + capa competitiva LVQ entrenada para apto/no apto"
         ),
         dim_entrada=DIM_ENTRADA,
         metricas={k: float(v) for k, v in meta.items() if k not in ("dim_hash", "epocas")},
