@@ -130,14 +130,21 @@ class UsuarioStore:
 
 def init_db() -> None:
     """
-    Crea las tablas si no existen y, la primera vez, carga los roles iniciales
-    y el usuario administrador (ADMIN_EMAIL / ADMIN_PASSWORD, obligatoria).
+    Crea las tablas si no existen y, la primera vez, carga los roles iniciales.
     """
     Base.metadata.create_all(engine)
     with SesionLocal() as s:
         if s.scalar(select(Rol.id).limit(1)) is None:
             s.add_all(Rol(**r.model_dump()) for r in ROLES_INICIALES)
             s.commit()
+
+
+def crear_administrador_inicial() -> None:
+    """
+    La primera vez crea el administrador (ADMIN_EMAIL / ADMIN_PASSWORD). La
+    contraseña es obligatoria; se llama al arrancar la API, no al importar el
+    módulo, para que los scripts de entrenamiento no la necesiten.
+    """
     correo = os.getenv("ADMIN_EMAIL", "admin@cvscope.co")
     if UsuarioStore().get_by_email(correo) is None:
         with SesionLocal() as s:

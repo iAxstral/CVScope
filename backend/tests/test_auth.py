@@ -124,3 +124,15 @@ def test_la_api_exige_auth_secret_y_contrasena_de_admin():
     sin_clave = arrancar({"AUTH_SECRET": "s"})
     assert sin_clave.returncode != 0 and "ADMIN_PASSWORD" in sin_clave.stderr
     assert arrancar({"AUTH_SECRET": "s", "ADMIN_PASSWORD": "x" * 10}).returncode == 0
+
+
+def test_los_scripts_no_necesitan_las_variables_de_seguridad():
+    """Entrenar o evaluar importa los servicios y la base de datos, pero no arranca la API."""
+    entorno = {k: v for k, v in os.environ.items() if k not in ("AUTH_SECRET", "ADMIN_PASSWORD")}
+    entorno["DATABASE_URL"] = f"sqlite:///{tempfile.mkdtemp()}/scripts.db"
+    raiz = Path(__file__).resolve().parent.parent
+    r = subprocess.run(
+        [sys.executable, "-c", "from app.services.datasets import cargar_seleccion; cargar_seleccion()"],
+        cwd=raiz, env=entorno, capture_output=True, text=True,
+    )
+    assert r.returncode == 0, r.stderr

@@ -8,7 +8,13 @@ from fastapi import Depends, FastAPI  # noqa: E402
 from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
 
 from app.dependencias import usuario_actual  # noqa: E402
+from app.models.store import crear_administrador_inicial  # noqa: E402
 from app.routers import auth, candidatos, competencia, datasets, preseleccion, roles  # noqa: E402
+from app.services.auth import secreto  # noqa: E402
+
+# La API no arranca sin AUTH_SECRET ni ADMIN_PASSWORD (no hay valores por defecto)
+secreto()
+crear_administrador_inicial()
 
 app = FastAPI(
     title="CVScope API",
