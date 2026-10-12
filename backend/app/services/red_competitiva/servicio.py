@@ -16,7 +16,7 @@ sus neuronas son prototipos y gana la más cercana a la hoja de vida.
 from functools import lru_cache
 from pathlib import Path
 
-from app.services.evaluador_requisitos import evaluar_cv
+from app.services.evaluador_requisitos import evaluar_cv, quitar_evidencia
 from app.services.red_competitiva.caracteristicas import DIM_ENTRADA, extraer
 from app.services.red_competitiva.competitiva import maxnet, podio
 from app.services.red_competitiva.lvq import CapaLVQ
@@ -157,4 +157,87 @@ def torneo(cvs: list[dict], requisitos: list[str], top: int = 5, semilla: int | 
             **_resumen_maxnet(abierta),
         },
         **resultado,
+    }
+
+
+def _contribuciones(cv: dict, requisitos: list[str]) -> dict:
+    """
+    Cuánto aporta cada requisito a la fuerza de una hoja de vida, por ablación:
+    fuerza con el texto completo menos la fuerza sin las menciones que sirven
+    de evidencia de ese requisito. Lo que no se explica por ningún requisito
+    (experiencia y otras señales del texto) queda en `otras_senales`, de modo
+    que fuerza = suma de contribuciones + otras_senales.
+    """
+    red, _ = cargar_modelo()
+    evaluacion = {e["requisito"]: e for e in evaluar_cv(cv["texto"], requisitos)["evaluacion"]}
+    detalle = []
+    for requisito in requisitos:
+        e = evaluacion[requisito]
+        contribucion = 0.0
+        if e["cumple"]:
+            sin_evidencia = extraer(quitar_evidencia(cv["texto"], requisito), requisitos)
+            contribucion = cv["fuerza"] - float(red.puntaje(sin_evidencia)[0])
+        detalle.append({
+            "requisito": requisito,
+            "cumple": e["cumple"],
+            "evidencia": e["evidencia"],
+            "contribucion": contribucion,
+        })
+    return {
+        "requisitos": detalle,
+        "otras_senales": cv["fuerza"] - sum(d["contribucion"] for d in detalle),
+    }
+
+
+_DATOS_PARTICIPANTE = ("id", "nombre", "fuente", "fuerza", "anios_experiencia")
+
+
+def explicar_ranking(cvs: list[dict], requisitos: list[str]) -> dict:
+    """
+    Por qué ganó la primera hoja de vida de la competencia: fuerza de cada
+    requisito, comparación contra la segunda y margen de la victoria.
+    Necesita al menos dos hojas de vida.
+    """
+    participantes = [preparar(cv, requisitos) for cv in cvs]
+    primero, segundo = (participantes[i] for i in podio([p["fuerza"] for p in participantes], 2))
+    pg, ps = _contribuciones(primero, requisitos), _contribuciones(segundo, requisitos)
+    resultado = duelo(primero, segundo)
+
+    por_requisito = []
+    for g, s in zip(pg["requisitos"], ps["requisitos"]):
+        por_requisito.append({
+            "requisito": g["requisito"],
+            "ganador": {k: g[k] for k in ("cumple", "evidencia", "contribucion")},
+            "segundo": {k: s[k] for k in ("cumple", "evidencia", "contribucion")},
+            "ventaja": g["contribucion"] - s["contribucion"],
+        })
+    ventaja_otras = pg["otras_senales"] - ps["otras_senales"]
+
+    margen = primero["fuerza"] - segundo["fuerza"]
+    iteraciones = resultado["iteraciones"]
+    decisivo = max(por_requisito, key=lambda r: r["ventaja"], default=None)
+    partes = [
+        f"{primero['nombre']} gana a {segundo['nombre']} por un margen de {margen:.2f} puntos de fuerza "
+        f"(probabilidad {resultado['prob_a']:.1%}); la competencia terminó en {iteraciones} "
+        f"{'iteración' if iteraciones == 1 else 'iteraciones'} de inhibición lateral."
+    ]
+    if decisivo and decisivo["ventaja"] > 0.01:
+        partes.append(f"El requisito que más la favorece es «{decisivo['requisito']}» ({decisivo['ventaja']:+.2f}).")
+    if abs(ventaja_otras) > abs(decisivo["ventaja"] if decisivo else 0):
+        partes.append(
+            f"Pesa más la experiencia y otras señales del texto ({ventaja_otras:+.2f}) que cualquier requisito por separado."
+        )
+    return {
+        "total_competidores": len(participantes),
+        "ganador": {**{k: primero[k] for k in _DATOS_PARTICIPANTE}, "otras_senales": pg["otras_senales"]},
+        "segundo": {**{k: segundo[k] for k in _DATOS_PARTICIPANTE}, "otras_senales": ps["otras_senales"]},
+        "requisitos": por_requisito,
+        "ventaja_otras_senales": ventaja_otras,
+        "margen": {
+            "fuerza": margen,
+            "probabilidad_ganador": resultado["prob_a"],
+            "iteraciones": iteraciones,
+            "epsilon": resultado["epsilon"],
+        },
+        "resumen": " ".join(partes),
     }

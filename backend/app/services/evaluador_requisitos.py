@@ -115,6 +115,27 @@ def _fragmento(texto: str, inicio: int, fin: int, margen: int = 70) -> str:
     return prefijo + texto[a:b].strip().replace("\n", " ") + sufijo
 
 
+def quitar_evidencia(cv_texto: str, requisito: str) -> str:
+    """
+    El mismo texto sin las menciones que cuentan como evidencia del requisito
+    (se reemplazan por un espacio). Sirve para medir cuánto pesa ese requisito
+    en la decisión de la red: se compara la fuerza con y sin la evidencia.
+    """
+    texto_norm = normalizar(cv_texto)
+    if len(texto_norm) != len(cv_texto):
+        cv_texto = texto_norm
+    tramos = []
+    for clave in _palabras_clave(requisito):
+        patron = r"(?<![a-z0-9])" + re.escape(clave) + r"(?![a-z0-9])"
+        for match in re.finditer(patron, texto_norm):
+            previo = texto_norm[max(0, match.start() - 30):match.start()]
+            if not any(neg in previo for neg in _NEGACIONES):
+                tramos.append((match.start(), match.end()))
+    for inicio, fin in sorted(tramos, reverse=True):
+        cv_texto = cv_texto[:inicio] + " " + cv_texto[fin:]
+    return cv_texto
+
+
 def extraer_anios_experiencia(cv_texto: str) -> int:
     anios = [int(n) for n in _PATRON_ANIOS.findall(normalizar(cv_texto))]
     return max(anios) if anios else 0
