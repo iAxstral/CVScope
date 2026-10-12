@@ -24,7 +24,7 @@ services:
     build:
       context: ./backend
       args:
-        CON_CLASIFICADOR: ${CON_CLASIFICADOR:-false}
+        CON_CLASIFICADOR: ${CON_CLASIFICADOR:-true}
     environment:
       DATABASE_URL: postgresql://cvscope:cvscope@db:5432/cvscope
       AUTH_SECRET: ${AUTH_SECRET:?Define AUTH_SECRET (por ejemplo en un archivo .env)}

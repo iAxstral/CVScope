@@ -490,8 +490,15 @@ docker compose up --build
 # Frontend: http://localhost:8080 · API: http://localhost:8000/docs
 ```
 
-Levanta PostgreSQL 16, la API y el frontend (nginx). Para incluir el
-clasificador de rol (instala PyTorch): `CON_CLASIFICADOR=true docker compose up --build`.
+Levanta PostgreSQL 16, la API y el frontend (nginx). La imagen de la API
+**incluye el clasificador de rol por defecto** (PyTorch en su versión CPU y el
+modelo `all-MiniLM-L6-v2`, que se descarga al construir la imagen, así que la
+primera construcción tarda y la imagen pesa bastante más). Para una imagen
+liviana sin él: `CON_CLASIFICADOR=false docker compose up --build`. En ese caso
+`POST /preseleccion/categorizar` (y evaluar sin elegir rol) responde **503**
+con "No se pudo cargar el clasificador de rol", porque la API arranca sin
+`scikit-learn` ni `sentence-transformers`; todo lo demás funciona. Lo mismo
+ocurre en una instalación local con `requirements-api.txt`.
 
 ### Opción B · Local
 
