@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 780" width="1600" height="780" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif">
+<defs><style>@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&amp;family=IBM+Plex+Mono&amp;display=swap');</style>
+<filter id="sombra" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#17244d" flood-opacity="0.12"/></filter>
+<pattern id="puntos" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.3" fill="#d5dbe7"/></pattern>
+<marker id="m17244d" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#17244d"/></marker>
+<marker id="m2f9e64" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2f9e64"/></marker>
+<marker id="mb9c2d6" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b9c2d6"/></marker>
+<marker id="md64550" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d64550"/></marker>
+<marker id="mdfe4ee" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#dfe4ee"/></marker>
+</defs>
+<rect width="1600" height="780" fill="#f3f5f9"/>
+<rect width="1600" height="780" fill="url(#puntos)"/>
+<rect x="55.0" y="150.0" width="700.0" height="560.0" rx="18" fill="#ffffff" stroke="#dfe4ee" stroke-width="1.5" filter="url(#sombra)"/>
+<rect x="805.0" y="150.0" width="740.0" height="560.0" rx="18" fill="#ffffff" stroke="#dfe4ee" stroke-width="1.5" filter="url(#sombra)"/>
+<polyline points="290.0,345.0 520.0,345.0" fill="none" stroke="#d64550" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="7 5" marker-end="url(#md64550)" marker-start="url(#md64550)"/><rect x="390.0" y="334.0" width="30" height="22" rx="11" fill="#ffffff"/><text x="405.0" y="345.0" font-size="14" font-weight="700" fill="#d64550" text-anchor="middle" dominant-baseline="central">−ε</text>
+<polyline points="275.9,379.8 369.1,470.2" fill="none" stroke="#d64550" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="7 5" marker-end="url(#md64550)" marker-start="url(#md64550)"/><rect x="307.5" y="414.0" width="30" height="22" rx="11" fill="#ffffff"/><text x="322.5" y="425.0" font-size="14" font-weight="700" fill="#d64550" text-anchor="middle" dominant-baseline="central">−ε</text>
+<polyline points="534.1,379.8 440.9,470.2" fill="none" stroke="#d64550" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="7 5" marker-end="url(#md64550)" marker-start="url(#md64550)"/><rect x="472.5" y="414.0" width="30" height="22" rx="11" fill="#ffffff"/><text x="487.5" y="425.0" font-size="14" font-weight="700" fill="#d64550" text-anchor="middle" dominant-baseline="central">−ε</text>
+<path d="M206.5,307.8 C186.0,243.5 133.4,388.1 190.5,352.0" fill="none" stroke="#2f9e64" stroke-width="2" marker-end="url(#m2f9e64)"/><text x="155.0" y="314.0" font-size="14" font-weight="700" fill="#2f9e64" text-anchor="middle" dominant-baseline="central">+1</text>
+<path d="M619.5,352.0 C676.6,388.1 624.0,243.5 603.5,307.8" fill="none" stroke="#2f9e64" stroke-width="2" marker-end="url(#m2f9e64)"/><text x="655.0" y="314.0" font-size="14" font-weight="700" fill="#2f9e64" text-anchor="middle" dominant-baseline="central">+1</text>
+<path d="M381.5,549.1 C328.0,590.5 482.0,590.5 428.5,549.1" fill="none" stroke="#2f9e64" stroke-width="2" marker-end="url(#m2f9e64)"/><text x="405.0" y="595.5" font-size="14" font-weight="700" fill="#2f9e64" text-anchor="middle" dominant-baseline="central">+1</text>
+<polyline points="905.0,545.0 1475.0,545.0" fill="none" stroke="#b9c2d6" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="905.0,417.5 1475.0,417.5" fill="none" stroke="#dfe4ee" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="905.0,290.0 1475.0,290.0" fill="none" stroke="#dfe4ee" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="905.0,290.0 1095.0,394.4 1285.0,435.0 1475.0,438.0" fill="none" stroke="#17244d" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="905.0,336.2 1095.0,463.7 1285.0,539.0 1475.0,545.0" fill="none" stroke="#d64550" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<ellipse cx="240.0" cy="345.0" rx="50.0" ry="50.0" fill="#17244d" stroke="#17244d" stroke-width="2.5" filter="url(#sombra)"/><text x="240.0" y="335.1" font-size="17" font-weight="700" fill="#ffffff" text-anchor="middle" dominant-baseline="central">HV 1</text><text x="240.0" y="356.2" font-size="15" font-weight="400" fill="#ffffff" text-anchor="middle" dominant-baseline="central">a₁</text>
+<ellipse cx="570.0" cy="345.0" rx="50.0" ry="50.0" fill="#ffffff" stroke="#22346b" stroke-width="2.5" filter="url(#sombra)"/><text x="570.0" y="335.1" font-size="17" font-weight="700" fill="#22346b" text-anchor="middle" dominant-baseline="central">HV 2</text><text x="570.0" y="356.2" font-size="15" font-weight="400" fill="#22346b" text-anchor="middle" dominant-baseline="central">a₂</text>
+<ellipse cx="405.0" cy="505.0" rx="50.0" ry="50.0" fill="#ffffff" stroke="#22346b" stroke-width="2.5" filter="url(#sombra)"/><text x="405.0" y="495.1" font-size="17" font-weight="700" fill="#22346b" text-anchor="middle" dominant-baseline="central">HV 3</text><text x="405.0" y="516.2" font-size="15" font-weight="400" fill="#22346b" text-anchor="middle" dominant-baseline="central">a₃</text>
+<rect x="85.0" y="625.0" width="640.0" height="66.0" rx="12" fill="#e7ebf5"/><text x="405.0" y="648.1" font-size="13" font-weight="700" fill="#22346b" text-anchor="middle" dominant-baseline="central">Regla en cada iteración</text><text x="405.0" y="666.6" font-size="15" font-weight="400" fill="#17203a" text-anchor="middle" dominant-baseline="central" font-family="'IBM Plex Mono', Consolas, monospace">aᵢ(t+1) = max(0, aᵢ(t) − ε · Σⱼ≠ᵢ aⱼ(t))   ·   0 &lt; ε &lt; 1/(S − 1)</text>
+<ellipse cx="905.0" cy="290.0" rx="7.0" ry="7.0" fill="#17244d" stroke="#ffffff" stroke-width="2"/>
+<ellipse cx="1095.0" cy="394.4" rx="7.0" ry="7.0" fill="#17244d" stroke="#ffffff" stroke-width="2"/>
+<ellipse cx="1285.0" cy="435.0" rx="7.0" ry="7.0" fill="#17244d" stroke="#ffffff" stroke-width="2"/>
+<ellipse cx="1475.0" cy="438.0" rx="7.0" ry="7.0" fill="#17244d" stroke="#ffffff" stroke-width="2"/>
+<ellipse cx="905.0" cy="336.2" rx="7.0" ry="7.0" fill="#d64550" stroke="#ffffff" stroke-width="2"/>
+<ellipse cx="1095.0" cy="463.7" rx="7.0" ry="7.0" fill="#d64550" stroke="#ffffff" stroke-width="2"/>
+<ellipse cx="1285.0" cy="539.0" rx="7.0" ry="7.0" fill="#d64550" stroke="#ffffff" stroke-width="2"/>
+<ellipse cx="1475.0" cy="545.0" rx="7.0" ry="7.0" fill="#d64550" stroke="#ffffff" stroke-width="2"/>
+<rect x="835.0" y="622.0" width="210.0" height="44.0" rx="22" fill="#f7f9fc" stroke="#dfe4ee" stroke-width="1.5"/><text x="940.0" y="644.0" font-size="13" font-weight="700" fill="#17244d" text-anchor="middle" dominant-baseline="central">●  A: s = 23.4</text>
+<rect x="1062.0" y="622.0" width="210.0" height="44.0" rx="22" fill="#f7f9fc" stroke="#dfe4ee" stroke-width="1.5"/><text x="1167.0" y="644.0" font-size="13" font-weight="700" fill="#d64550" text-anchor="middle" dominant-baseline="central">●  B: s = 23.2</text>
+<rect x="1289.0" y="622.0" width="226.0" height="44.0" rx="22" fill="#f7f9fc" stroke="#dfe4ee" stroke-width="1.5"/><text x="1402.0" y="644.0" font-size="13" font-weight="700" fill="#17203a" text-anchor="middle" dominant-baseline="central">P(A gana) = σ(0.2) = 55.0 %</text>
+<text x="60.0" y="57.0" font-size="30" font-weight="700" fill="#17244d" text-anchor="start" dominant-baseline="central">La competencia: capa MAXNET</text>
+<text x="60.0" y="97.0" font-size="16" font-weight="400" fill="#5c6b8a" text-anchor="start" dominant-baseline="central">Una neurona por hoja de vida. En cada iteración se refuerza a sí misma (+1) e inhibe a las demás (−ε).</text>
+<rect x="1300.0" y="42.0" width="240.0" height="32.0" rx="16" fill="#17244d"/><text x="1420.0" y="58.0" font-size="12" font-weight="700" fill="#ffffff" text-anchor="middle" dominant-baseline="central">CVScope · MAXNET</text>
+<text x="85.0" y="187.0" font-size="18" font-weight="700" fill="#17203a" text-anchor="start" dominant-baseline="central">Tres hojas de vida compitiendo</text>
+<text x="85.0" y="213.0" font-size="13" font-weight="400" fill="#5c6b8a" text-anchor="start" dominant-baseline="central">La más fuerte arranca en 1: aᵢ(0) = exp(sᵢ − max s)</text>
+<text x="835.0" y="187.0" font-size="18" font-weight="700" fill="#17203a" text-anchor="start" dominant-baseline="central">Ejemplo real: duelo de 2 hojas de vida</text>
+<text x="835.0" y="213.0" font-size="13" font-weight="400" fill="#5c6b8a" text-anchor="start" dominant-baseline="central">Fuerzas de la capa de evaluación: s_A = 23.4 · s_B = 23.2 · ε = 0.5</text>
+<text x="893.0" y="545.0" font-size="12" font-weight="400" fill="#5c6b8a" text-anchor="end" dominant-baseline="central">0.00</text>
+<text x="893.0" y="417.5" font-size="12" font-weight="400" fill="#5c6b8a" text-anchor="end" dominant-baseline="central">0.50</text>
+<text x="893.0" y="290.0" font-size="12" font-weight="400" fill="#5c6b8a" text-anchor="end" dominant-baseline="central">1.00</text>
+<text x="905.0" y="565.0" font-size="12" font-weight="400" fill="#5c6b8a" text-anchor="middle" dominant-baseline="central">t = 0</text>
+<text x="1095.0" y="565.0" font-size="12" font-weight="400" fill="#5c6b8a" text-anchor="middle" dominant-baseline="central">t = 1</text>
+<text x="1285.0" y="565.0" font-size="12" font-weight="400" fill="#5c6b8a" text-anchor="middle" dominant-baseline="central">t = 2</text>
+<text x="1475.0" y="565.0" font-size="12" font-weight="400" fill="#5c6b8a" text-anchor="middle" dominant-baseline="central">t = 3</text>
+<text x="851.0" y="248.0" font-size="12" font-weight="700" fill="#5c6b8a" text-anchor="start" dominant-baseline="central">activación aᵢ(t)</text>
+<text x="1475.0" y="589.0" font-size="12" font-weight="700" fill="#5c6b8a" text-anchor="end" dominant-baseline="central">iteración</text>
+<text x="917.0" y="274.0" font-size="12" font-weight="700" fill="#17244d" text-anchor="start" dominant-baseline="central">1.00</text>
+<text x="1095.0" y="372.4" font-size="12" font-weight="700" fill="#17244d" text-anchor="middle" dominant-baseline="central">0.59</text>
+<text x="1285.0" y="413.0" font-size="12" font-weight="700" fill="#17244d" text-anchor="middle" dominant-baseline="central">0.43</text>
+<text x="1475.0" y="416.0" font-size="12" font-weight="700" fill="#17244d" text-anchor="middle" dominant-baseline="central">0.42 · gana A</text>
+<text x="905.0" y="358.2" font-size="12" font-weight="700" fill="#d64550" text-anchor="middle" dominant-baseline="central">0.82</text>
+<text x="1095.0" y="485.7" font-size="12" font-weight="700" fill="#d64550" text-anchor="middle" dominant-baseline="central">0.32</text>
+<text x="1285.0" y="517.0" font-size="12" font-weight="700" fill="#d64550" text-anchor="middle" dominant-baseline="central">0.02</text>
+<text x="1463.0" y="525.0" font-size="12" font-weight="700" fill="#d64550" text-anchor="end" dominant-baseline="central">0.00 · se apaga</text>
+<text x="60.0" y="749.0" font-size="12" font-weight="400" fill="#5c6b8a" text-anchor="start" dominant-baseline="central">Código: backend/app/services/red_competitiva/competitiva.py  ·  El ejemplo se calcula con la misma regla que usa el backend</text>
+</svg>
