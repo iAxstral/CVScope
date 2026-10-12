@@ -2,7 +2,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
-from app.services.evaluador_requisitos import evaluar_cv, quitar_evidencia
+from app.services.evaluador_requisitos import evaluar_cv, quitar_evidencia, quitar_experiencia
 
 client = TestClient(app)
 
@@ -20,9 +20,12 @@ def test_la_explicacion_coincide_con_el_podio_y_cuadra_las_cuentas(rol_id):
     # fuerza = suma de aportes de cada requisito + otras señales (para ambas)
     for lado in ("ganador", "segundo"):
         aportes = sum(r[lado]["contribucion"] for r in e["requisitos"])
-        assert aportes + e[lado]["otras_senales"] == pytest.approx(e[lado]["fuerza"], abs=1e-4)
-    # y por lo tanto el margen se reparte entre los requisitos y las otras señales
-    ventajas = sum(r["ventaja"] for r in e["requisitos"]) + e["ventaja_otras_senales"]
+        total = aportes + e[lado]["experiencia"] + e[lado]["otras_senales"]
+        assert total == pytest.approx(e[lado]["fuerza"], abs=1e-4)
+    # y por lo tanto el margen se reparte entre requisitos, experiencia y otras señales
+    ventajas = (
+        sum(r["ventaja"] for r in e["requisitos"]) + e["ventaja_experiencia"] + e["ventaja_otras_senales"]
+    )
     assert ventajas == pytest.approx(margen, abs=1e-4)
     assert e["resumen"]
 
@@ -45,3 +48,8 @@ def test_quitar_evidencia_elimina_solo_ese_requisito():
     sin_react = quitar_evidencia(texto, "React o similar")
     ev = {e["requisito"]: e["cumple"] for e in evaluar_cv(sin_react, requisitos)["evaluacion"]}
     assert ev == {"React o similar": False, "Bases de datos SQL/NoSQL": True}
+
+
+def test_quitar_experiencia_borra_los_anios_declarados():
+    sin = quitar_experiencia("Perfil con 5 años de experiencia en ventas.")
+    assert "5" not in sin and "ventas" in sin

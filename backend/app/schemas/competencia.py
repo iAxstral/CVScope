@@ -137,8 +137,11 @@ class ParticipanteExplicado(BaseModel):
     fuente: str
     fuerza: float
     anios_experiencia: int
+    experiencia: float = Field(
+        ..., description="Cuánto sube la fuerza gracias a los años de experiencia declarados (ablación)."
+    )
     otras_senales: float = Field(
-        ..., description="Parte de la fuerza que no se explica por ningún requisito (experiencia y señales del texto)."
+        ..., description="Resto de la fuerza: punto de partida de la red y demás señales del texto."
     )
 
 
@@ -156,6 +159,7 @@ class ExplicacionRankingResponse(BaseModel):
     ganador: ParticipanteExplicado
     segundo: ParticipanteExplicado
     requisitos: list[RequisitoExplicado]
+    ventaja_experiencia: float
     ventaja_otras_senales: float
     margen: MargenVictoria
     resumen: str

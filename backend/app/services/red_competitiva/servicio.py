@@ -16,7 +16,7 @@ sus neuronas son prototipos y gana la más cercana a la hoja de vida.
 from functools import lru_cache
 from pathlib import Path
 
-from app.services.evaluador_requisitos import evaluar_cv, quitar_evidencia
+from app.services.evaluador_requisitos import evaluar_cv, quitar_evidencia, quitar_experiencia
 from app.services.red_competitiva.caracteristicas import DIM_ENTRADA, extraer
 from app.services.red_competitiva.competitiva import maxnet, podio
 from app.services.red_competitiva.lvq import CapaLVQ
@@ -164,9 +164,10 @@ def _contribuciones(cv: dict, requisitos: list[str]) -> dict:
     """
     Cuánto aporta cada requisito a la fuerza de una hoja de vida, por ablación:
     fuerza con el texto completo menos la fuerza sin las menciones que sirven
-    de evidencia de ese requisito. Lo que no se explica por ningún requisito
-    (experiencia y otras señales del texto) queda en `otras_senales`, de modo
-    que fuerza = suma de contribuciones + otras_senales.
+    de evidencia de ese requisito; igual para la experiencia declarada. Lo que
+    no se explica por ninguno de los dos (el punto de partida de la red y las
+    demás señales del texto) queda en `otras_senales`, de modo que
+    fuerza = suma de aportes de requisitos + experiencia + otras_senales.
     """
     red, _ = cargar_modelo()
     evaluacion = {e["requisito"]: e for e in evaluar_cv(cv["texto"], requisitos)["evaluacion"]}
@@ -183,9 +184,12 @@ def _contribuciones(cv: dict, requisitos: list[str]) -> dict:
             "evidencia": e["evidencia"],
             "contribucion": contribucion,
         })
+    sin_experiencia = extraer(quitar_experiencia(cv["texto"]), requisitos)
+    experiencia = cv["fuerza"] - float(red.puntaje(sin_experiencia)[0]) if cv["anios_experiencia"] else 0.0
     return {
         "requisitos": detalle,
-        "otras_senales": cv["fuerza"] - sum(d["contribucion"] for d in detalle),
+        "experiencia": experiencia,
+        "otras_senales": cv["fuerza"] - sum(d["contribucion"] for d in detalle) - experiencia,
     }
 
 
@@ -211,6 +215,7 @@ def explicar_ranking(cvs: list[dict], requisitos: list[str]) -> dict:
             "segundo": {k: s[k] for k in ("cumple", "evidencia", "contribucion")},
             "ventaja": g["contribucion"] - s["contribucion"],
         })
+    ventaja_experiencia = pg["experiencia"] - ps["experiencia"]
     ventaja_otras = pg["otras_senales"] - ps["otras_senales"]
 
     margen = primero["fuerza"] - segundo["fuerza"]
@@ -223,15 +228,19 @@ def explicar_ranking(cvs: list[dict], requisitos: list[str]) -> dict:
     ]
     if decisivo and decisivo["ventaja"] > 0.01:
         partes.append(f"El requisito que más la favorece es «{decisivo['requisito']}» ({decisivo['ventaja']:+.2f}).")
-    if abs(ventaja_otras) > abs(decisivo["ventaja"] if decisivo else 0):
-        partes.append(
-            f"Pesa más la experiencia y otras señales del texto ({ventaja_otras:+.2f}) que cualquier requisito por separado."
-        )
+    ventaja_requisitos = sum(r["ventaja"] for r in por_requisito)
+    partes.append(
+        f"Frente a la segunda, los requisitos le suman {ventaja_requisitos:+.2f}, la experiencia "
+        f"{ventaja_experiencia:+.2f} y el resto {ventaja_otras:+.2f} (interacciones entre señales y punto de partida de la red)."
+    )
     return {
         "total_competidores": len(participantes),
-        "ganador": {**{k: primero[k] for k in _DATOS_PARTICIPANTE}, "otras_senales": pg["otras_senales"]},
-        "segundo": {**{k: segundo[k] for k in _DATOS_PARTICIPANTE}, "otras_senales": ps["otras_senales"]},
+        "ganador": {**{k: primero[k] for k in _DATOS_PARTICIPANTE},
+                    "experiencia": pg["experiencia"], "otras_senales": pg["otras_senales"]},
+        "segundo": {**{k: segundo[k] for k in _DATOS_PARTICIPANTE},
+                    "experiencia": ps["experiencia"], "otras_senales": ps["otras_senales"]},
         "requisitos": por_requisito,
+        "ventaja_experiencia": ventaja_experiencia,
         "ventaja_otras_senales": ventaja_otras,
         "margen": {
             "fuerza": margen,

@@ -136,6 +136,14 @@ def quitar_evidencia(cv_texto: str, requisito: str) -> str:
     return cv_texto
 
 
+def quitar_experiencia(cv_texto: str) -> str:
+    """El mismo texto sin las frases «N años de experiencia» (para medir cuánto pesa la experiencia)."""
+    texto_norm = normalizar(cv_texto)
+    if len(texto_norm) != len(cv_texto):
+        cv_texto = texto_norm
+    return _PATRON_ANIOS.sub(" ", texto_norm)
+
+
 def extraer_anios_experiencia(cv_texto: str) -> int:
     anios = [int(n) for n in _PATRON_ANIOS.findall(normalizar(cv_texto))]
     return max(anios) if anios else 0
