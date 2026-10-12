@@ -1,13 +1,20 @@
 # Diagrama: red neuronal competitiva de CVScope
 
-![Red neuronal competitiva de CVScope](red_competitiva.png)
+El diagrama son tres láminas con estilo de tablero, pensadas para leerse por
+separado o proyectarse en la presentación.
+
+| Lámina | Qué muestra |
+|---|---|
+| ![Visión general](lamina_1_vision_general.png) | **1 · Visión general**: de las hojas de vida a la ganadora, en cinco pasos. |
+| ![MAXNET](lamina_2_maxnet.png) | **2 · Competencia MAXNET**: inhibición lateral y un duelo real, iteración por iteración. |
+| ![Entrenamiento y LVQ](lamina_3_entrenamiento.png) | **3 · Cómo aprende**: entrenamiento de la capa de evaluación y prototipos de la LVQ. |
 
 | Archivo | Para qué sirve |
 |---|---|
-| [`red_competitiva.drawio`](red_competitiva.drawio) | Diagrama editable. Se abre en [diagrams.net](https://app.diagrams.net) (Archivo › Abrir desde › Dispositivo) o con la extensión de draw.io para VS Code. |
-| [`red_competitiva.svg`](red_competitiva.svg) | Imagen vectorial (GitHub la muestra directamente). |
-| [`red_competitiva.png`](red_competitiva.png) | Imagen para presentaciones e informes. |
-| [`generar_diagrama.py`](generar_diagrama.py) | Genera el `.drawio` y el `.svg` desde una sola definición: `python docs/diagrama/generar_diagrama.py` |
+| [`red_competitiva.drawio`](red_competitiva.drawio) | Diagrama editable, una página por lámina. Se abre en [diagrams.net](https://app.diagrams.net) (Archivo › Abrir desde › Dispositivo) o con la extensión de draw.io para VS Code. |
+| `lamina_*.svg` | Imágenes vectoriales (GitHub las muestra directamente). |
+| `lamina_*.png` | Imágenes para presentaciones e informes. |
+| [`generar_diagrama.py`](generar_diagrama.py) | Genera el `.drawio` y los `.svg` desde una sola definición: `python docs/diagrama/generar_diagrama.py`. Con `--png` también exporta los `.png` usando Chrome o Edge sin interfaz. |
 
 ## La idea en una frase
 
@@ -104,7 +111,7 @@ que aprender (sus pesos son `+1` y `−ε`, fijos).
 | Exactitud en duelos | 0.959 | 0.934 |
 | Precisión@5 | 0.80 | 0.70 |
 
-### Capa competitiva que aprende: LVQ (franja verde)
+### Capa competitiva que aprende: LVQ (lámina 3, a la derecha)
 
 MAXNET tiene pesos fijos (`+1` y `−ε`): decide, pero no aprende. Por eso hay
 una segunda capa competitiva, **LVQ** (*Learning Vector Quantization*,
