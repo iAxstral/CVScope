@@ -9,7 +9,7 @@ y `frontend/package.json`.
 | Pieza | Fuente | Dónde se usa |
 |---|---|---|
 | Embeddings `all-MiniLM-L6-v2` | Modelo de [sentence-transformers](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2) en Hugging Face (destilado de MiniLM, Wang et al., 2020) | `app/services/ia_services.py`; entrada del clasificador de rol |
-| Regresión logística | `sklearn.linear_model.LogisticRegression` (scikit-learn) | Clasificador de rol (`clasificador_rol.pkl`) |
+| Regresión logística | `sklearn.linear_model.LogisticRegression` (scikit-learn), entrenada con Kaggle + sintético | Clasificador de rol (`clasificador_rol.pkl`) |
 | Red de evaluación 1026-64-32-1 | **Propia**, en NumPy; entrenada con duelos de pares (RankNet) | `app/services/red_competitiva/modelo.py` |
 | Capa competitiva MAXNET | **Propia**, en NumPy; sigue la red de Hamming (Hagan et al.; Lippmann, 1987) | `red_competitiva/competitiva.py` |
 | Capa competitiva LVQ (LVQ1) | **Propia**, en NumPy; regla de Kohonen | `red_competitiva/lvq.py` |
@@ -22,9 +22,9 @@ y `frontend/package.json`.
 
 | Dataset | Fuente | Notas |
 |---|---|---|
-| `backend/data/dataset_seleccion.csv` | **Sintético**, generado por `scripts/generar_datasets.py` (semilla 2026) | 240 hojas de vida (60 por rol) con rol y apto/no apto |
+| `backend/data/dataset_seleccion.csv` | **Sintético**, generado por `scripts/generar_datasets.py` (semilla 2026) | 240 hojas de vida (60 por rol) con rol y apto/no apto; también entrena el clasificador de rol junto con Kaggle |
 | `backend/data/dataset_ranking.csv` | **Sintético**, mismo script | 60 hojas de vida (15 por rol) con puntaje y posición de referencia |
-| Resume Dataset (Kaggle) | [kaggle.com/datasets/snehaanbhawal/resume-dataset](https://www.kaggle.com/datasets/snehaanbhawal/resume-dataset) | **Opcional**, descarga manual; solo para reentrenar el clasificador de rol (ver [clasificador_rol.md](clasificador_rol.md)). No está en el repo; respeta la licencia indicada en Kaggle |
+| Resume Dataset (Kaggle) | [kaggle.com/datasets/snehaanbhawal/resume-dataset](https://www.kaggle.com/datasets/snehaanbhawal/resume-dataset) | Descarga manual; con el sintético entrena el clasificador de rol (`--dataset combinado`, ver [clasificador_rol.md](clasificador_rol.md)). Se usan 442 hojas de vida de las categorías `INFORMATION-TECHNOLOGY`, `HR`, `SALES` y `DIGITAL-MEDIA`. No está en el repo; respeta la licencia indicada en Kaggle |
 
 ## Papers y libros
 
