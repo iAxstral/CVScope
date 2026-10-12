@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { getRanking, getRoles } from "../api/client.js";
 import useApi from "../hooks/useApi.js";
+import ExplicacionRanking from "../components/ExplicacionRanking.jsx";
 import Highlight from "../components/Highlight.jsx";
 import RoleTabs from "../components/RoleTabs.jsx";
 import ScoreMeter from "../components/ScoreMeter.jsx";
@@ -80,6 +82,7 @@ function RankingContenido({ ranking }) {
   const otros = new Set(ranking.top_otro_metodo);
   const comunes = ranking.top.filter((c) => otros.has(c.id)).length;
   const otroNombre = porRed ? "palabras clave" : "la red";
+  const [explicando, setExplicando] = useState(false);
 
   return (
     <>
@@ -192,6 +195,20 @@ function RankingContenido({ ranking }) {
             );
           })}
         </ol>
+      )}
+
+      {porRed && ranking.top.length >= 2 && (
+        <section className="ranking-page__explicacion" aria-label="Por qué ganó el primer puesto">
+          <button
+            type="button"
+            className="btn btn--ghost btn--sm"
+            aria-expanded={explicando}
+            onClick={() => setExplicando((v) => !v)}
+          >
+            {explicando ? "Ocultar explicación" : `¿Por qué ganó ${ranking.top[0].nombre}?`}
+          </button>
+          {explicando && <ExplicacionRanking rolId={ranking.rol_id} />}
+        </section>
       )}
 
       <p className="ranking-page__legend">

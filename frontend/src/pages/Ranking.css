@@ -123,6 +123,17 @@
   white-space: normal;
 }
 
+.ranking-page__explicacion {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.ranking-page__explicacion .explicacion {
+  align-self: stretch;
+}
+
 .ranking-page__legend {
   font-size: 0.8rem;
   color: var(--ink-faint);
