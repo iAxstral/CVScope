@@ -29,7 +29,7 @@ export default defineConfig({
       command: `${PYTHON} -m uvicorn app.main:app --port 8000`,
       cwd: "../backend",
       url: "http://127.0.0.1:8000/",
-      env: { DATABASE_URL: `sqlite:///${BASE_DATOS}`, AUTH_SECRET: "e2e" },
+      env: { DATABASE_URL: `sqlite:///${BASE_DATOS}`, AUTH_SECRET: "e2e", ADMIN_PASSWORD: "cvscope2026" },
       reuseExistingServer: !process.env.CI,
       timeout: 120_000,
     },

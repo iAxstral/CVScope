@@ -6,11 +6,11 @@ Autenticación con la librería estándar (sin dependencias extra).
   fecha de expiración. No se guarda en el servidor; se verifica la firma.
 
 Variables de entorno:
-  AUTH_SECRET      -> clave para firmar los tokens (obligatoria en producción;
-                      si falta se genera una al arrancar y las sesiones se
-                      pierden al reiniciar)
+  AUTH_SECRET      -> clave para firmar los tokens (OBLIGATORIA; sin ella la
+                      API no arranca; los scripts de entrenamiento no la usan)
   ADMIN_EMAIL      -> usuario inicial (por defecto admin@cvscope.co)
-  ADMIN_PASSWORD   -> su contraseña (por defecto cvscope2026)
+  ADMIN_PASSWORD   -> su contraseña (OBLIGATORIA la primera vez que se crea el
+                      administrador; no hay valor por defecto)
 """
 
 import base64
@@ -24,7 +24,16 @@ import time
 ITERACIONES = 390_000
 DURACION_TOKEN = 8 * 60 * 60  # 8 horas
 
-_SECRETO = (os.getenv("AUTH_SECRET") or secrets.token_hex(32)).encode()
+
+def secreto() -> bytes:
+    """Clave de firma de los tokens. La API la valida al arrancar (main.py)."""
+    valor = os.getenv("AUTH_SECRET", "").strip()
+    if not valor:
+        raise RuntimeError(
+            "Falta la variable de entorno AUTH_SECRET (firma las sesiones). Genérala con: "
+            'python -c "import secrets; print(secrets.token_hex(32))"'
+        )
+    return valor.encode()
 
 
 class TokenInvalido(ValueError):
@@ -59,7 +68,7 @@ def _desde_b64(texto: str) -> bytes:
 def crear_token(usuario_id: int, ahora: float | None = None) -> str:
     ahora = time.time() if ahora is None else ahora
     carga = _b64(json.dumps({"sub": usuario_id, "exp": int(ahora + DURACION_TOKEN)}).encode())
-    firma = _b64(hmac.new(_SECRETO, carga.encode(), hashlib.sha256).digest())
+    firma = _b64(hmac.new(secreto(), carga.encode(), hashlib.sha256).digest())
     return f"{carga}.{firma}"
 
 
@@ -69,7 +78,7 @@ def leer_token(token: str, ahora: float | None = None) -> int:
         carga, firma = token.split(".")
     except ValueError as exc:
         raise TokenInvalido("Token mal formado") from exc
-    esperada = _b64(hmac.new(_SECRETO, carga.encode(), hashlib.sha256).digest())
+    esperada = _b64(hmac.new(secreto(), carga.encode(), hashlib.sha256).digest())
     if not hmac.compare_digest(firma, esperada):
         raise TokenInvalido("Firma inválida")
     datos = json.loads(_desde_b64(carga))

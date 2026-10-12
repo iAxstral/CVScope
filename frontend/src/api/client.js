@@ -140,3 +140,7 @@ export function crearRol({ nombre, clave, requisitos, umbralApto }) {
     umbral_apto: umbralApto,
   });
 }
+
+export function getExplicacionRanking(rolId) {
+  return get(`/competencia/explicar/${rolId}`);
+}

@@ -34,7 +34,8 @@ Una empresa recibe muchas hojas de vida para un cargo. CVScope:
    Ventas o Marketing Digital).
 2. **Selecciona**: decide si cumple los requisitos mínimos del rol (*apto* o
    *no apto*) y **explica** cada requisito citando el fragmento del CV que lo
-   demuestra.
+   demuestra. El motor por defecto usa palabras clave y no necesita nada
+   externo; **Gemini es un motor opcional** (solo con `OPENAI_API_KEY`).
 3. **Pone a competir** a las hojas de vida del rol en una **red neuronal
    competitiva** y entrega a la ganadora y el **top 5**, con la explicación de
    cada duelo.
@@ -47,16 +48,16 @@ flowchart LR
     A[Hoja de vida<br/>PDF · DOCX · TXT] --> B[Extracción<br/>de texto]
     B --> D[Clasificador<br/>de rol]
     D --> E{Evaluación de<br/>requisitos}
-    E -->|palabras clave| F[Apto / no apto<br/>+ evidencia]
-    E -->|Gemini · CV anonimizado| F
+    E -->|palabras clave · motor por defecto| F[Apto / no apto<br/>+ evidencia]
+    E -.->|opcional: Gemini<br/>CV anonimizado| F
     F --> G[Red neuronal competitiva<br/>entrada anonimizada]
     G --> H[Ganadora y top 5<br/>+ explicación]
     G --> L[Capa LVQ<br/>apto / no apto aprendido]
 ```
 
 **Stack:** Python + FastAPI · SQLAlchemy (SQLite / PostgreSQL) · NumPy ·
-scikit-learn · React 19 + Vite · Gemini 2.5 Flash (vía endpoint compatible con
-OpenAI) · Playwright · GitHub Actions · Docker Compose.
+scikit-learn · React 19 + Vite · Gemini 2.5 Flash como motor opcional (vía endpoint
+compatible con OpenAI) · Playwright · GitHub Actions · Docker Compose.
 
 ---
 
@@ -91,7 +92,8 @@ trabajó en cinco entregas:
 *`feat/hito2`*
 
 - **Clasificador de rol**: embeddings `all-MiniLM-L6-v2` (sentence-transformers)
-  + regresión logística (`ml_models/clasificador_rol.pkl`).
+  + regresión logística (`ml_models/clasificador_rol.pkl`); cómo reproducirlo en
+  [docs/clasificador_rol.md](docs/clasificador_rol.md).
 - `POST /preseleccion/categorizar`: predice el rol de una hoja de vida.
 - **Primer frontend** en React: login, dashboard de roles, carga de candidatos
   y vistas de ranking y detalle (aún con datos de ejemplo).
@@ -123,7 +125,8 @@ trabajó en cinco entregas:
 
 - **Capa competitiva MAXNET**: la red pasa a ser una **red competitiva tipo
   Hamming** con inhibición lateral (*winner-take-all*).
-- **Gemini** como segundo motor de evaluación, con citas verificadas.
+- **Gemini** como motor de evaluación **opcional** (requiere API key), con citas
+  verificadas.
 - **Extracción de texto** de PDF, DOCX y TXT.
 - **Anonimización** de las hojas de vida y **auditoría de sesgos** con
   contrafactuales.
@@ -273,8 +276,13 @@ neuronas se apagarían al mismo ritmo para siempre).
 
 En la página "Red competitiva" del frontend se ve el cuadro del torneo, la
 competencia abierta y un gráfico de cómo se apagan las neuronas en cada
-iteración. La página "Ranking top 5" muestra el mismo podio y permite
-compararlo con el orden por palabras clave.
+iteración. La página "Ranking top 5" muestra el mismo podio, permite
+compararlo con el orden por palabras clave y tiene un panel **«¿Por qué
+ganó…?»** (`GET /competencia/explicar/{rol_id}`) que explica el primer puesto:
+el aporte de cada requisito a la fuerza de la ganadora y de la segunda (se mide
+quitando de la hoja de vida la evidencia de ese requisito y viendo cuánto baja
+la fuerza), la ventaja de cada requisito, la experiencia y el margen de la
+victoria, con su probabilidad y las iteraciones de MAXNET.
 
 ### Paso 7 · Una capa competitiva que aprende: LVQ
 
@@ -376,6 +384,9 @@ Métricas del evaluador por palabras clave (`python scripts/evaluar_datasets.py`
 - **Selección**: exactitud 0.954 · precisión 1.000 · recall 0.917 · F1 0.957
 - **Ranking**: precisión@5 promedio 0.75
 
+Fuentes de cada pieza (modelos, datasets, papers y librerías):
+[docs/fuentes.md](docs/fuentes.md).
+
 Para medir a Gemini contra esta línea base (requiere API key):
 `python scripts/evaluar_llm.py --n 40`.
 
@@ -420,7 +431,7 @@ CVScope/
 │   │   │   ├── auth.py                   # contraseñas (PBKDF2) y tokens firmados
 │   │   │   ├── anonimizador.py
 │   │   │   ├── evaluador_requisitos.py   # motor de palabras clave
-│   │   │   ├── llm_service.py            # motor Gemini
+│   │   │   ├── llm_service.py            # motor Gemini (opcional)
 │   │   │   ├── extractor_texto.py        # PDF, DOCX, TXT
 │   │   │   └── ia_services.py            # clasificador de rol
 │   │   ├── models/        # tablas SQLAlchemy y stores (roles, candidatos, usuarios)
@@ -431,6 +442,8 @@ CVScope/
 │   └── tests/             # pruebas (pytest)
 ├── docs/
 │   ├── diagrama/          # láminas del diagrama de la red (.drawio, .svg, .png)
+│   ├── clasificador_rol.md  # cómo reproducir el clasificador de rol (Kaggle)
+│   ├── fuentes.md         # de dónde sale cada pieza: modelos, datasets, papers y librerías
 │   └── sesgos.md
 └── frontend/
     ├── e2e/               # pruebas de punta a punta (Playwright)
@@ -454,12 +467,13 @@ Todos los endpoints, salvo `/auth/login`, requieren la cabecera
 | GET · POST | `/roles/` | Listar roles · crear uno con sus requisitos y su `umbral_apto` |
 | POST | `/preseleccion/extraer-texto` | Extrae el texto de un CV en PDF, DOCX o TXT |
 | POST | `/preseleccion/categorizar` | Rol predicho por el clasificador |
-| POST | `/preseleccion/evaluar` | Apto/no apto con evidencia y veredicto LVQ; `motor`: `palabras_clave` o `llm` (Gemini) |
-| GET | `/preseleccion/motores` | Indica si Gemini está disponible |
+| POST | `/preseleccion/evaluar` | Apto/no apto con evidencia y veredicto LVQ; `motor`: `palabras_clave` (por defecto) o `llm` (Gemini, opcional) |
+| GET | `/preseleccion/motores` | Indica si el motor opcional Gemini está disponible |
 | GET | `/preseleccion/ranking/{rol_id}?top=5&metodo=red` | Top N del rol según la red (o `metodo=palabras_clave`) y el top del otro método |
 | GET | `/preseleccion/hojas-de-vida/{cv_id}` | Detalle explicable de una hoja de vida |
 | POST | `/competencia/comparar` | Duelo entre dos hojas de vida (MAXNET de 2 neuronas) |
 | POST | `/competencia/torneo` | Torneo, competencia abierta, ganadora y top N |
+| GET | `/competencia/explicar/{rol_id}` | Por qué ganó el 1.º del ranking: aporte de cada requisito, comparación con el 2.º y margen |
 | GET | `/competencia/modelo` | Arquitectura, métricas y prototipos de la LVQ |
 | GET | `/datasets/`, `/datasets/seleccion`, `/datasets/ranking` | Resumen y consulta de los datasets |
 
@@ -469,18 +483,34 @@ La documentación interactiva completa está en `http://127.0.0.1:8000/docs`.
 
 ## Cómo ejecutar
 
-**Usuario inicial:** `admin@cvscope.co` / `cvscope2026` (se crea la primera vez;
-cámbialo con `ADMIN_EMAIL` y `ADMIN_PASSWORD`).
+**Variables obligatorias:** `AUTH_SECRET` (clave que firma las sesiones) y
+`ADMIN_PASSWORD` (contraseña del administrador inicial, que se crea la primera
+vez con `ADMIN_EMAIL`, por defecto `admin@cvscope.co`). No tienen valor por
+defecto: sin ellas la API no arranca. Genera el secreto con
+`python -c "import secrets; print(secrets.token_hex(32))"`. El login bloquea
+durante 15 minutos (HTTP 429) tras 5 intentos fallidos por IP y correo
+(`LOGIN_MAX_INTENTOS`, `LOGIN_VENTANA_SEGUNDOS`).
 
 ### Opción A · Docker (todo en un comando)
 
 ```bash
+# Crea un archivo .env junto al docker-compose.yml con AUTH_SECRET y ADMIN_PASSWORD
+printf 'AUTH_SECRET=%s
+ADMIN_PASSWORD=%s
+' "$(python -c 'import secrets; print(secrets.token_hex(32))')" "cambia-esta-clave" > .env
 docker compose up --build
 # Frontend: http://localhost:8080 · API: http://localhost:8000/docs
 ```
 
-Levanta PostgreSQL 16, la API y el frontend (nginx). Para incluir el
-clasificador de rol (instala PyTorch): `CON_CLASIFICADOR=true docker compose up --build`.
+Levanta PostgreSQL 16, la API y el frontend (nginx). La imagen de la API
+**incluye el clasificador de rol por defecto** (PyTorch en su versión CPU y el
+modelo `all-MiniLM-L6-v2`, que se descarga al construir la imagen, así que la
+primera construcción tarda y la imagen pesa bastante más). Para una imagen
+liviana sin él: `CON_CLASIFICADOR=false docker compose up --build`. En ese caso
+`POST /preseleccion/categorizar` (y evaluar sin elegir rol) responde **503**
+con "No se pudo cargar el clasificador de rol", porque la API arranca sin
+`scikit-learn` ni `sentence-transformers`; todo lo demás funciona. Lo mismo
+ocurre en una instalación local con `requirements-api.txt`.
 
 ### Opción B · Local
 
@@ -491,12 +521,12 @@ cd backend
 python -m venv .venv
 source .venv/bin/activate      # En Windows: .venv\Scripts\Activate.ps1
 pip install -r requirements.txt   # o requirements-api.txt sin el clasificador (más liviano)
-cp .env.example .env           # define AUTH_SECRET; opcional: API key de Gemini
+cp .env.example .env           # define AUTH_SECRET y ADMIN_PASSWORD; opcional: API key de Gemini
 uvicorn app.main:app --reload  # http://127.0.0.1:8000
 ```
 
 Sin `DATABASE_URL` usa SQLite (`backend/cvscope.db`). Sin API key todo funciona
-con el motor de palabras clave; con `OPENAI_API_KEY` se habilita Gemini en
+con el motor de palabras clave (Gemini es opcional); con `OPENAI_API_KEY` se habilita Gemini en
 "Seleccionar CV".
 
 **Frontend**
@@ -521,7 +551,7 @@ El frontend usa `VITE_API_URL` (por defecto `http://127.0.0.1:8000`).
 | `python scripts/evaluar_datasets.py` | Mide el evaluador por palabras clave |
 | `python scripts/auditar_sesgos.py` | Auditoría de sesgos con contrafactuales |
 | `python scripts/evaluar_llm.py --n 40` | Compara Gemini con la línea base (requiere API key) |
-| `python scripts/entrenar_clasificador_rol.py` | Reentrena el clasificador de rol (requiere acceso a Hugging Face) |
+| `python scripts/entrenar_clasificador_rol.py [--dataset kaggle]` | Reentrena el clasificador de rol con el dataset sintético o con el CSV de Kaggle (ver [docs/clasificador_rol.md](docs/clasificador_rol.md); requiere acceso a Hugging Face) |
 | `python ../docs/diagrama/generar_diagrama.py --png` | Regenera las láminas del diagrama de la red |
 | `cd ../frontend && npm run test:e2e` | Pruebas de punta a punta (levanta backend y frontend solos) |
 
@@ -534,7 +564,9 @@ El frontend usa `VITE_API_URL` (por defecto `http://127.0.0.1:8000`).
 - **Hojas de vida reales** anonimizadas y etiquetadas a mano: con más datos de
   prueba se podrá confirmar si la mejora de la red es significativa, y hay que
   repetir la auditoría de sesgos.
-- **Reentrenar el clasificador de rol** con el dataset de selección
-  (`scripts/entrenar_clasificador_rol.py`, requiere acceso a Hugging Face).
+- **Reentrenar el clasificador de rol** con el CSV de Kaggle y las versiones
+  fijadas de scikit-learn (`python scripts/entrenar_clasificador_rol.py --dataset kaggle`;
+  pasos, filtro a 4 roles, split y métricas en
+  [docs/clasificador_rol.md](docs/clasificador_rol.md)).
 - **Migraciones de base de datos** (por ejemplo, Alembic) si el esquema
   cambia con datos ya cargados.

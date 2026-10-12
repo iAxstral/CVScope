@@ -1,0 +1,139 @@
+.explicacion {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+}
+
+.explicacion__resumen {
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.explicacion__stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.explicacion__tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.explicacion__caption {
+  text-align: left;
+  font-size: 0.8rem;
+  color: var(--ink-faint);
+  padding-bottom: 0.4rem;
+}
+
+.explicacion__tabla th,
+.explicacion__tabla td {
+  text-align: left;
+  vertical-align: top;
+  padding: 0.6rem 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.explicacion__tabla thead th {
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+
+.explicacion__tabla tbody th {
+  font-weight: 600;
+  min-width: 140px;
+}
+
+.explicacion__leyenda {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  margin-right: 0.4rem;
+}
+
+.explicacion__leyenda--ganador,
+.explicacion__relleno--ganador {
+  background: var(--accent);
+}
+
+.explicacion__leyenda--segundo,
+.explicacion__relleno--segundo {
+  background: var(--primary);
+}
+
+.explicacion__barra {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 130px;
+}
+
+.explicacion__pista {
+  height: 8px;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.explicacion__relleno {
+  height: 100%;
+  border-radius: 99px;
+}
+
+.explicacion__numero {
+  font-family: var(--font-mono);
+  color: var(--ink);
+}
+
+.explicacion__numero small {
+  color: var(--ink-faint);
+  font-family: var(--font-body);
+}
+
+.explicacion__evidencia {
+  color: var(--ink-faint);
+  font-size: 0.75rem;
+  line-height: 1.35;
+}
+
+.explicacion__ventaja {
+  font-family: var(--font-mono);
+  white-space: nowrap;
+  color: var(--ink-soft);
+}
+
+.explicacion__ventaja--pos {
+  color: var(--success);
+  font-weight: 600;
+}
+
+.explicacion__ventaja--neg {
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.explicacion__resto th,
+.explicacion__resto td {
+  color: var(--ink-soft);
+}
+
+.explicacion__nota {
+  font-size: 0.8rem;
+  color: var(--ink-faint);
+  line-height: 1.5;
+}
+
+@media (max-width: 720px) {
+  .explicacion__tabla {
+    display: block;
+    overflow-x: auto;
+  }
+}
