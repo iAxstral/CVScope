@@ -19,3 +19,6 @@ dist/
 
 # Base de datos local (SQLite)
 backend/cvscope.db
+
+# CSV de Kaggle para reentrenar el clasificador de rol (descarga manual)
+backend/data/kaggle/

@@ -1,9 +1,15 @@
+import os
+import subprocess
+import sys
+import tempfile
 import time
+from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
+from app.services.limitador import LimitadorDeIntentos, limitador_login
 from app.services.auth import (
     DURACION_TOKEN,
     TokenInvalido,
@@ -65,3 +71,68 @@ def test_crear_usuario_requiere_sesion():
     assert client.post("/auth/usuarios", json=nuevo, headers=cabecera).status_code == 409
     login = client.post("/auth/login", json={"email": nuevo["email"], "contrasena": nuevo["contrasena"]})
     assert login.status_code == 200
+
+
+def test_el_limitador_bloquea_y_se_libera_con_el_tiempo():
+    limitador = LimitadorDeIntentos(max_intentos=3, ventana=60)
+    for t in (0, 1, 2):
+        assert limitador.segundos_de_espera("ip", "a@x.co", ahora=t) == 0
+        limitador.registrar_fallo("ip", "a@x.co", ahora=t)
+    assert limitador.segundos_de_espera("ip", "A@x.co ", ahora=3) > 0  # mismo correo, sin importar el formato
+    assert limitador.segundos_de_espera("ip", "b@x.co", ahora=3) == 0  # otro correo no se bloquea
+    assert limitador.segundos_de_espera("otra-ip", "a@x.co", ahora=3) == 0
+    assert limitador.segundos_de_espera("ip", "a@x.co", ahora=61) == 0  # pasó la ventana del primer fallo
+    limitador.registrar_exito("ip", "a@x.co")
+    assert limitador.segundos_de_espera("ip", "a@x.co", ahora=3) == 0
+
+
+def test_login_responde_429_tras_demasiados_fallos():
+    limitador_login.reiniciar()
+    mala = {"email": "victima@cvscope.co", "contrasena": "mala"}
+    for _ in range(limitador_login.max_intentos):
+        assert client.post("/auth/login", json=mala).status_code == 401
+    r = client.post("/auth/login", json=mala)
+    assert r.status_code == 429 and int(r.headers["Retry-After"]) > 0
+    # Bloqueado ese correo, otro usuario sigue entrando
+    assert client.post("/auth/login", json=ADMIN).status_code == 200
+    limitador_login.reiniciar()
+
+
+def test_un_login_correcto_reinicia_el_contador():
+    limitador_login.reiniciar()
+    for _ in range(limitador_login.max_intentos - 1):
+        client.post("/auth/login", json={**ADMIN, "contrasena": "mala"})
+    assert client.post("/auth/login", json=ADMIN).status_code == 200
+    for _ in range(limitador_login.max_intentos - 1):
+        assert client.post("/auth/login", json={**ADMIN, "contrasena": "mala"}).status_code == 401
+    limitador_login.reiniciar()
+
+
+def test_la_api_exige_auth_secret_y_contrasena_de_admin():
+    entorno = {k: v for k, v in os.environ.items() if k not in ("AUTH_SECRET", "ADMIN_PASSWORD")}
+    entorno["DATABASE_URL"] = f"sqlite:///{tempfile.mkdtemp()}/vacia.db"
+    raiz = Path(__file__).resolve().parent.parent
+
+    def arrancar(extra):
+        return subprocess.run(
+            [sys.executable, "-c", "import app.main"], cwd=raiz, env={**entorno, **extra},
+            capture_output=True, text=True,
+        )
+
+    sin_secreto = arrancar({"ADMIN_PASSWORD": "x" * 10})
+    assert sin_secreto.returncode != 0 and "AUTH_SECRET" in sin_secreto.stderr
+    sin_clave = arrancar({"AUTH_SECRET": "s"})
+    assert sin_clave.returncode != 0 and "ADMIN_PASSWORD" in sin_clave.stderr
+    assert arrancar({"AUTH_SECRET": "s", "ADMIN_PASSWORD": "x" * 10}).returncode == 0
+
+
+def test_los_scripts_no_necesitan_las_variables_de_seguridad():
+    """Entrenar o evaluar importa los servicios y la base de datos, pero no arranca la API."""
+    entorno = {k: v for k, v in os.environ.items() if k not in ("AUTH_SECRET", "ADMIN_PASSWORD")}
+    entorno["DATABASE_URL"] = f"sqlite:///{tempfile.mkdtemp()}/scripts.db"
+    raiz = Path(__file__).resolve().parent.parent
+    r = subprocess.run(
+        [sys.executable, "-c", "from app.services.datasets import cargar_seleccion; cargar_seleccion()"],
+        cwd=raiz, env=entorno, capture_output=True, text=True,
+    )
+    assert r.returncode == 0, r.stderr

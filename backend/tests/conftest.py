@@ -9,6 +9,9 @@ import tempfile
 
 _tmp = tempfile.mkdtemp(prefix="cvscope-tests-")
 os.environ.setdefault("DATABASE_URL", f"sqlite:///{os.path.join(_tmp, 'pruebas.db')}")
+# La API exige estas dos variables (no tienen valor por defecto)
+os.environ.setdefault("AUTH_SECRET", "secreto-solo-para-pruebas")
+os.environ.setdefault("ADMIN_PASSWORD", "cvscope2026")
 
 import pytest  # noqa: E402
 

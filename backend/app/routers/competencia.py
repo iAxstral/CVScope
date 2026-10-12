@@ -4,6 +4,7 @@ from app.models.store import rol_store
 from app.schemas.competencia import (
     CompararRequest,
     CompararResponse,
+    ExplicacionRankingResponse,
     HojaDeVidaEntrada,
     ModeloInfo,
     PrototipoLVQ,
@@ -121,6 +122,24 @@ def torneo(data: TorneoRequest):
         competencia_abierta=resultado["competencia_abierta"],
         total_duelos=resultado["total_duelos"],
         coincidencias_referencia=coincidencias,
+    )
+
+
+@router.get("/explicar/{rol_id}", response_model=ExplicacionRankingResponse)
+def explicar_ranking(rol_id: int):
+    """
+    Explica por qué ganó la hoja de vida que encabeza el ranking del rol: el
+    aporte de cada requisito a su fuerza, la comparación contra la segunda y
+    el margen de la victoria. El aporte de un requisito se mide quitando del
+    texto la evidencia de ese requisito y viendo cuánto baja la fuerza.
+    """
+    _modelo()
+    rol = _rol_o_404(rol_id)
+    cvs = pool_del_rol(rol)
+    if len(cvs) < 2:
+        raise HTTPException(status_code=400, detail="Se necesitan al menos 2 hojas de vida para explicar el ranking")
+    return ExplicacionRankingResponse(
+        rol_id=rol["id"], rol_nombre=rol["nombre"], **servicio.explicar_ranking(cvs, rol["requisitos"])
     )
 
 

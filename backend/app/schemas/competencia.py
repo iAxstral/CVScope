@@ -114,3 +114,52 @@ class ModeloInfo(BaseModel):
     lvq: dict | None = Field(
         default=None, description="Métricas y prototipos de la capa competitiva LVQ."
     )
+
+
+class VeredictoRequisito(BaseModel):
+    cumple: bool
+    evidencia: str | None = None
+    contribucion: float = Field(
+        ..., description="Cuánto sube la fuerza de la hoja de vida gracias a este requisito (ablación)."
+    )
+
+
+class RequisitoExplicado(BaseModel):
+    requisito: str
+    ganador: VeredictoRequisito
+    segundo: VeredictoRequisito
+    ventaja: float = Field(..., description="Contribución de la ganadora menos la de la segunda.")
+
+
+class ParticipanteExplicado(BaseModel):
+    id: str
+    nombre: str
+    fuente: str
+    fuerza: float
+    anios_experiencia: int
+    experiencia: float = Field(
+        ..., description="Cuánto sube la fuerza gracias a los años de experiencia declarados (ablación)."
+    )
+    otras_senales: float = Field(
+        ..., description="Resto de la fuerza: punto de partida de la red y demás señales del texto."
+    )
+
+
+class MargenVictoria(BaseModel):
+    fuerza: float = Field(..., description="Fuerza de la ganadora menos la de la segunda.")
+    probabilidad_ganador: float = Field(..., ge=0, le=1)
+    iteraciones: int = Field(..., description="Iteraciones de MAXNET hasta apagar a la segunda.")
+    epsilon: float
+
+
+class ExplicacionRankingResponse(BaseModel):
+    rol_id: int
+    rol_nombre: str
+    total_competidores: int
+    ganador: ParticipanteExplicado
+    segundo: ParticipanteExplicado
+    requisitos: list[RequisitoExplicado]
+    ventaja_experiencia: float
+    ventaja_otras_senales: float
+    margen: MargenVictoria
+    resumen: str

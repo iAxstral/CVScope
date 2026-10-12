@@ -8,11 +8,17 @@ from fastapi import Depends, FastAPI  # noqa: E402
 from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
 
 from app.dependencias import usuario_actual  # noqa: E402
+from app.models.store import crear_administrador_inicial  # noqa: E402
 from app.routers import auth, candidatos, competencia, datasets, preseleccion, roles  # noqa: E402
+from app.services.auth import secreto  # noqa: E402
+
+# La API no arranca sin AUTH_SECRET ni ADMIN_PASSWORD (no hay valores por defecto)
+secreto()
+crear_administrador_inicial()
 
 app = FastAPI(
     title="CVScope API",
-    description="Categoriza candidatos por rol, evalúa si cumplen los requisitos usando un LLM (Gemini) y genera un ranking explicable de aptos.",
+    description="Categoriza candidatos por rol, evalúa si cumplen los requisitos (por palabras clave o, de forma opcional, con un LLM como Gemini) y genera un ranking explicable de aptos con una red neuronal competitiva.",
     version="0.1.0",
 )
 
