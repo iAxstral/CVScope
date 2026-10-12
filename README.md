@@ -92,7 +92,8 @@ trabajó en cinco entregas:
 *`feat/hito2`*
 
 - **Clasificador de rol**: embeddings `all-MiniLM-L6-v2` (sentence-transformers)
-  + regresión logística (`ml_models/clasificador_rol.pkl`).
+  + regresión logística (`ml_models/clasificador_rol.pkl`); cómo reproducirlo en
+  [docs/clasificador_rol.md](docs/clasificador_rol.md).
 - `POST /preseleccion/categorizar`: predice el rol de una hoja de vida.
 - **Primer frontend** en React: login, dashboard de roles, carga de candidatos
   y vistas de ranking y detalle (aún con datos de ejemplo).
@@ -275,8 +276,13 @@ neuronas se apagarían al mismo ritmo para siempre).
 
 En la página "Red competitiva" del frontend se ve el cuadro del torneo, la
 competencia abierta y un gráfico de cómo se apagan las neuronas en cada
-iteración. La página "Ranking top 5" muestra el mismo podio y permite
-compararlo con el orden por palabras clave.
+iteración. La página "Ranking top 5" muestra el mismo podio, permite
+compararlo con el orden por palabras clave y tiene un panel **«¿Por qué
+ganó…?»** (`GET /competencia/explicar/{rol_id}`) que explica el primer puesto:
+el aporte de cada requisito a la fuerza de la ganadora y de la segunda (se mide
+quitando de la hoja de vida la evidencia de ese requisito y viendo cuánto baja
+la fuerza), la ventaja de cada requisito, la experiencia y el margen de la
+victoria, con su probabilidad y las iteraciones de MAXNET.
 
 ### Paso 7 · Una capa competitiva que aprende: LVQ
 
@@ -378,6 +384,9 @@ Métricas del evaluador por palabras clave (`python scripts/evaluar_datasets.py`
 - **Selección**: exactitud 0.954 · precisión 1.000 · recall 0.917 · F1 0.957
 - **Ranking**: precisión@5 promedio 0.75
 
+Fuentes de cada pieza (modelos, datasets, papers y librerías):
+[docs/fuentes.md](docs/fuentes.md).
+
 Para medir a Gemini contra esta línea base (requiere API key):
 `python scripts/evaluar_llm.py --n 40`.
 
@@ -433,6 +442,8 @@ CVScope/
 │   └── tests/             # pruebas (pytest)
 ├── docs/
 │   ├── diagrama/          # láminas del diagrama de la red (.drawio, .svg, .png)
+│   ├── clasificador_rol.md  # cómo reproducir el clasificador de rol (Kaggle)
+│   ├── fuentes.md         # de dónde sale cada pieza: modelos, datasets, papers y librerías
 │   └── sesgos.md
 └── frontend/
     ├── e2e/               # pruebas de punta a punta (Playwright)
@@ -462,6 +473,7 @@ Todos los endpoints, salvo `/auth/login`, requieren la cabecera
 | GET | `/preseleccion/hojas-de-vida/{cv_id}` | Detalle explicable de una hoja de vida |
 | POST | `/competencia/comparar` | Duelo entre dos hojas de vida (MAXNET de 2 neuronas) |
 | POST | `/competencia/torneo` | Torneo, competencia abierta, ganadora y top N |
+| GET | `/competencia/explicar/{rol_id}` | Por qué ganó el 1.º del ranking: aporte de cada requisito, comparación con el 2.º y margen |
 | GET | `/competencia/modelo` | Arquitectura, métricas y prototipos de la LVQ |
 | GET | `/datasets/`, `/datasets/seleccion`, `/datasets/ranking` | Resumen y consulta de los datasets |
 
@@ -539,7 +551,7 @@ El frontend usa `VITE_API_URL` (por defecto `http://127.0.0.1:8000`).
 | `python scripts/evaluar_datasets.py` | Mide el evaluador por palabras clave |
 | `python scripts/auditar_sesgos.py` | Auditoría de sesgos con contrafactuales |
 | `python scripts/evaluar_llm.py --n 40` | Compara Gemini con la línea base (requiere API key) |
-| `python scripts/entrenar_clasificador_rol.py` | Reentrena el clasificador de rol (requiere acceso a Hugging Face) |
+| `python scripts/entrenar_clasificador_rol.py [--dataset kaggle]` | Reentrena el clasificador de rol con el dataset sintético o con el CSV de Kaggle (ver [docs/clasificador_rol.md](docs/clasificador_rol.md); requiere acceso a Hugging Face) |
 | `python ../docs/diagrama/generar_diagrama.py --png` | Regenera las láminas del diagrama de la red |
 | `cd ../frontend && npm run test:e2e` | Pruebas de punta a punta (levanta backend y frontend solos) |
 
@@ -552,7 +564,9 @@ El frontend usa `VITE_API_URL` (por defecto `http://127.0.0.1:8000`).
 - **Hojas de vida reales** anonimizadas y etiquetadas a mano: con más datos de
   prueba se podrá confirmar si la mejora de la red es significativa, y hay que
   repetir la auditoría de sesgos.
-- **Reentrenar el clasificador de rol** con el dataset de selección
-  (`scripts/entrenar_clasificador_rol.py`, requiere acceso a Hugging Face).
+- **Reentrenar el clasificador de rol** con el CSV de Kaggle y las versiones
+  fijadas de scikit-learn (`python scripts/entrenar_clasificador_rol.py --dataset kaggle`;
+  pasos, filtro a 4 roles, split y métricas en
+  [docs/clasificador_rol.md](docs/clasificador_rol.md)).
 - **Migraciones de base de datos** (por ejemplo, Alembic) si el esquema
   cambia con datos ya cargados.
