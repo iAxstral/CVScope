@@ -491,6 +491,14 @@ defecto: sin ellas la API no arranca. Genera el secreto con
 durante 15 minutos (HTTP 429) tras 5 intentos fallidos por IP y correo
 (`LOGIN_MAX_INTENTOS`, `LOGIN_VENTANA_SEGUNDOS`).
 
+### Opción 0 · Un solo script (Windows)
+
+```powershell
+.\iniciar.ps1            # backend + frontend; el liviano (-Liviano) omite el clasificador de rol
+```
+
+La primera vez crea el entorno virtual, instala las dependencias, genera `backend\.env` con un `AUTH_SECRET` y una `ADMIN_PASSWORD` aleatorios (te muestra el usuario y la clave), abre cada servidor en su ventana y el navegador en la aplicación. Si un puerto está ocupado, usa el siguiente libre.
+
 ### Opción A · Docker (todo en un comando)
 
 ```bash
