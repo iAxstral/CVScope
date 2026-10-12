@@ -149,9 +149,13 @@ trabajó en cinco entregas:
 
 ## Cómo se construyó la red neuronal competitiva
 
-![Diagrama de la red neuronal competitiva](docs/diagrama/red_competitiva.png)
+![Visión general de la red neuronal competitiva](docs/diagrama/lamina_1_vision_general.png)
 
-*Diagrama editable: [`docs/diagrama/red_competitiva.drawio`](docs/diagrama/red_competitiva.drawio) ·
+![La competencia MAXNET con un duelo real](docs/diagrama/lamina_2_maxnet.png)
+
+![Cómo aprenden la capa de evaluación y la capa LVQ](docs/diagrama/lamina_3_entrenamiento.png)
+
+*Diagrama editable (una página por lámina): [`docs/diagrama/red_competitiva.drawio`](docs/diagrama/red_competitiva.drawio) ·
 guía de lectura: [`docs/diagrama/README.md`](docs/diagrama/README.md)*
 
 ### El problema
@@ -426,7 +430,7 @@ CVScope/
 │   ├── scripts/           # generar datasets, entrenar, validar, evaluar y auditar sesgos
 │   └── tests/             # pruebas (pytest)
 ├── docs/
-│   ├── diagrama/          # diagrama de la red (.drawio, .svg, .png)
+│   ├── diagrama/          # láminas del diagrama de la red (.drawio, .svg, .png)
 │   └── sesgos.md
 └── frontend/
     ├── e2e/               # pruebas de punta a punta (Playwright)
@@ -518,7 +522,7 @@ El frontend usa `VITE_API_URL` (por defecto `http://127.0.0.1:8000`).
 | `python scripts/auditar_sesgos.py` | Auditoría de sesgos con contrafactuales |
 | `python scripts/evaluar_llm.py --n 40` | Compara Gemini con la línea base (requiere API key) |
 | `python scripts/entrenar_clasificador_rol.py` | Reentrena el clasificador de rol (requiere acceso a Hugging Face) |
-| `python ../docs/diagrama/generar_diagrama.py` | Regenera el diagrama de la red |
+| `python ../docs/diagrama/generar_diagrama.py --png` | Regenera las láminas del diagrama de la red |
 | `cd ../frontend && npm run test:e2e` | Pruebas de punta a punta (levanta backend y frontend solos) |
 
 ---
