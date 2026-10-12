@@ -469,12 +469,21 @@ La documentación interactiva completa está en `http://127.0.0.1:8000/docs`.
 
 ## Cómo ejecutar
 
-**Usuario inicial:** `admin@cvscope.co` / `cvscope2026` (se crea la primera vez;
-cámbialo con `ADMIN_EMAIL` y `ADMIN_PASSWORD`).
+**Variables obligatorias:** `AUTH_SECRET` (clave que firma las sesiones) y
+`ADMIN_PASSWORD` (contraseña del administrador inicial, que se crea la primera
+vez con `ADMIN_EMAIL`, por defecto `admin@cvscope.co`). No tienen valor por
+defecto: sin ellas la API no arranca. Genera el secreto con
+`python -c "import secrets; print(secrets.token_hex(32))"`. El login bloquea
+durante 15 minutos (HTTP 429) tras 5 intentos fallidos por IP y correo
+(`LOGIN_MAX_INTENTOS`, `LOGIN_VENTANA_SEGUNDOS`).
 
 ### Opción A · Docker (todo en un comando)
 
 ```bash
+# Crea un archivo .env junto al docker-compose.yml con AUTH_SECRET y ADMIN_PASSWORD
+printf 'AUTH_SECRET=%s
+ADMIN_PASSWORD=%s
+' "$(python -c 'import secrets; print(secrets.token_hex(32))')" "cambia-esta-clave" > .env
 docker compose up --build
 # Frontend: http://localhost:8080 · API: http://localhost:8000/docs
 ```
@@ -491,7 +500,7 @@ cd backend
 python -m venv .venv
 source .venv/bin/activate      # En Windows: .venv\Scripts\Activate.ps1
 pip install -r requirements.txt   # o requirements-api.txt sin el clasificador (más liviano)
-cp .env.example .env           # define AUTH_SECRET; opcional: API key de Gemini
+cp .env.example .env           # define AUTH_SECRET y ADMIN_PASSWORD; opcional: API key de Gemini
 uvicorn app.main:app --reload  # http://127.0.0.1:8000
 ```
 

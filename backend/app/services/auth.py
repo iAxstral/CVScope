@@ -6,11 +6,11 @@ Autenticación con la librería estándar (sin dependencias extra).
   fecha de expiración. No se guarda en el servidor; se verifica la firma.
 
 Variables de entorno:
-  AUTH_SECRET      -> clave para firmar los tokens (obligatoria en producción;
-                      si falta se genera una al arrancar y las sesiones se
-                      pierden al reiniciar)
+  AUTH_SECRET      -> clave para firmar los tokens (OBLIGATORIA; sin ella la
+                      API no arranca)
   ADMIN_EMAIL      -> usuario inicial (por defecto admin@cvscope.co)
-  ADMIN_PASSWORD   -> su contraseña (por defecto cvscope2026)
+  ADMIN_PASSWORD   -> su contraseña (OBLIGATORIA la primera vez que se crea el
+                      administrador; no hay valor por defecto)
 """
 
 import base64
@@ -24,7 +24,18 @@ import time
 ITERACIONES = 390_000
 DURACION_TOKEN = 8 * 60 * 60  # 8 horas
 
-_SECRETO = (os.getenv("AUTH_SECRET") or secrets.token_hex(32)).encode()
+
+def _leer_secreto() -> bytes:
+    secreto = os.getenv("AUTH_SECRET", "").strip()
+    if not secreto:
+        raise RuntimeError(
+            "Falta la variable de entorno AUTH_SECRET (firma las sesiones). Genérala con: "
+            'python -c "import secrets; print(secrets.token_hex(32))"'
+        )
+    return secreto.encode()
+
+
+_SECRETO = _leer_secreto()
 
 
 class TokenInvalido(ValueError):

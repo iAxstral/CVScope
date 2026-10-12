@@ -1,7 +1,9 @@
 # CVScope completo: PostgreSQL + API + frontend.
 #   docker compose up --build
 #   Frontend: http://localhost:8080   API: http://localhost:8000/docs
-# Usuario inicial: admin@cvscope.co / cvscope2026 (cámbialo con ADMIN_PASSWORD)
+# Requiere AUTH_SECRET y ADMIN_PASSWORD (sin valores por defecto), por ejemplo en
+# un archivo .env junto a este docker-compose.yml. Usuario inicial: ADMIN_EMAIL
+# (admin@cvscope.co por defecto) con la contraseña de ADMIN_PASSWORD.
 
 services:
   db:
@@ -25,9 +27,9 @@ services:
         CON_CLASIFICADOR: ${CON_CLASIFICADOR:-false}
     environment:
       DATABASE_URL: postgresql://cvscope:cvscope@db:5432/cvscope
-      AUTH_SECRET: ${AUTH_SECRET:-cambia-esta-clave-en-produccion}
+      AUTH_SECRET: ${AUTH_SECRET:?Define AUTH_SECRET (por ejemplo en un archivo .env)}
       ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@cvscope.co}
-      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-cvscope2026}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Define ADMIN_PASSWORD (por ejemplo en un archivo .env)}
       CORS_ORIGINS: http://localhost:8080,http://127.0.0.1:8080
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
     depends_on:
