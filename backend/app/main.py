@@ -12,7 +12,7 @@ from app.routers import auth, candidatos, competencia, datasets, preseleccion, r
 
 app = FastAPI(
     title="CVScope API",
-    description="Categoriza candidatos por rol, evalúa si cumplen los requisitos usando un LLM (Gemini) y genera un ranking explicable de aptos.",
+    description="Categoriza candidatos por rol, evalúa si cumplen los requisitos (por palabras clave o, de forma opcional, con un LLM como Gemini) y genera un ranking explicable de aptos con una red neuronal competitiva.",
     version="0.1.0",
 )
 

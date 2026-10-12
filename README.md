@@ -34,7 +34,8 @@ Una empresa recibe muchas hojas de vida para un cargo. CVScope:
    Ventas o Marketing Digital).
 2. **Selecciona**: decide si cumple los requisitos mínimos del rol (*apto* o
    *no apto*) y **explica** cada requisito citando el fragmento del CV que lo
-   demuestra.
+   demuestra. El motor por defecto usa palabras clave y no necesita nada
+   externo; **Gemini es un motor opcional** (solo con `OPENAI_API_KEY`).
 3. **Pone a competir** a las hojas de vida del rol en una **red neuronal
    competitiva** y entrega a la ganadora y el **top 5**, con la explicación de
    cada duelo.
@@ -47,16 +48,16 @@ flowchart LR
     A[Hoja de vida<br/>PDF · DOCX · TXT] --> B[Extracción<br/>de texto]
     B --> D[Clasificador<br/>de rol]
     D --> E{Evaluación de<br/>requisitos}
-    E -->|palabras clave| F[Apto / no apto<br/>+ evidencia]
-    E -->|Gemini · CV anonimizado| F
+    E -->|palabras clave · motor por defecto| F[Apto / no apto<br/>+ evidencia]
+    E -.->|opcional: Gemini<br/>CV anonimizado| F
     F --> G[Red neuronal competitiva<br/>entrada anonimizada]
     G --> H[Ganadora y top 5<br/>+ explicación]
     G --> L[Capa LVQ<br/>apto / no apto aprendido]
 ```
 
 **Stack:** Python + FastAPI · SQLAlchemy (SQLite / PostgreSQL) · NumPy ·
-scikit-learn · React 19 + Vite · Gemini 2.5 Flash (vía endpoint compatible con
-OpenAI) · Playwright · GitHub Actions · Docker Compose.
+scikit-learn · React 19 + Vite · Gemini 2.5 Flash como motor opcional (vía endpoint
+compatible con OpenAI) · Playwright · GitHub Actions · Docker Compose.
 
 ---
 
@@ -123,7 +124,8 @@ trabajó en cinco entregas:
 
 - **Capa competitiva MAXNET**: la red pasa a ser una **red competitiva tipo
   Hamming** con inhibición lateral (*winner-take-all*).
-- **Gemini** como segundo motor de evaluación, con citas verificadas.
+- **Gemini** como motor de evaluación **opcional** (requiere API key), con citas
+  verificadas.
 - **Extracción de texto** de PDF, DOCX y TXT.
 - **Anonimización** de las hojas de vida y **auditoría de sesgos** con
   contrafactuales.
@@ -420,7 +422,7 @@ CVScope/
 │   │   │   ├── auth.py                   # contraseñas (PBKDF2) y tokens firmados
 │   │   │   ├── anonimizador.py
 │   │   │   ├── evaluador_requisitos.py   # motor de palabras clave
-│   │   │   ├── llm_service.py            # motor Gemini
+│   │   │   ├── llm_service.py            # motor Gemini (opcional)
 │   │   │   ├── extractor_texto.py        # PDF, DOCX, TXT
 │   │   │   └── ia_services.py            # clasificador de rol
 │   │   ├── models/        # tablas SQLAlchemy y stores (roles, candidatos, usuarios)
@@ -454,8 +456,8 @@ Todos los endpoints, salvo `/auth/login`, requieren la cabecera
 | GET · POST | `/roles/` | Listar roles · crear uno con sus requisitos y su `umbral_apto` |
 | POST | `/preseleccion/extraer-texto` | Extrae el texto de un CV en PDF, DOCX o TXT |
 | POST | `/preseleccion/categorizar` | Rol predicho por el clasificador |
-| POST | `/preseleccion/evaluar` | Apto/no apto con evidencia y veredicto LVQ; `motor`: `palabras_clave` o `llm` (Gemini) |
-| GET | `/preseleccion/motores` | Indica si Gemini está disponible |
+| POST | `/preseleccion/evaluar` | Apto/no apto con evidencia y veredicto LVQ; `motor`: `palabras_clave` (por defecto) o `llm` (Gemini, opcional) |
+| GET | `/preseleccion/motores` | Indica si el motor opcional Gemini está disponible |
 | GET | `/preseleccion/ranking/{rol_id}?top=5&metodo=red` | Top N del rol según la red (o `metodo=palabras_clave`) y el top del otro método |
 | GET | `/preseleccion/hojas-de-vida/{cv_id}` | Detalle explicable de una hoja de vida |
 | POST | `/competencia/comparar` | Duelo entre dos hojas de vida (MAXNET de 2 neuronas) |
@@ -505,7 +507,7 @@ uvicorn app.main:app --reload  # http://127.0.0.1:8000
 ```
 
 Sin `DATABASE_URL` usa SQLite (`backend/cvscope.db`). Sin API key todo funciona
-con el motor de palabras clave; con `OPENAI_API_KEY` se habilita Gemini en
+con el motor de palabras clave (Gemini es opcional); con `OPENAI_API_KEY` se habilita Gemini en
 "Seleccionar CV".
 
 **Frontend**
