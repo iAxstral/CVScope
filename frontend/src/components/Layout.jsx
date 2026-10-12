@@ -1,10 +1,18 @@
 import { useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { sesionActual } from "../utils/sesion.js";
 import Sidebar from "./Sidebar.jsx";
 import "./Layout.css";
 
 export default function Layout() {
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const location = useLocation();
+
+  // Sin sesión no se entra a la aplicación; se vuelve al login y luego aquí.
+  if (!sesionActual()) {
+    return <Navigate to="/" replace state={{ desde: location.pathname + location.search }} />;
+  }
 
   return (
     <div className="app-shell">

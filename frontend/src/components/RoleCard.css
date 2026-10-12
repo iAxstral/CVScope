@@ -81,3 +81,9 @@
   margin-top: auto;
   flex-wrap: wrap;
 }
+
+.role-card__umbral {
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+  margin-top: -0.5rem;
+}

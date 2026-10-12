@@ -15,7 +15,8 @@ complementarlo más adelante manteniendo la misma estructura de respuesta.
 import re
 import unicodedata
 
-# Fracción mínima de requisitos que debe cumplir un candidato para ser "apto".
+# Fracción mínima de requisitos que debe cumplir un candidato para ser "apto"
+# (valor por defecto; cada rol puede definir el suyo en umbral_apto).
 # Con 4 requisitos exige 3; con 3 requisitos exige 2.
 UMBRAL_APTO = 0.66
 
@@ -119,7 +120,7 @@ def extraer_anios_experiencia(cv_texto: str) -> int:
     return max(anios) if anios else 0
 
 
-def evaluar_cv(cv_texto: str, requisitos: list[str]) -> dict:
+def evaluar_cv(cv_texto: str, requisitos: list[str], umbral: float = UMBRAL_APTO) -> dict:
     """
     Evalúa una hoja de vida contra los requisitos de un rol.
 
@@ -157,10 +158,10 @@ def evaluar_cv(cv_texto: str, requisitos: list[str]) -> dict:
             "nota": nota,
         })
 
-    return resumir(evaluacion, extraer_anios_experiencia(cv_texto))
+    return resumir(evaluacion, extraer_anios_experiencia(cv_texto), umbral)
 
 
-def resumir(evaluacion: list[dict], anios: int) -> dict:
+def resumir(evaluacion: list[dict], anios: int, umbral: float = UMBRAL_APTO) -> dict:
     """
     Puntaje, veredicto y explicación a partir de la evaluación por requisito.
     Lo comparten el evaluador por palabras clave y el evaluador con LLM, así
@@ -176,7 +177,7 @@ def resumir(evaluacion: list[dict], anios: int) -> dict:
         + PESO_EXPERIENCIA * min(anios, ANIOS_EXPERIENCIA_TOPE) / ANIOS_EXPERIENCIA_TOPE,
         1,
     )
-    estado = "apto" if fraccion >= UMBRAL_APTO else "no_apto"
+    estado = "apto" if fraccion >= umbral else "no_apto"
 
     explicacion = (
         f"Cumple {len(cumplidos)} de {len(requisitos)} requisitos"
@@ -186,7 +187,7 @@ def resumir(evaluacion: list[dict], anios: int) -> dict:
         explicacion += "Supera el umbral mínimo de requisitos, por lo que es apto para el rol."
     else:
         explicacion += (
-            f"No alcanza el mínimo del {round(UMBRAL_APTO * 100)}% de requisitos, "
+            f"No alcanza el mínimo del {round(umbral * 100)}% de requisitos, "
             "por lo que no es apto para el rol."
         )
     if faltantes:

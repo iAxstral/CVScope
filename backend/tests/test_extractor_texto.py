@@ -43,3 +43,9 @@ def test_api_extraer_texto():
     assert "TypeScript" in r.json()["hoja_de_vida_texto"]
     r = client.post("/preseleccion/extraer-texto", files={"archivo": ("cv.doc", b"x", "application/msword")})
     assert r.status_code == 415
+
+
+def test_api_rechaza_archivos_de_mas_de_5_mb():
+    grande = b"a" * (5 * 1024 * 1024 + 1)
+    r = client.post("/preseleccion/extraer-texto", files={"archivo": ("cv.txt", grande, "text/plain")})
+    assert r.status_code == 413

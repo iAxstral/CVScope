@@ -12,6 +12,8 @@ function Esquina({ competidor, gano, prob }) {
       <span className="duelo-esquina__prob">{(prob * 100).toFixed(1)}%</span>
       <span className="duelo-esquina__meta">
         Fuerza {competidor.fuerza.toFixed(1)} · {competidor.anios_experiencia} años
+        {competidor.veredicto_lvq &&
+          ` · LVQ: ${competidor.veredicto_lvq === "apto" ? "apto" : "no apto"}`}
       </span>
       <div className="duelo-esquina__reqs">
         {competidor.requisitos_cumplidos.map((r) => (

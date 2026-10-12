@@ -1,0 +1,50 @@
+# CVScope completo: PostgreSQL + API + frontend.
+#   docker compose up --build
+#   Frontend: http://localhost:8080   API: http://localhost:8000/docs
+# Usuario inicial: admin@cvscope.co / cvscope2026 (cámbialo con ADMIN_PASSWORD)
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: cvscope
+      POSTGRES_PASSWORD: cvscope
+      POSTGRES_DB: cvscope
+    volumes:
+      - datos-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cvscope"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: ./backend
+      args:
+        CON_CLASIFICADOR: ${CON_CLASIFICADOR:-false}
+    environment:
+      DATABASE_URL: postgresql://cvscope:cvscope@db:5432/cvscope
+      AUTH_SECRET: ${AUTH_SECRET:-cambia-esta-clave-en-produccion}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@cvscope.co}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-cvscope2026}
+      CORS_ORIGINS: http://localhost:8080,http://127.0.0.1:8080
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+
+  web:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: http://localhost:8000
+    depends_on:
+      - api
+    ports:
+      - "8080:80"
+
+volumes:
+  datos-postgres:

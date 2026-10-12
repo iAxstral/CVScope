@@ -24,7 +24,12 @@ import os
 import re
 
 from app.services.anonimizador import anonimizar
-from app.services.evaluador_requisitos import extraer_anios_experiencia, normalizar, resumir
+from app.services.evaluador_requisitos import (
+    UMBRAL_APTO,
+    extraer_anios_experiencia,
+    normalizar,
+    resumir,
+)
 
 MODELO_POR_DEFECTO = "gemini-2.5-flash"
 BASE_URL_POR_DEFECTO = "https://generativelanguage.googleapis.com/v1beta/openai/"
@@ -112,7 +117,7 @@ def _validar(respuesta: dict, requisitos: list[str], cv_texto: str) -> list[dict
     return evaluacion
 
 
-def evaluar_compatibilidad(cv_texto: str, requisitos: list[str]) -> dict:
+def evaluar_compatibilidad(cv_texto: str, requisitos: list[str], umbral: float = UMBRAL_APTO) -> dict:
     """
     Evalúa una hoja de vida contra los requisitos de un rol usando el LLM.
 
@@ -136,6 +141,6 @@ def evaluar_compatibilidad(cv_texto: str, requisitos: list[str]) -> dict:
     except Exception as exc:  # red, cuota, JSON inválido...
         raise LLMNoDisponible(f"Gemini no devolvió una evaluación válida: {exc}") from exc
 
-    resultado = resumir(_validar(datos, requisitos, texto), extraer_anios_experiencia(texto))
+    resultado = resumir(_validar(datos, requisitos, texto), extraer_anios_experiencia(texto), umbral)
     resultado["explicacion"] = "Evaluado con Gemini. " + resultado["explicacion"]
     return resultado

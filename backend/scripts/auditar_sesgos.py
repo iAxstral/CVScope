@@ -61,6 +61,7 @@ def main() -> None:
     filas = cargar_ranking()
     print(f"Hojas de vida auditadas: {len(filas)}\n")
     print(f"{'Dato cambiado':<22}{'Δ fuerza red (máx)':>20}{'Δ puntaje base (máx)':>24}")
+    fugas = []
     for nombre, version_a, version_b in CONTRAFACTUALES:
         delta_red = delta_base = 0.0
         for fila in filas:
@@ -75,6 +76,12 @@ def main() -> None:
             delta_red = max(delta_red, abs(f1 - f0))
             delta_base = max(delta_base, abs(b1 - b0))
         print(f"{nombre:<22}{delta_red:>20.4f}{delta_base:>24.4f}")
+        if delta_red > 1e-6 or delta_base > 1e-6:
+            fugas.append(nombre)
+    if fugas:
+        print(f"\nFUGA DE SESGO: cambiar {', '.join(fugas)} altera la evaluación")
+        sys.exit(1)
+    print("\nSin fugas: ningún dato personal cambia la evaluación.")
 
 
 if __name__ == "__main__":

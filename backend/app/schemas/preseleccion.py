@@ -46,6 +46,11 @@ class EvaluacionResponse(BaseModel):
     requisitos_cumplidos: list[str]
     requisitos_faltantes: list[str]
     explicacion: str
+    veredicto_lvq: str | None = Field(
+        default=None,
+        description="Apto/no apto según la capa competitiva LVQ (aprendida de los datos).",
+    )
+    margen_lvq: float | None = None
 
 
 class Referencia(BaseModel):
@@ -67,15 +72,26 @@ class CandidatoRanking(BaseModel):
     requisitos_cumplidos: list[str]
     requisitos_faltantes: list[str]
     posicion_referencia: int | None = None
+    fuerza: float | None = Field(
+        default=None, description="Fuerza que le asigna la red competitiva (si se usó)."
+    )
 
 
 class RankingResponse(BaseModel):
     rol_id: int
     rol_nombre: str
     requisitos: list[str]
+    metodo: Literal["red", "palabras_clave"] = Field(
+        ..., description="Con qué se ordenó el top: la red competitiva o las palabras clave."
+    )
     total_evaluados: int
     total_aptos: int
     top: list[CandidatoRanking]
+    top_otro_metodo: list[str] = Field(
+        default_factory=list,
+        description="Ids del top según el otro método, para comparar ambos rankings.",
+    )
+    aviso: str | None = None
     coincidencias_referencia: int | None = Field(
         default=None,
         description="Cuántos del top devuelto están también en el top de referencia del dataset.",

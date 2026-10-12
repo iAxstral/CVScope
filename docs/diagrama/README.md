@@ -104,6 +104,37 @@ que aprender (sus pesos son `+1` y `−ε`, fijos).
 | Exactitud en duelos | 0.959 | 0.934 |
 | Precisión@5 | 0.80 | 0.70 |
 
+### Capa competitiva que aprende: LVQ (franja verde)
+
+MAXNET tiene pesos fijos (`+1` y `−ε`): decide, pero no aprende. Por eso hay
+una segunda capa competitiva, **LVQ** (*Learning Vector Quantization*,
+Kohonen), que sí aprende y decide **apto / no apto**:
+
+1. **Entrada**: el mismo vector `x` del paso 2 (los dos rasgos explícitos
+   pesan 3 veces más al medir distancias).
+2. **Neuronas prototipo**: 4 neuronas, 2 de clase «apto» y 2 de «no apto»,
+   cada una con un vector de pesos `w_k`.
+3. **Competencia**: gana la neurona más cercana, `k* = argmin ‖x − w_k‖`
+   (*winner-take-all*); su clase es el veredicto.
+4. **Aprendizaje de Kohonen**: al entrenar, solo la ganadora se mueve: se
+   **acerca** a la hoja de vida si su clase era la correcta
+   (`w ← w + α(x − w)`) y se **aleja** si no (`w ← w − α(x − w)`), con `α`
+   decreciendo de 0.05 a 0.
+
+Lo que aprendió (prototipos en unidades originales):
+
+| Neurona | Clase | Fracción de requisitos | Años de experiencia |
+|---|---|---|---|
+| 0 | No apto | 0.12 | 3.5 |
+| 1 | No apto | 0.25 | 10.0 |
+| 2 | Apto | 0.77 | 10.7 |
+| 3 | Apto | 0.82 | 3.7 |
+
+Nadie le dio el umbral del 66 %: la frontera entre «apto» y «no apto» la
+aprendió de los datos, y además separó por su cuenta perfiles con poca y con
+mucha experiencia. En prueba iguala al evaluador por palabras clave
+(exactitud 0.983 en ambos; F1 0.988 frente a 0.987).
+
 ## Dónde está en el código
 
 | Etapa | Archivo |
@@ -112,7 +143,9 @@ que aprender (sus pesos son `+1` y `−ε`, fijos).
 | Vector de características | `backend/app/services/red_competitiva/caracteristicas.py` |
 | Capa de evaluación | `backend/app/services/red_competitiva/modelo.py` |
 | Capa competitiva MAXNET | `backend/app/services/red_competitiva/competitiva.py` |
+| Capa competitiva LVQ | `backend/app/services/red_competitiva/lvq.py` |
 | Torneo | `backend/app/services/red_competitiva/torneo.py` |
 | API (`/competencia/...`) | `backend/app/routers/competencia.py` |
-| Entrenamiento | `backend/scripts/entrenar_red_competitiva.py` |
+| Entrenamiento | `backend/scripts/entrenar_red_competitiva.py`, `backend/scripts/entrenar_lvq.py` |
+| Validación estadística | `backend/scripts/validar_red.py` |
 | Interfaz | `frontend/src/pages/Torneo.jsx` (página "Red competitiva") |

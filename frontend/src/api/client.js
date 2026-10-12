@@ -1,4 +1,11 @@
+import { cerrarSesion, guardarSesion, sesionActual } from "../utils/sesion.js";
+
 export const API_BASE_URL = import.meta.env.VITE_API_URL ?? "http://127.0.0.1:8000";
+
+function cabeceras(extra = {}) {
+  const token = sesionActual()?.token;
+  return token ? { ...extra, Authorization: `Bearer ${token}` } : extra;
+}
 
 async function handleResponse(res) {
   if (!res.ok) {
@@ -9,6 +16,11 @@ async function handleResponse(res) {
     } catch {
       // el backend no devolvió JSON (ej. no está corriendo)
     }
+    if (res.status === 401 && sesionActual()) {
+      // Sesión vencida o inválida: se cierra y se vuelve al login
+      cerrarSesion();
+      window.location.assign("/");
+    }
     throw new Error(typeof detail === "string" ? detail : JSON.stringify(detail));
   }
   return res.json();
@@ -18,17 +30,25 @@ async function get(path, params = {}) {
   const query = new URLSearchParams(
     Object.entries(params).filter(([, v]) => v !== undefined && v !== null && v !== ""),
   ).toString();
-  const res = await fetch(`${API_BASE_URL}${path}${query ? `?${query}` : ""}`);
+  const res = await fetch(`${API_BASE_URL}${path}${query ? `?${query}` : ""}`, {
+    headers: cabeceras(),
+  });
   return handleResponse(res);
 }
 
 async function post(path, body) {
   const res = await fetch(`${API_BASE_URL}${path}`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: cabeceras({ "Content-Type": "application/json" }),
     body: JSON.stringify(body),
   });
   return handleResponse(res);
+}
+
+export async function iniciarSesion({ email, contrasena }) {
+  const sesion = await post("/auth/login", { email, contrasena });
+  guardarSesion(sesion);
+  return sesion;
 }
 
 export function getRoles() {
@@ -60,13 +80,14 @@ export async function extraerTexto(archivo) {
   datos.append("archivo", archivo);
   const res = await fetch(`${API_BASE_URL}/preseleccion/extraer-texto`, {
     method: "POST",
+    headers: cabeceras(),
     body: datos,
   });
   return handleResponse(res);
 }
 
-export function getRanking(rolId, top = 5) {
-  return get(`/preseleccion/ranking/${rolId}`, { top });
+export function getRanking(rolId, top = 5, metodo = "red") {
+  return get(`/preseleccion/ranking/${rolId}`, { top, metodo });
 }
 
 export function getDetalleHojaDeVida(cvId, rolId, motor) {
@@ -109,4 +130,13 @@ export function jugarTorneo({ rolId, cvIds, top = 5, semilla }) {
 
 export function getModeloCompetencia() {
   return get("/competencia/modelo");
+}
+
+export function crearRol({ nombre, clave, requisitos, umbralApto }) {
+  return post("/roles/", {
+    nombre,
+    clave: clave || null,
+    requisitos,
+    umbral_apto: umbralApto,
+  });
 }

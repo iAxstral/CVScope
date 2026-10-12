@@ -21,4 +21,9 @@ def obtener_rol(rol_id: int):
 
 @router.post("/", response_model=RolResponse, status_code=201)
 def crear_rol(data: RolCreate):
-    return rol_store.create(data)
+    requisitos = [r.strip() for r in data.requisitos if r.strip()]
+    if not requisitos:
+        raise HTTPException(status_code=422, detail="El rol necesita al menos un requisito")
+    if data.clave and rol_store.get_by_clave(data.clave):
+        raise HTTPException(status_code=409, detail=f"Ya existe un rol con la clave '{data.clave}'")
+    return rol_store.create(data.model_copy(update={"requisitos": requisitos}))

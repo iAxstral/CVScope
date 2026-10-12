@@ -134,11 +134,35 @@
     gap: 0.75rem 1rem;
   }
 
-  .ranking-row .score-meter {
+  .ranking-row__puntajes {
     grid-column: 2;
+  }
+
+  .ranking-row__name-line .chip {
+    white-space: normal;
   }
 
   .ranking-row .btn {
     grid-column: 1 / -1;
   }
+}
+
+.ranking-page__toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.ranking-row__puntajes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.ranking-row__fuerza {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--ink-faint);
 }

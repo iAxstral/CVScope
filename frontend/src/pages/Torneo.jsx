@@ -4,6 +4,7 @@ import { getModeloCompetencia, getRoles, jugarTorneo } from "../api/client.js";
 import useApi from "../hooks/useApi.js";
 import Bracket from "../components/Bracket.jsx";
 import DueloDirecto from "../components/DueloDirecto.jsx";
+import LvqPanel from "../components/LvqPanel.jsx";
 import MaxnetChart from "../components/MaxnetChart.jsx";
 import RoleTabs from "../components/RoleTabs.jsx";
 import StatTile from "../components/StatTile.jsx";
@@ -75,6 +76,8 @@ export default function Torneo() {
       {torneo.status === "success" && (
         <Resultado key={`${rolActivo}-${semilla}`} torneo={torneo.data} />
       )}
+
+      {modelo.status === "success" && modelo.data.lvq && <LvqPanel lvq={modelo.data.lvq} />}
     </div>
   );
 }
@@ -158,6 +161,14 @@ function Resultado({ torneo }) {
                 {p.posicion_referencia && (
                   <span className="chip" title="Posición real en el dataset de ranking">
                     ref. #{p.posicion_referencia}
+                  </span>
+                )}
+                {p.veredicto_lvq && (
+                  <span
+                    className={`status-pill status-pill--${p.veredicto_lvq}`}
+                    title="Veredicto de la capa competitiva LVQ"
+                  >
+                    LVQ: {p.veredicto_lvq === "apto" ? "apto" : "no apto"}
                   </span>
                 )}
                 <span className="torneo-podio__fuerza">{p.fuerza.toFixed(1)}</span>

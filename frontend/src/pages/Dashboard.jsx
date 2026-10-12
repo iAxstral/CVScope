@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { getRanking, getResumenDatasets, getRoles } from "../api/client.js";
 import useApi from "../hooks/useApi.js";
+import NuevoRolForm from "../components/NuevoRolForm.jsx";
 import RoleCard from "../components/RoleCard.jsx";
 import StatTile from "../components/StatTile.jsx";
 import { Cargando, ErrorCarga } from "../components/EstadoCarga.jsx";
@@ -17,6 +19,7 @@ async function cargarDashboard() {
 
 export default function Dashboard() {
   const { status, data, error, reload } = useApi(cargarDashboard);
+  const [creandoRol, setCreandoRol] = useState(false);
 
   const seleccion = data?.datasets.seleccion;
   const ranking = data?.datasets.ranking;
@@ -88,8 +91,28 @@ export default function Dashboard() {
             </Link>
           </section>
 
-          <section>
-            <h2 className="section-title">Roles</h2>
+          <section className="dashboard-page__roles">
+            <div className="dashboard-page__roles-head">
+              <h2 className="section-title">Roles</h2>
+              {!creandoRol && (
+                <button
+                  type="button"
+                  className="btn btn--ghost btn--sm"
+                  onClick={() => setCreandoRol(true)}
+                >
+                  + Nuevo rol
+                </button>
+              )}
+            </div>
+            {creandoRol && (
+              <NuevoRolForm
+                onCancelar={() => setCreandoRol(false)}
+                onCreado={() => {
+                  setCreandoRol(false);
+                  reload();
+                }}
+              />
+            )}
             <div className="dashboard-page__grid">
               {data.roles.map((rol) => (
                 <RoleCard key={rol.id} rol={rol} ranking={rol.ranking} />

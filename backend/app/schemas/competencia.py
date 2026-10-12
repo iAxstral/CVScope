@@ -24,6 +24,12 @@ class Competidor(BaseModel):
     requisitos_cumplidos: list[str]
     requisitos_faltantes: list[str]
     posicion_referencia: int | None = None
+    veredicto_lvq: str | None = Field(
+        default=None, description="Apto/no apto según la capa competitiva LVQ (aprendida)."
+    )
+    margen_lvq: float | None = Field(
+        default=None, description="Confianza de la LVQ: 0 = empate entre clases, 1 = clara."
+    )
 
 
 class Maxnet(BaseModel):
@@ -94,7 +100,17 @@ class TorneoResponse(BaseModel):
     )
 
 
+class PrototipoLVQ(BaseModel):
+    neurona: int
+    clase: str
+    fraccion_requisitos: float
+    anios_experiencia: float
+
+
 class ModeloInfo(BaseModel):
     arquitectura: str
     dim_entrada: int
     metricas: dict[str, float]
+    lvq: dict | None = Field(
+        default=None, description="Métricas y prototipos de la capa competitiva LVQ."
+    )

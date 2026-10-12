@@ -8,6 +8,9 @@ Arquitectura (tipo red de Hamming):
   3. Capa competitiva (recurrente, MAXNET): una neurona por hoja de vida; se
      inhiben entre sí hasta que solo queda una activa.
   4. Salida: la hoja de vida ganadora (one-hot) y la probabilidad de cada una.
+
+Además, una capa competitiva que aprende (LVQ, lvq.py) decide apto/no apto:
+sus neuronas son prototipos y gana la más cercana a la hoja de vida.
 """
 
 from functools import lru_cache
@@ -16,10 +19,12 @@ from pathlib import Path
 from app.services.evaluador_requisitos import evaluar_cv
 from app.services.red_competitiva.caracteristicas import DIM_ENTRADA, extraer
 from app.services.red_competitiva.competitiva import maxnet, podio
+from app.services.red_competitiva.lvq import CapaLVQ
 from app.services.red_competitiva.modelo import RedCompetitiva
 from app.services.red_competitiva.torneo import jugar_torneo
 
 RUTA_MODELO = Path(__file__).resolve().parent.parent.parent / "ml_models" / "red_competitiva.npz"
+RUTA_LVQ = RUTA_MODELO.with_name("lvq_seleccion.npz")
 
 
 class ModeloNoDisponible(RuntimeError):
@@ -40,15 +45,33 @@ def cargar_modelo() -> tuple[RedCompetitiva, dict]:
     return red, meta
 
 
+@lru_cache
+def cargar_lvq() -> tuple[CapaLVQ, dict] | None:
+    """La capa LVQ es opcional: si no está entrenada, no se reporta su veredicto."""
+    if not RUTA_LVQ.exists():
+        return None
+    capa, meta = CapaLVQ.cargar(RUTA_LVQ)
+    return (capa, meta) if capa.prototipos.shape[1] == DIM_ENTRADA else None
+
+
+def clasificar_lvq(x) -> dict | None:
+    """Veredicto apto/no apto de la capa competitiva LVQ para un vector x."""
+    lvq = cargar_lvq()
+    return lvq[0].competir(x) if lvq else None
+
+
 def preparar(cv: dict, requisitos: list[str]) -> dict:
     """Agrega a la hoja de vida su vector, su fuerza y el resumen de requisitos."""
     red, _ = cargar_modelo()
     x = extraer(cv["texto"], requisitos)
     evaluacion = evaluar_cv(cv["texto"], requisitos)
+    lvq = clasificar_lvq(x)
     return {
         **cv,
         "x": x,
         "fuerza": float(red.puntaje(x)[0]),
+        "veredicto_lvq": lvq["veredicto"] if lvq else None,
+        "margen_lvq": round(lvq["margen"], 3) if lvq else None,
         "score_palabras_clave": evaluacion["score"],
         "anios_experiencia": evaluacion["anios_experiencia"],
         "requisitos_cumplidos": evaluacion["requisitos_cumplidos"],

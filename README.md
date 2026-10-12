@@ -16,6 +16,7 @@ Escuela Colombiana de Ingeniería Julio Garavito · 2026-2
 2. [Historia del proyecto](#historia-del-proyecto)
    - [Hito 1 · Exploración](#hito-1--exploración)
    - [Hito 2 · Datos, evaluación y red neuronal competitiva](#hito-2--datos-evaluación-y-red-neuronal-competitiva)
+   - [Mejoras para la sustentación](#25--mejoras-para-la-sustentación)
 3. [Cómo se construyó la red neuronal competitiva](#cómo-se-construyó-la-red-neuronal-competitiva)
 4. [Datasets](#datasets)
 5. [Sesgos y equidad](#sesgos-y-equidad)
@@ -38,6 +39,9 @@ Una empresa recibe muchas hojas de vida para un cargo. CVScope:
    competitiva** y entrega a la ganadora y el **top 5**, con la explicación de
    cada duelo.
 
+Los datos se guardan en una base de datos (SQLite o PostgreSQL) y la aplicación
+pide iniciar sesión.
+
 ```mermaid
 flowchart LR
     A[Hoja de vida<br/>PDF · DOCX · TXT] --> B[Extracción<br/>de texto]
@@ -47,10 +51,12 @@ flowchart LR
     E -->|Gemini · CV anonimizado| F
     F --> G[Red neuronal competitiva<br/>entrada anonimizada]
     G --> H[Ganadora y top 5<br/>+ explicación]
+    G --> L[Capa LVQ<br/>apto / no apto aprendido]
 ```
 
-**Stack:** Python + FastAPI · NumPy · scikit-learn · React 19 + Vite · Gemini
-2.5 Flash (vía endpoint compatible con OpenAI).
+**Stack:** Python + FastAPI · SQLAlchemy (SQLite / PostgreSQL) · NumPy ·
+scikit-learn · React 19 + Vite · Gemini 2.5 Flash (vía endpoint compatible con
+OpenAI) · Playwright · GitHub Actions · Docker Compose.
 
 ---
 
@@ -79,7 +85,7 @@ El objetivo fue definir el problema y dejar lista la base técnica.
 *14 de septiembre – octubre de 2026*
 
 El hito 2 convirtió la base en un sistema que funciona de punta a punta. Se
-trabajó en cuatro entregas:
+trabajó en cinco entregas:
 
 #### 2.1 · Clasificador de rol y primer frontend
 *`feat/hito2`*
@@ -124,6 +130,21 @@ trabajó en cuatro entregas:
 - **Diagrama** de la red en draw.io ([docs/diagrama](docs/diagrama/README.md))
   y documento de [sesgos y equidad](docs/sesgos.md).
 
+#### 2.5 · Mejoras para la sustentación
+*`feat/mejoras`*
+
+- **Un solo top 5**: el ranking lo decide la red competitiva (el mismo podio
+  de la página "Red competitiva"); el orden por palabras clave queda como
+  comparación.
+- **Capa competitiva que aprende (LVQ)** para decidir apto / no apto.
+- **Validación estadística**: validación cruzada e intervalos de confianza.
+- **Base de datos** con SQLAlchemy (SQLite por defecto, PostgreSQL con
+  `DATABASE_URL`), **login real** y **roles configurables** desde la interfaz
+  (con su propio umbral de apto).
+- **Calidad**: dependencias fijadas, CI en GitHub Actions (backend contra SQLite
+  y PostgreSQL, auditoría de sesgos, lint, build y pruebas de punta a punta con
+  Playwright) y `docker compose` para levantar todo.
+
 ---
 
 ## Cómo se construyó la red neuronal competitiva
@@ -147,6 +168,7 @@ cap. 16; Lippmann, 1987), la red competitiva clásica, que tiene dos capas:
 |---|---|---|
 | **Capa de evaluación** | Feedforward, **entrenada** | Calcula la fuerza de cada hoja de vida para el rol. |
 | **Capa competitiva (MAXNET)** | Recurrente, pesos fijos | Las neuronas se inhiben entre sí hasta que solo una queda activa. |
+| **Capa competitiva LVQ** | Competitiva, **entrenada** (Kohonen) | Neuronas prototipo de «apto» y «no apto»; gana la más cercana. |
 
 ### Paso 1 · Preparar los datos
 
@@ -247,7 +269,31 @@ neuronas se apagarían al mismo ritmo para siempre).
 
 En la página "Red competitiva" del frontend se ve el cuadro del torneo, la
 competencia abierta y un gráfico de cómo se apagan las neuronas en cada
-iteración.
+iteración. La página "Ranking top 5" muestra el mismo podio y permite
+compararlo con el orden por palabras clave.
+
+### Paso 7 · Una capa competitiva que aprende: LVQ
+
+MAXNET decide, pero no aprende (sus pesos `+1` y `−ε` son fijos). Para que la
+parte competitiva también aprenda de los datos, se agregó una capa **LVQ**
+(*Learning Vector Quantization*, Kohonen) que decide **apto / no apto**
+(`red_competitiva/lvq.py`, entrenada con `scripts/entrenar_lvq.py`):
+
+1. Tiene 4 **neuronas prototipo** (2 «apto» y 2 «no apto»), cada una con un
+   vector de pesos `w_k` del mismo tamaño que `x`.
+2. Ante una hoja de vida **gana la neurona más cercana**,
+   `k* = argmin ‖x − w_k‖`, y su clase es el veredicto.
+3. **Regla de Kohonen**: al entrenar, solo la ganadora se mueve; se acerca a la
+   hoja de vida si acertó (`w ← w + α(x − w)`) y se aleja si falló
+   (`w ← w − α(x − w)`), con `α` decreciendo de 0.05 a 0 en 40 épocas.
+
+La configuración (peso 3 para los rasgos explícitos, 2 prototipos por clase)
+se eligió en validación. Lo que aprendió es interpretable: los prototipos
+«apto» quedaron en ~0.8 de requisitos cumplidos y los «no apto» entre 0.1 y
+0.25, y además se separaron solos por experiencia (~3.5 y ~10 años). En prueba
+**iguala** al evaluador por palabras clave (exactitud 0.983 en ambos; F1 0.988
+frente a 0.987), pero la frontera la aprendió de los datos en vez de usar un
+umbral fijo. Su veredicto aparece en "Seleccionar CV" y en la red competitiva.
 
 ### Evolución y resultados
 
@@ -276,13 +322,37 @@ ganadores con 99 % de seguridad entre hojas de vida iguales.*
   directamente por puntaje; `scripts/evaluar_datasets.py` reporta 0.75 porque
   primero filtra solo a los aptos.
 
+### ¿La mejora es estadísticamente significativa?
+
+`scripts/validar_red.py` responde esa pregunta con dos análisis:
+
+- **Validación cruzada de 5 particiones** (dataset de selección, exactitud en
+  duelos): red **0.953 ± 0.014**, palabras clave **0.944 ± 0.023**. La red
+  gana en 3 de 5 particiones y es más estable.
+- **Bootstrap de 2.000 remuestreos** de la prueba (intervalos del 95 %):
+
+| Métrica | Red | Palabras clave | Diferencia (IC 95 %) |
+|---|---|---|---|
+| Exactitud en duelos | 0.959 [0.909, 0.990] | 0.934 [0.875, 0.982] | +0.024 [−0.042, +0.087] |
+| Precisión@5 | 0.80 [0.75, 1.00] | 0.70 [0.65, 0.95] | +0.10 [−0.10, +0.30] |
+
+**Conclusión honesta:** la red es mejor en promedio, pero con 60 hojas de vida
+de prueba el intervalo de la diferencia incluye el 0, así que **todavía no se
+puede afirmar que la mejora sea significativa**. Hace falta un conjunto de
+prueba más grande (idealmente con hojas de vida reales) para confirmarlo.
+
 ### Cómo se validó
 
-- **59 pruebas automáticas** (`backend/tests/`): gradiente con diferencias
-  finitas, antisimetría de las probabilidades, que en MAXNET gane siempre la
-  neurona más fuerte y quede una sola activa, número de duelos del torneo,
-  empates, guardado/carga del modelo y los endpoints.
-- **Auditoría de sesgos** con contrafactuales (`scripts/auditar_sesgos.py`).
+- **79 pruebas del backend** (`backend/tests/`): gradiente con diferencias
+  finitas, antisimetría de las probabilidades, MAXNET (gana la más fuerte y
+  queda una sola activa), LVQ (aprende, regla de Kohonen), torneo, que el
+  ranking coincida con el podio de la red, anonimizador, Gemini con un cliente
+  simulado, extracción de PDF/DOCX, persistencia, umbral por rol,
+  autenticación y los endpoints. Corren también contra PostgreSQL 16.
+- **16 pruebas de punta a punta** con Playwright (escritorio y móvil) sobre el
+  backend y el frontend reales.
+- **Auditoría de sesgos** con contrafactuales (`scripts/auditar_sesgos.py`),
+  que el CI ejecuta en cada cambio.
 
 ---
 
@@ -294,7 +364,7 @@ indirecta y menciones negadas ("sin experiencia en nómina").
 
 | Dataset | Archivo | Hojas de vida | Uso |
 |---|---|---|---|
-| **Selección** | `backend/data/dataset_seleccion.csv` | 240 (60 por rol) | Rol y apto/no apto. Entrena la red competitiva y valida la selección; sirve también para reentrenar el clasificador de rol. |
+| **Selección** | `backend/data/dataset_seleccion.csv` | 240 (60 por rol) | Rol y apto/no apto. Entrena la red competitiva y la capa LVQ y valida la selección; sirve también para reentrenar el clasificador de rol. |
 | **Ranking** | `backend/data/dataset_ranking.csv` | 60 (15 por rol) | Puntaje y posición de referencia. Prueba la red y el top 5. |
 
 Métricas del evaluador por palabras clave (`python scripts/evaluar_datasets.py`):
@@ -323,7 +393,8 @@ cuánto cambia la evaluación:
 
 La auditoría **encontró dos fugas reales** que se corrigieron: una ciudad
 fuera de la lista (Quibdó) cambiaba la fuerza hasta 4.8 puntos, y mencionar la
-edad la cambiaba hasta 5.7. Detalles, limitaciones y uso responsable en
+edad la cambiaba hasta 5.7. El CI corre esta auditoría en cada cambio y falla
+si reaparece una fuga. Detalles, limitaciones y uso responsable en
 [docs/sesgos.md](docs/sesgos.md).
 
 ---
@@ -332,27 +403,33 @@ edad la cambiaba hasta 5.7. Detalles, limitaciones y uso responsable en
 
 ```
 CVScope/
+├── .github/workflows/     # CI: backend (SQLite y PostgreSQL), frontend y e2e
+├── docker-compose.yml     # PostgreSQL + API + frontend
 ├── backend/
 │   ├── app/
 │   │   ├── main.py
-│   │   ├── routers/       # roles, candidatos, preseleccion, competencia, datasets, vacantes
+│   │   ├── db.py          # conexión (SQLite por defecto, PostgreSQL con DATABASE_URL)
+│   │   ├── dependencias.py  # sesión obligatoria en los endpoints
+│   │   ├── routers/       # auth, roles, candidatos, preseleccion, competencia, datasets
 │   │   ├── services/
-│   │   │   ├── red_competitiva/   # caracteristicas, modelo, competitiva (MAXNET), torneo, servicio
+│   │   │   ├── red_competitiva/   # caracteristicas, modelo, competitiva (MAXNET), lvq, torneo, servicio
+│   │   │   ├── auth.py                   # contraseñas (PBKDF2) y tokens firmados
 │   │   │   ├── anonimizador.py
 │   │   │   ├── evaluador_requisitos.py   # motor de palabras clave
 │   │   │   ├── llm_service.py            # motor Gemini
 │   │   │   ├── extractor_texto.py        # PDF, DOCX, TXT
 │   │   │   └── ia_services.py            # clasificador de rol
-│   │   ├── models/        # store en memoria (roles y candidatos)
+│   │   ├── models/        # tablas SQLAlchemy y stores (roles, candidatos, usuarios)
 │   │   ├── schemas/       # esquemas Pydantic
-│   │   └── ml_models/     # clasificador_rol.pkl, red_competitiva.npz
+│   │   └── ml_models/     # clasificador_rol.pkl, red_competitiva.npz, lvq_seleccion.npz
 │   ├── data/              # dataset_seleccion.csv, dataset_ranking.csv
-│   ├── scripts/           # generar datasets, entrenar, evaluar y auditar sesgos
+│   ├── scripts/           # generar datasets, entrenar, validar, evaluar y auditar sesgos
 │   └── tests/             # pruebas (pytest)
 ├── docs/
 │   ├── diagrama/          # diagrama de la red (.drawio, .svg, .png)
 │   └── sesgos.md
 └── frontend/
+    ├── e2e/               # pruebas de punta a punta (Playwright)
     └── src/
         ├── api/           # cliente HTTP del backend
         ├── components/    # bracket, gráfico MAXNET, duelo directo…
@@ -363,17 +440,23 @@ CVScope/
 
 ### Endpoints principales
 
+Todos los endpoints, salvo `/auth/login`, requieren la cabecera
+`Authorization: Bearer <token>`.
+
 | Método | Ruta | Descripción |
 |---|---|---|
+| POST | `/auth/login` | Inicia sesión y devuelve el token (8 horas) |
+| GET | `/auth/yo` · POST `/auth/usuarios` | Usuario actual · crear otro usuario |
+| GET · POST | `/roles/` | Listar roles · crear uno con sus requisitos y su `umbral_apto` |
 | POST | `/preseleccion/extraer-texto` | Extrae el texto de un CV en PDF, DOCX o TXT |
 | POST | `/preseleccion/categorizar` | Rol predicho por el clasificador |
-| POST | `/preseleccion/evaluar` | Apto/no apto con evidencia; `motor`: `palabras_clave` o `llm` (Gemini) |
+| POST | `/preseleccion/evaluar` | Apto/no apto con evidencia y veredicto LVQ; `motor`: `palabras_clave` o `llm` (Gemini) |
 | GET | `/preseleccion/motores` | Indica si Gemini está disponible |
-| GET | `/preseleccion/ranking/{rol_id}?top=5` | Top N de hojas de vida aptas del rol |
+| GET | `/preseleccion/ranking/{rol_id}?top=5&metodo=red` | Top N del rol según la red (o `metodo=palabras_clave`) y el top del otro método |
 | GET | `/preseleccion/hojas-de-vida/{cv_id}` | Detalle explicable de una hoja de vida |
 | POST | `/competencia/comparar` | Duelo entre dos hojas de vida (MAXNET de 2 neuronas) |
 | POST | `/competencia/torneo` | Torneo, competencia abierta, ganadora y top N |
-| GET | `/competencia/modelo` | Arquitectura y métricas de la red |
+| GET | `/competencia/modelo` | Arquitectura, métricas y prototipos de la LVQ |
 | GET | `/datasets/`, `/datasets/seleccion`, `/datasets/ranking` | Resumen y consulta de los datasets |
 
 La documentación interactiva completa está en `http://127.0.0.1:8000/docs`.
@@ -382,21 +465,37 @@ La documentación interactiva completa está en `http://127.0.0.1:8000/docs`.
 
 ## Cómo ejecutar
 
-### Backend
+**Usuario inicial:** `admin@cvscope.co` / `cvscope2026` (se crea la primera vez;
+cámbialo con `ADMIN_EMAIL` y `ADMIN_PASSWORD`).
+
+### Opción A · Docker (todo en un comando)
+
+```bash
+docker compose up --build
+# Frontend: http://localhost:8080 · API: http://localhost:8000/docs
+```
+
+Levanta PostgreSQL 16, la API y el frontend (nginx). Para incluir el
+clasificador de rol (instala PyTorch): `CON_CLASIFICADOR=true docker compose up --build`.
+
+### Opción B · Local
+
+**Backend**
 
 ```bash
 cd backend
 python -m venv .venv
 source .venv/bin/activate      # En Windows: .venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-cp .env.example .env           # Opcional: API key de Google AI Studio para usar Gemini
+pip install -r requirements.txt   # o requirements-api.txt sin el clasificador (más liviano)
+cp .env.example .env           # define AUTH_SECRET; opcional: API key de Gemini
 uvicorn app.main:app --reload  # http://127.0.0.1:8000
 ```
 
-Sin API key todo funciona con el motor de palabras clave; con `OPENAI_API_KEY`
-en `backend/.env` se habilita Gemini en "Seleccionar CV".
+Sin `DATABASE_URL` usa SQLite (`backend/cvscope.db`). Sin API key todo funciona
+con el motor de palabras clave; con `OPENAI_API_KEY` se habilita Gemini en
+"Seleccionar CV".
 
-### Frontend
+**Frontend**
 
 ```bash
 cd frontend
@@ -410,7 +509,9 @@ El frontend usa `VITE_API_URL` (por defecto `http://127.0.0.1:8000`).
 
 | Comando | Para qué |
 |---|---|
-| `pip install pytest && python -m pytest tests` | Corre las 59 pruebas |
+| `pip install -r requirements-dev.txt && python -m pytest` | Corre las 79 pruebas (con `DATABASE_URL=postgresql://...` las corre contra PostgreSQL) |
+| `python scripts/validar_red.py` | Validación cruzada e intervalos de confianza de la red |
+| `python scripts/entrenar_lvq.py` | Entrena la capa competitiva LVQ |
 | `python scripts/generar_datasets.py` | Regenera los dos datasets |
 | `python scripts/entrenar_red_competitiva.py` | Entrena la red y reporta métricas |
 | `python scripts/evaluar_datasets.py` | Mide el evaluador por palabras clave |
@@ -418,14 +519,18 @@ El frontend usa `VITE_API_URL` (por defecto `http://127.0.0.1:8000`).
 | `python scripts/evaluar_llm.py --n 40` | Compara Gemini con la línea base (requiere API key) |
 | `python scripts/entrenar_clasificador_rol.py` | Reentrena el clasificador de rol (requiere acceso a Hugging Face) |
 | `python ../docs/diagrama/generar_diagrama.py` | Regenera el diagrama de la red |
+| `cd ../frontend && npm run test:e2e` | Pruebas de punta a punta (levanta backend y frontend solos) |
 
 ---
 
 ## Próximos pasos
 
-- Medir Gemini con la API key y comparar sus métricas con la red y la línea base.
-- Validar con hojas de vida reales anonimizadas (los datasets actuales son
-  sintéticos) y repetir la auditoría de sesgos.
-- Reentrenar el clasificador de rol con el dataset de selección.
-- Persistencia en PostgreSQL (hoy los candidatos se guardan en memoria) y
-  autenticación real.
+- **Medir Gemini** con la API key (`python scripts/evaluar_llm.py --n 40`) y
+  compararlo con la red y la línea base.
+- **Hojas de vida reales** anonimizadas y etiquetadas a mano: con más datos de
+  prueba se podrá confirmar si la mejora de la red es significativa, y hay que
+  repetir la auditoría de sesgos.
+- **Reentrenar el clasificador de rol** con el dataset de selección
+  (`scripts/entrenar_clasificador_rol.py`, requiere acceso a Hugging Face).
+- **Migraciones de base de datos** (por ejemplo, Alembic) si el esquema
+  cambia con datos ya cargados.

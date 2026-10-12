@@ -13,8 +13,16 @@ from app.schemas.preseleccion import (
     RankingResponse,
 )
 from app.services.evaluador_requisitos import evaluar_cv
-from app.services.extractor_texto import ArchivoIlegible, FormatoNoSoportado, extraer_texto
+from app.services.extractor_texto import (
+    TAMANO_MAXIMO,
+    ArchivoIlegible,
+    FormatoNoSoportado,
+    extraer_texto,
+)
 from app.services.hojas_de_vida import buscar, pool_del_rol
+from app.services.red_competitiva import servicio as servicio_red
+from app.services.red_competitiva.caracteristicas import extraer
+from app.services.red_competitiva.competitiva import podio
 from app.services.ia_services import ClasificadorNoDisponible, categorizar_rol
 from app.services.llm_service import (
     MODELO_POR_DEFECTO,
@@ -64,13 +72,14 @@ def _categorizar(texto: str) -> str:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
 
 
-def _evaluar(texto: str, requisitos: list[str], motor: str) -> dict:
+def _evaluar(texto: str, rol: dict, motor: str) -> dict:
+    requisitos, umbral = rol["requisitos"], rol["umbral_apto"]
     if motor == "llm":
         try:
-            return evaluar_compatibilidad(texto, requisitos)
+            return evaluar_compatibilidad(texto, requisitos, umbral)
         except LLMNoDisponible as exc:
             raise HTTPException(status_code=503, detail=str(exc)) from exc
-    return evaluar_cv(texto, requisitos)
+    return evaluar_cv(texto, requisitos, umbral)
 
 
 def _rol_o_404(rol_id: int) -> dict:
@@ -119,7 +128,8 @@ def evaluar_candidato(data: EvaluarRequest):
     else:
         rol = _rol_o_404(rol_id)
 
-    resultado = _evaluar(texto, rol["requisitos"], data.motor)
+    resultado = _evaluar(texto, rol, data.motor)
+    lvq = servicio_red.clasificar_lvq(extraer(texto, rol["requisitos"]))
 
     if data.candidato_id is not None:
         candidato_store.update(
@@ -139,24 +149,35 @@ def evaluar_candidato(data: EvaluarRequest):
         rol_id=rol["id"],
         rol_nombre=rol["nombre"],
         rol_predicho=rol_predicho,
+        veredicto_lvq=lvq["veredicto"] if lvq else None,
+        margen_lvq=round(lvq["margen"], 3) if lvq else None,
         **resultado,
     )
 
 
 @router.get("/ranking/{rol_id}", response_model=RankingResponse)
-def ranking_por_rol(rol_id: int, top: int = Query(default=5, ge=1, le=50)):
+def ranking_por_rol(
+    rol_id: int,
+    top: int = Query(default=5, ge=1, le=50),
+    metodo: Literal["red", "palabras_clave"] = Query(default="red"),
+):
     """
     Paso 3 (ranking): evalúa todas las hojas de vida del rol (dataset de
-    ranking + candidatos registrados) y devuelve las `top` mejores entre las
-    aptas, ordenadas de mejor a peor ajuste con el perfil buscado.
+    ranking + candidatos registrados) y devuelve las `top` mejores.
+
+    - metodo=red (por defecto): las ordena la red neuronal competitiva, igual
+      que el podio de la página "Red competitiva".
+    - metodo=palabras_clave: solo las aptas, ordenadas por el puntaje del
+      evaluador por palabras clave.
+
+    `top_otro_metodo` trae el top del otro método para compararlos.
     """
     rol = _rol_o_404(rol_id)
-
     pool = pool_del_rol(rol)
 
     evaluados = []
     for cv in pool:
-        r = evaluar_cv(cv["texto"], rol["requisitos"])
+        r = evaluar_cv(cv["texto"], rol["requisitos"], rol["umbral_apto"])
         evaluados.append({
             "id": cv["id"],
             "nombre": cv["nombre"],
@@ -174,7 +195,24 @@ def ranking_por_rol(rol_id: int, top: int = Query(default=5, ge=1, le=50)):
         (e for e in evaluados if e["estado"] == "apto"),
         key=lambda e: (-e["score"], e["id"]),
     )
-    seleccion = aptos[:top]
+    top_palabras = aptos[:top]
+
+    aviso = None
+    top_red = None
+    if evaluados:
+        try:
+            fuerzas = [servicio_red.preparar(cv, rol["requisitos"])["fuerza"] for cv in pool]
+            for e, f in zip(evaluados, fuerzas):
+                e["fuerza"] = round(f, 3)
+            top_red = [evaluados[i] for i in podio(fuerzas, top)]
+        except servicio_red.ModeloNoDisponible as exc:
+            aviso = f"La red competitiva no está disponible ({exc}); se ordenó por palabras clave."
+
+    if metodo == "red" and top_red is not None:
+        seleccion, otro = top_red, top_palabras
+    else:
+        metodo = "palabras_clave"
+        seleccion, otro = top_palabras, top_red or []
 
     coincidencias = None
     if any(e["fuente"] == "dataset" for e in evaluados):
@@ -186,10 +224,13 @@ def ranking_por_rol(rol_id: int, top: int = Query(default=5, ge=1, le=50)):
         rol_id=rol["id"],
         rol_nombre=rol["nombre"],
         requisitos=rol["requisitos"],
+        metodo=metodo,
         total_evaluados=len(evaluados),
         total_aptos=len(aptos),
         top=seleccion,
+        top_otro_metodo=[e["id"] for e in otro],
         coincidencias_referencia=coincidencias,
+        aviso=aviso,
     )
 
 
@@ -222,7 +263,7 @@ def detalle_hoja_de_vida(
         rol_nombre=rol["nombre"],
         referencia=cv["referencia"],
         motor=motor,
-        **_evaluar(cv["texto"], rol["requisitos"], motor),
+        **_evaluar(cv["texto"], rol, motor),
     )
 
 
@@ -241,7 +282,15 @@ class TextoExtraido(BaseModel):
 @router.post("/extraer-texto", response_model=TextoExtraido)
 async def extraer_texto_de_archivo(archivo: UploadFile = File(...)):
     """Extrae el texto plano de una hoja de vida en PDF, DOCX o TXT."""
-    contenido = await archivo.read()
+    # Se lee por partes y se corta apenas supera el límite, para no cargar en
+    # memoria un archivo enorme antes de rechazarlo.
+    partes, leido = [], 0
+    while parte := await archivo.read(64 * 1024):
+        leido += len(parte)
+        if leido > TAMANO_MAXIMO:
+            raise HTTPException(status_code=413, detail="El archivo supera el tamaño máximo de 5 MB")
+        partes.append(parte)
+    contenido = b"".join(partes)
     try:
         texto = extraer_texto(archivo.filename or "", contenido)
     except FormatoNoSoportado as exc:

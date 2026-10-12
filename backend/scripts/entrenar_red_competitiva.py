@@ -112,7 +112,7 @@ def precision_top(cvs: list[dict], fuerza) -> dict[str, int]:
     return resultado
 
 
-def entrenar(duelos, rng: np.random.Generator) -> RedCompetitiva:
+def entrenar(duelos, rng: np.random.Generator, verbose: bool = True) -> RedCompetitiva:
     red = RedCompetitiva(DIM_ENTRADA, semilla=SEMILLA)
     x_a = np.stack([a["x"] for a, _ in duelos])
     x_b = np.stack([b["x"] for _, b in duelos])
@@ -130,7 +130,7 @@ def entrenar(duelos, rng: np.random.Generator) -> RedCompetitiva:
             b = np.where(inv, x_a[idx], x_b[idx])
             etiqueta = np.where(invertir[idx], 1 - y[idx], y[idx])
             perdidas.append(red.paso(a, b, etiqueta, tasa=TASA, l2=L2))
-        if epoca == 1 or epoca % 10 == 0:
+        if verbose and (epoca == 1 or epoca % 10 == 0):
             print(f"   época {epoca:>3}  pérdida {np.mean(perdidas):.4f}")
     return red
 

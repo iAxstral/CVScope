@@ -87,7 +87,18 @@
   gap: 0.75rem;
 }
 
+.sidebar__usuario {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #fff;
+}
+
 .sidebar__logout {
+  border: none;
+  background: none;
+  padding: 0;
+  text-align: left;
+  width: fit-content;
   font-size: 0.82rem;
   color: rgba(255, 255, 255, 0.7);
 }

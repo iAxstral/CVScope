@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class RolBase(BaseModel):
@@ -16,6 +16,13 @@ class RolBase(BaseModel):
                     "(fullstack, rrhh, ventas, marketing).",
         examples=["fullstack"],
     )
+    umbral_apto: float = Field(
+        default=0.66,
+        ge=0.1,
+        le=1.0,
+        description="Fracción mínima de requisitos que debe cumplir un candidato para ser apto.",
+        examples=[0.66],
+    )
 
 
 class RolCreate(RolBase):
@@ -27,5 +34,4 @@ class RolResponse(RolBase):
     """Lo que la API devuelve: incluye el id asignado."""
     id: int
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
