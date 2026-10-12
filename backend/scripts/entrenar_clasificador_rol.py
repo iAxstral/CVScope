@@ -9,11 +9,14 @@ Fuentes de datos (--dataset):
   sintetico (por defecto)  hojas de vida sintéticas del repo (data/dataset_seleccion.csv)
   kaggle                   CSV del dataset "Resume Dataset" de Kaggle (descarga manual,
                            ver docs/clasificador_rol.md), filtrado a los 4 roles de CVScope
+  combinado                las dos anteriores juntas; la división se estratifica por
+                           (rol, fuente) y las métricas se reportan también por fuente
 
 Uso (desde backend/):
     python scripts/entrenar_clasificador_rol.py
     python scripts/entrenar_clasificador_rol.py --dataset kaggle
     python scripts/entrenar_clasificador_rol.py --dataset kaggle --csv ruta/a/Resume.csv
+    python scripts/entrenar_clasificador_rol.py --dataset combinado
 
 Además del modelo, guarda las métricas de prueba y las versiones usadas en
 app/ml_models/clasificador_rol_metricas.json.
@@ -94,16 +97,23 @@ def cargar_kaggle(ruta: Path) -> tuple[list[str], list[str]]:
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--dataset", choices=["sintetico", "kaggle"], default="sintetico")
-    ap.add_argument("--csv", type=Path, default=CSV_KAGGLE, help="CSV de Kaggle (solo con --dataset kaggle)")
+    ap.add_argument("--dataset", choices=["sintetico", "kaggle", "combinado"], default="sintetico")
+    ap.add_argument("--csv", type=Path, default=CSV_KAGGLE, help="CSV de Kaggle (con --dataset kaggle o combinado)")
     ap.add_argument("--salida", type=Path, default=RUTA_MODELO, help="Dónde guardar el modelo (.pkl)")
     args = ap.parse_args()
 
-    textos, etiquetas = cargar_kaggle(args.csv) if args.dataset == "kaggle" else cargar_sintetico()
+    textos, etiquetas, fuentes = [], [], []
+    for fuente in (["kaggle", "sintetico"] if args.dataset == "combinado" else [args.dataset]):
+        t, e = cargar_kaggle(args.csv) if fuente == "kaggle" else cargar_sintetico()
+        textos += t
+        etiquetas += e
+        fuentes += [fuente] * len(t)
     print("Hojas de vida por rol:", dict(sorted(Counter(etiquetas).items())))
 
-    x_train, x_test, y_train, y_test = train_test_split(
-        textos, etiquetas, test_size=PROPORCION_PRUEBA, stratify=etiquetas, random_state=SEMILLA
+    # Con varias fuentes se estratifica por (rol, fuente): ambas quedan en entrenamiento y en prueba
+    estratos = [f"{e}|{f}" for e, f in zip(etiquetas, fuentes)] if args.dataset == "combinado" else etiquetas
+    x_train, x_test, y_train, y_test, _, f_test = train_test_split(
+        textos, etiquetas, fuentes, test_size=PROPORCION_PRUEBA, stratify=estratos, random_state=SEMILLA
     )
     print(f"Entrenamiento: {len(x_train)} · prueba: {len(x_test)} (estratificado, semilla {SEMILLA})")
 
@@ -113,6 +123,19 @@ def main() -> None:
 
     predicciones = clasificador.predict(embeddings.encode(x_test))
     print(classification_report(y_test, predicciones))
+
+    por_fuente = {}
+    for fuente in sorted(set(fuentes)):
+        idx = [i for i, f in enumerate(f_test) if f == fuente]
+        reales, predichas = [y_test[i] for i in idx], [predicciones[i] for i in idx]
+        por_fuente[fuente] = {
+            "hojas_de_vida": {"total": fuentes.count(fuente), "prueba": len(idx)},
+            "por_rol": dict(sorted(Counter(e for e, f in zip(etiquetas, fuentes) if f == fuente).items())),
+            "exactitud": round(float(accuracy_score(reales, predichas)), 4),
+            "f1_macro": round(float(f1_score(reales, predichas, average="macro")), 4),
+        }
+        print(f"{fuente}: exactitud {por_fuente[fuente]['exactitud']} · F1 macro "
+              f"{por_fuente[fuente]['f1_macro']} ({len(idx)} de prueba)")
 
     args.salida.parent.mkdir(parents=True, exist_ok=True)
     joblib.dump(clasificador, args.salida)
@@ -127,6 +150,7 @@ def main() -> None:
         "exactitud": round(float(accuracy_score(y_test, predicciones)), 4),
         "f1_macro": round(float(f1_score(y_test, predicciones, average="macro")), 4),
         "reporte": classification_report(y_test, predicciones, output_dict=True),
+        "por_fuente": por_fuente,
         "versiones": {"scikit-learn": sklearn.__version__, "embeddings": MODELO_EMBEDDINGS},
     }
     ruta_metricas = args.salida.with_name("clasificador_rol_metricas.json")
